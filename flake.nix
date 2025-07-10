@@ -1,5 +1,8 @@
 {
+  # https://discourse.nixos.org/t/enable-different-priority-substituters-with-flake/56073/7
+  nixConfig.substituters = [ https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store ];
   inputs = {
+    nixpkgs.url = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-25.05/nixexprs.tar.xz;
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -17,6 +20,7 @@
         ./configuration.nix
         ./n0099.nix
         ./nixvim.nix
+        ./networking.nix
         home-manager.nixosModules.home-manager {
           home-manager = {
             useGlobalPkgs = true;
