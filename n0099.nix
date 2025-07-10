@@ -27,12 +27,6 @@
     sudo.configFile = "Defaults timestamp_timeout=15";
   };
   programs = {
-    neovim = {
-      enable = true;
-      viAlias = true;
-      vimAlias = true;
-      defaultEditor = true;
-    };
     zsh.enable = true;
     git.enable = true;
     atop = {
