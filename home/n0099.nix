@@ -1,27 +1,24 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
+  imports = [ ./zsh.nix ];
   home = {
     stateVersion = "25.05";
     shellAliases = {
       sudo = "sudo "; # https://askubuntu.com/questions/22037/aliases-not-available-when-using-sudo/22043#22043
     };
+    packages = with pkgs; [ certbot lnav parallel ];
   };
   services.ssh-agent.enable = true;
   programs = {
-    zsh = {
+    atuin = {
       enable = true;
-      antidote = {
-        enable = true;
-        plugins =
-          [ "getantidote/use-omz" ]
-          ++ map (i: "ohmyzsh/ohmyzsh " + i)
-            ([ "path:lib" "path:themes/duellj.zsh-theme" ]
-            ++ map
-              (i: "path:plugins/" + i)
-              [ "git" "command-not-found" "colorize" "colored-man-pages" "zsh-interactive-cd" ])
-          ++ [ "zdharma-continuum/fast-syntax-highlighting" "zsh-users/zsh-autosuggestions" ]
-        ;
+      enableZshIntegration = true;
+      flags = [ "--disable-up-arrow" ];
+      settings = {
+        search_mode = "fulltext";
+        filter_mode = "directory";
+        enter_accept = false;
       };
     };
     git = {

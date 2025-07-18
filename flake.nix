@@ -25,7 +25,7 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users.n0099 = ./home.nix;
+            users.n0099 = ./home/n0099.nix;
           };
         }
       ];
