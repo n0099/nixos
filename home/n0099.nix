@@ -7,7 +7,12 @@
     shellAliases = {
       sudo = "sudo "; # https://askubuntu.com/questions/22037/aliases-not-available-when-using-sudo/22043#22043
     };
-    packages = with pkgs; [ certbot lnav parallel nixfmt-tree ];
+    packages = with pkgs; [
+      certbot
+      lnav
+      parallel
+      nixfmt-tree
+    ];
   };
   services.ssh-agent.enable = true;
   programs = {
