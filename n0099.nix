@@ -7,9 +7,10 @@
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOLshjq9QWQoWa8lDt3wFuWtcaM6o7hj8rF0s9QGedkn" ];
   };
-  environment.systemPackages = with pkgs; [
-    _7zz
-  ];
+  environment.systemPackages =
+    with pkgs;
+      [ _7zz ]
+      ++ [ nixd nixfmt-rfc-style ];
   services = {
     openssh = {
       enable = true;
@@ -21,6 +22,12 @@
     };
     nginx.enable = true;
     vnstat.enable = true;
+    netdata.enable = true;
+    mysql = {
+      enable = true;
+      package = pkgs.mariadb_114;
+    };
+    postgresql.enable = true;
   };
   security = {
     # https://unix.stackexchange.com/questions/382060/change-default-sudo-password-timeout

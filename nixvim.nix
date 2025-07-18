@@ -77,5 +77,33 @@
       -- https://github.com/nvimdev/indentmini.nvim/blob/0dc4bc2b3fc763420793e748b672292bc43ee722/README.md#config
       require("indentmini").setup({ only_current = true })
     '';
+  } {
+    plugins.lspconfig.enable = true;
+    extraConfigLua = ''
+      -- https://github.com/NixOS/nixfmt/blob/1f2589cb7198529c6c1eec9699eccd4d507d3600/README.md#neovim--nixd
+      local nvim_lsp = require("lspconfig")
+      nvim_lsp.nixd.setup({
+         settings = {
+            nixd = {
+               formatting = {
+                  command = { "nixfmt" },
+               },
+            },
+         },
+      })
+
+      -- https://www.mitchellhanberg.com/modern-format-on-save-in-neovim/
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = vim.api.nvim_create_augroup("lsp", { clear = true }),
+        callback = function(args)
+          vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = args.buf,
+            callback = function()
+              vim.lsp.buf.format {async = false, id = args.data.client_id }
+            end,
+          })
+        end
+      })
+    '';
   }];
 }
