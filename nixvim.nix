@@ -154,17 +154,24 @@
       extraConfigLua = ''
         -- https://github.com/NStefan002/screenkey.nvim/blob/16390931d847b1d5d77098daccac4e55654ac9e2/README.md#-how-to-use
         vim.g.screenkey_statusline_component = true
-        vim.api.nvim_create_autocmd('InsertEnter', {
+        -- https://neovim.io/doc/user/vimfn.html#mode()
+        -- https://neovim.io/doc/user/autocmd.html#autocmd-pattern
+        local modes_to_disable_screenkey = '{i*,c,cr}*'
+        -- https://neovim.io/doc/user/autocmd.html#ModeChanged
+        vim.api.nvim_create_autocmd('ModeChanged', {
+          pattern = '*:' .. modes_to_disable_screenkey,
           callback = function()
             vim.g.screenkey_statusline_component = false
           end
         })
-        vim.api.nvim_create_autocmd('InsertLeave', {
+        vim.api.nvim_create_autocmd('ModeChanged', {
+          pattern = modes_to_disable_screenkey .. ':*',
           callback = function()
             vim.g.screenkey_statusline_component = true
           end
         })
         require('screenkey').setup({
+          clear_after = math.huge,
           filter = function(keys)
             return vim.iter(keys)
               :filter(function(k)
