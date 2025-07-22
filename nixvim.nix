@@ -98,32 +98,32 @@
           end
         })
         -- https://github.com/nvimdev/indentmini.nvim/blob/0dc4bc2b3fc763420793e748b672292bc43ee722/README.md#config
-        require("indentmini").setup({ only_current = true })
+        require('indentmini').setup({ only_current = true })
       '';
     }
     {
       plugins.lspconfig.enable = true;
       extraConfigLua = ''
         -- https://github.com/NixOS/nixfmt/blob/1f2589cb7198529c6c1eec9699eccd4d507d3600/README.md#neovim--nixd
-        local nvim_lsp = require("lspconfig")
+        local nvim_lsp = require('lspconfig')
         nvim_lsp.nixd.setup({
            settings = {
               nixd = {
                  formatting = {
-                    command = { "nixfmt" },
+                    command = { 'nixfmt' },
                  },
               },
            },
         })
 
         -- https://www.mitchellhanberg.com/modern-format-on-save-in-neovim/
-        vim.api.nvim_create_autocmd("LspAttach", {
-          group = vim.api.nvim_create_augroup("lsp", { clear = true }),
+        vim.api.nvim_create_autocmd('LspAttach', {
+          group = vim.api.nvim_create_augroup('lsp', { clear = true }),
           callback = function(args)
-            vim.api.nvim_create_autocmd("BufWritePre", {
+            vim.api.nvim_create_autocmd('BufWritePre', {
               buffer = args.buf,
               callback = function()
-                vim.lsp.buf.format {async = false, id = args.data.client_id }
+                vim.lsp.buf.format { async = false, id = args.data.client_id }
               end,
             })
           end
@@ -140,6 +140,61 @@
         lualine.settings.theme = "powerline";
         modicator.enable = true;
       };
+      extraPlugins = with pkgs; [
+        (vimUtils.buildVimPlugin {
+          name = "screenkey";
+          src = fetchFromGitHub {
+            owner = "NStefan002";
+            repo = "screenkey.nvim";
+            rev = "16390931d847b1d5d77098daccac4e55654ac9e2";
+            hash = "sha256-EGyIkWcQbCurkBbeHpXvQAKRTovUiNx1xqtXmQba8Gg=";
+          };
+        })
+      ];
+      extraConfigLua = ''
+        -- https://github.com/NStefan002/screenkey.nvim/blob/16390931d847b1d5d77098daccac4e55654ac9e2/README.md#-how-to-use
+        vim.g.screenkey_statusline_component = true
+        vim.api.nvim_create_autocmd('InsertEnter', {
+          callback = function()
+            vim.g.screenkey_statusline_component = false
+          end
+        })
+        vim.api.nvim_create_autocmd('InsertLeave', {
+          callback = function()
+            vim.g.screenkey_statusline_component = true
+          end
+        })
+        require('screenkey').setup({
+          filter = function(keys)
+            return vim.iter(keys)
+              :filter(function(k)
+                return k.key ~= '<LeftDrag>' -- https://neovim.io/doc/user/gui.html#%3CLeftDrag%3E
+              end)
+              :totable()
+          end,
+        })
+
+        -- https://github.com/nvim-lualine/lualine.nvim/blob/master/README.md#default-configuration
+        require('lualine').setup({
+          sections = {
+            lualine_c = {
+              'filename',
+              function()
+                return require('screenkey').get_keys()
+              end,
+            },
+            lualine_x = {
+              { 'encoding', show_bomb = true }, -- https://github.com/nvim-lualine/lualine.nvim/blob/master/README.md#encoding-component-options
+              'fileformat',
+              'filetype',
+            },
+            lualine_z = {
+              'location',
+              'lsp_status',
+            },
+          },
+        })
+      '';
     }
     {
       extraPlugins = [ pkgs.vimPlugins.ultimate-autopair-nvim ];
