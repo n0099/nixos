@@ -13,7 +13,7 @@
       viAlias = true;
       vimAlias = true;
       defaultEditor = true;
-      colorscheme = "desert";
+      colorscheme = "sorbet";
       plugins = {
         # leap.enable = true;
         trim.enable = true;
@@ -58,6 +58,11 @@
         })
       ];
       files = {
+        "after/ftplugin/gitcommit.lua" = {
+          localOpts = {
+            textwidth = 0; # https://unix.stackexchange.com/questions/138148/make-vim-stop-splitting-my-git-commit-messages
+          };
+        };
         "after/ftplugin/nix.lua" = {
           # https://github.com/nix-community/nixvim/issues/2418#issuecomment-2413714276
           localOpts = {
@@ -76,14 +81,18 @@
       };
     }
     {
-      plugins = {
-        treesitter = {
-          enable = true;
-          settings.indent.enable = true;
+      plugins =
+        {
+          treesitter = {
+            enable = true;
+            settings.indent.enable = true;
+          };
+          rainbow-delimiters.enable = true;
+        }
+        // {
+          dropbar.enable = true;
+          web-devicons.enable = true;
         };
-        rainbow-delimiters.enable = true;
-        dropbar.enable = true;
-      };
       extraConfigLua = ''
         -- `vim.treesitter.start()` will enable highlight of `nvim-treesitter` and `rainbow-delimiters`
         -- or highlights of `rainbow-delimiters` will show on the first buffer update
@@ -103,6 +112,12 @@
     }
     {
       plugins.lspconfig.enable = true;
+      diagnostic.settings = {
+        underline = false;
+        virtual_text.current_line = false; # https://github.com/neovim/neovim/pull/33517
+        virtual_lines.current_line = true;
+        update_in_insert = true;
+      };
       extraConfigLua = ''
         -- https://github.com/NixOS/nixfmt/blob/1f2589cb7198529c6c1eec9699eccd4d507d3600/README.md#neovim--nixd
         local nvim_lsp = require('lspconfig')
