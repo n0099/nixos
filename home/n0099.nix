@@ -30,6 +30,7 @@
       enable = true;
       userName = "n0099";
       userEmail = "n@n0099.net";
+      extraConfig.push.autoSetupRemote = true;
     };
     tmux = {
       enable = true;

@@ -27,10 +27,7 @@ lib.mkMerge [
         enable = true;
         plugins =
           [ "getantidote/use-omz" ]
-          ++ omzPrefix [
-            "path:lib"
-            "path:themes/fino-time.zsh-theme"
-          ]
+          ++ omzPrefix [ "path:lib" ]
           ++ omzPluginPrefix [
             "common-aliases"
             "colored-man-pages"
@@ -90,6 +87,51 @@ lib.mkMerge [
         # https://github.com/ohmyzsh/ohmyzsh/tree/3e7ef0182f59c7990a52cf6ec2981adb56d5b368/plugins/docker
         zstyle ':completion:*:*:docker:*' option-stacking yes
         zstyle ':completion:*:*:docker-*:*' option-stacking yes
+      '';
+    };
+  }
+  {
+    programs.zsh = {
+      antidote.plugins = [ "spaceship-prompt/spaceship-prompt" ];
+      initContent = lib.mkOrder 800 ''
+        spaceship remove line_sep
+        spaceship add --before char line_sep
+        SPACESHIP_PROMPT_ADD_NEWLINE=false
+
+        spaceship_prefix_first_line() {
+          spaceship::section::v4 ╭─
+        }
+        spaceship_prefix_second_line() {
+          spaceship::section::v4 ╰─
+        }
+        spaceship add --before char prefix_second_line
+        # https://spaceship-prompt.sh/config/prompt/#Prompt-order
+        SPACESHIP_USER_SHOW=false
+        spaceship add --before dir prefix_first_line
+
+        SPACESHIP_DIR_PREFIX=[
+        SPACESHIP_DIR_SUFFIX=]"$SPACESHIP_PROMPT_DEFAULT_SUFFIX"
+
+        SPACESHIP_CHAR_SYMBOL=•
+        # https://askubuntu.com/questions/1486572/how-to-change-symbol-from-spaceship-theme-on-zshrc/1501019#1501019
+        SPACESHIP_CHAR_SYMBOL_SUCCESS="$SPACESHIP_CHAR_SYMBOL"
+        SPACESHIP_CHAR_SYMBOL_FAILURE="$SPACESHIP_CHAR_SYMBOL"
+
+        SPACESHIP_DIR_TRUNC=0
+        SPACESHIP_DIR_TRUNC_REPO=false
+
+        spaceship remove exit_code
+        spaceship remove time
+        spaceship remove exec_time
+        SPACESHIP_RPROMPT_ORDER=(exit_code time exec_time)
+
+        SPACESHIP_EXEC_TIME_ELAPSED=0
+        SPACESHIP_EXEC_TIME_PRECISION=2
+
+        SPACESHIP_TIME_SHOW=true
+        SPACESHIP_EXIT_CODE_SHOW=true
+        SPACESHIP_SUDO_SYMBOL=#
+        SPACESHIP_HOST_SHOW=false
       '';
     };
   }

@@ -20,6 +20,20 @@
         lastplace.enable = true;
         visual-whitespace.enable = true;
         guess-indent.enable = true;
+        illuminate.enable = true;
+        fugitive.enable = true;
+        gitsigns = {
+          enable = true;
+          settings = {
+            current_line_blame = true;
+            current_line_blame_opts.delay = 100;
+          };
+        };
+        coq-nvim = {
+          enable = true;
+          installArtifacts = true;
+          settings.auto_start = "shut-up";
+        };
       };
       extraPlugins = with pkgs; [
         vimPlugins.vim-better-whitespace
@@ -115,6 +129,21 @@
           end
         })
       '';
+    }
+    {
+      opts = {
+        cursorline = true;
+        number = true;
+      };
+      plugins = {
+        lualine.enable = true;
+        lualine.settings.theme = "powerline";
+        modicator.enable = true;
+      };
+    }
+    {
+      extraPlugins = [ pkgs.vimPlugins.ultimate-autopair-nvim ];
+      extraConfigLua = "require('ultimate-autopair').setup()";
     }
   ];
 }
