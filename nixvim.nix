@@ -185,6 +185,7 @@
           opts = {
             cursorline = true;
             number = true;
+            numberwidth = 1;
           };
           plugins = {
             lualine.enable = true;
@@ -275,14 +276,13 @@
           -- https://github.com/NixOS/nixfmt/blob/1f2589cb7198529c6c1eec9699eccd4d507d3600/README.md#neovim--nixd
           local nvim_lsp = require('lspconfig')
           nvim_lsp.nixd.setup({
-             settings = {
-                nixd = {
-                   formatting = {
-                      command = { 'nixfmt' },
-                   },
+            settings = {
+              nixd = {
+                formatting = {
+                  command = { 'nixfmt' },
                 },
-             },
-          })
+              },
+            },
           })
         '';
         # https://www.mitchellhanberg.com/modern-format-on-save-in-neovim/
