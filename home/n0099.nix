@@ -31,6 +31,7 @@
       userName = "n0099";
       userEmail = "n@n0099.net";
       extraConfig.push.autoSetupRemote = true;
+      difftastic.enable = true;
     };
     tmux = {
       enable = true;

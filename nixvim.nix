@@ -18,7 +18,6 @@
           defaultEditor = true;
           colorscheme = "sorbet";
           plugins = {
-            # leap.enable = true;
             trim.enable = true;
             lastplace.enable = true;
             visual-whitespace.enable = true;
@@ -41,15 +40,6 @@
           extraPlugins = with pkgs; [
             vimPlugins.vim-better-whitespace
             vimPlugins.vim-pasta
-            (vimUtils.buildVimPlugin {
-              name = "indentmini";
-              src = fetchFromGitHub {
-                owner = "nvimdev";
-                repo = "indentmini.nvim";
-                rev = "0dc4bc2b3fc763420793e748b672292bc43ee722";
-                hash = "sha256-iMQn9eJuwThatTg9aTKhgHQaBc1NV4h/6gGt+fhZG9k=";
-              };
-            })
             (vimUtils.buildVimPlugin {
               name = "auto-indent";
               src = fetchFromGitHub {
@@ -84,6 +74,23 @@
           };
         }
         {
+          extraPlugins = with pkgs; [
+            (vimUtils.buildVimPlugin {
+              name = "indentmini";
+              src = fetchFromGitHub {
+                owner = "nvimdev";
+                repo = "indentmini.nvim";
+                rev = "0dc4bc2b3fc763420793e748b672292bc43ee722";
+                hash = "sha256-iMQn9eJuwThatTg9aTKhgHQaBc1NV4h/6gGt+fhZG9k=";
+              };
+            })
+          ];
+          extraConfigLua = ''
+            -- https://github.com/nvimdev/indentmini.nvim/blob/0dc4bc2b3fc763420793e748b672292bc43ee722/README.md#config
+            require('indentmini').setup({ only_current = true })
+          '';
+        }
+        {
           plugins =
             {
               treesitter = {
@@ -109,8 +116,6 @@
                 end
               end
             })
-            -- https://github.com/nvimdev/indentmini.nvim/blob/0dc4bc2b3fc763420793e748b672292bc43ee722/README.md#config
-            require('indentmini').setup({ only_current = true })
           '';
         }
         {
@@ -121,30 +126,51 @@
             virtual_lines.current_line = true;
             update_in_insert = true;
           };
+        }
+        {
+          plugins = {
+            treesitter.enable = true;
+            lspconfig.enable = true;
+            statuscol.enable = true;
+            origami.enable = true;
+          };
+          opts = {
+            # https://github.com/kevinhwang91/nvim-ufo/issues/4#issuecomment-1157716294
+            foldcolumn = "1";
+            fillchars = "foldopen:,foldsep: ,foldclose:";
+            # https://stackoverflow.com/questions/8316139/how-to-set-the-default-to-unfolded-when-you-open-a-file/26082966#26082966
+            foldlevelstart = 99;
+            # https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/README.md#folding
+            foldmethod = "expr";
+            foldexpr = "v:lua.vim.treesitter.foldexpr()";
+          };
           extraConfigLua = ''
-            -- https://github.com/NixOS/nixfmt/blob/1f2589cb7198529c6c1eec9699eccd4d507d3600/README.md#neovim--nixd
-            local nvim_lsp = require('lspconfig')
-            nvim_lsp.nixd.setup({
-               settings = {
-                  nixd = {
-                     formatting = {
-                        command = { 'nixfmt' },
-                     },
-                  },
-               },
+            -- https://neovim.io/doc/user/lsp.html#vim.lsp.foldexpr()
+            vim.api.nvim_create_autocmd('LspAttach', {
+              callback = function(args)
+                local client = vim.lsp.get_client_by_id(args.data.client_id)
+                if client:supports_method('textDocument/foldingRange') then
+                  local win = vim.api.nvim_get_current_win()
+                  vim.wo[win][0].foldexpr = 'v:lua.vim.lsp.foldexpr()'
+                end
+              end,
             })
 
-            -- https://www.mitchellhanberg.com/modern-format-on-save-in-neovim/
-            vim.api.nvim_create_autocmd('LspAttach', {
-              group = vim.api.nvim_create_augroup('lsp', { clear = true }),
-              callback = function(args)
-                vim.api.nvim_create_autocmd('BufWritePre', {
-                  buffer = args.buf,
-                  callback = function()
-                    vim.lsp.buf.format { async = false, id = args.data.client_id }
-                  end,
-                })
-              end
+            -- https://stackoverflow.com/questions/74397698/how-to-remove-the-fold-level-numbers-in-vim/78238311#78238311
+            local builtin = require('statuscol.builtin')
+            require('statuscol').setup({
+              setopt = true,
+              -- override the default list of segments with:
+              -- number-less fold indicator, then signs, then line number & separator
+              segments = {
+                { text = { builtin.foldfunc }, click = 'v:lua.ScFa' },
+                { text = { '%s' }, click = 'v:lua.ScSa' },
+                {
+                  text = { builtin.lnumfunc, ' ' },
+                  condition = { true, builtin.not_empty },
+                  click = 'v:lua.ScLa',
+                },
+              },
             })
           '';
         }
@@ -225,6 +251,41 @@
           extraPlugins = [ pkgs.vimPlugins.ultimate-autopair-nvim ];
           extraConfigLua = "require('ultimate-autopair').setup()";
         }
+      ];
+    }
+    {
+      programs.nixvim = {
+        plugins.lspconfig.enable = true;
+        extraConfigLua = ''
+          -- https://github.com/NixOS/nixfmt/blob/1f2589cb7198529c6c1eec9699eccd4d507d3600/README.md#neovim--nixd
+          local nvim_lsp = require('lspconfig')
+          nvim_lsp.nixd.setup({
+             settings = {
+                nixd = {
+                   formatting = {
+                      command = { 'nixfmt' },
+                   },
+                },
+             },
+          })
+
+          -- https://www.mitchellhanberg.com/modern-format-on-save-in-neovim/
+          vim.api.nvim_create_autocmd('LspAttach', {
+            group = vim.api.nvim_create_augroup('lsp', { clear = true }),
+            callback = function(args)
+              vim.api.nvim_create_autocmd('BufWritePre', {
+                buffer = args.buf,
+                callback = function()
+                  vim.lsp.buf.format { async = false, id = args.data.client_id }
+                end,
+              })
+            end
+          })
+        '';
+      };
+      environment.systemPackages = with pkgs; [
+        nixd
+        nixfmt-rfc-style
       ];
     }
   ];
