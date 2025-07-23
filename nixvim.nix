@@ -103,20 +103,23 @@
               dropbar.enable = true;
               web-devicons.enable = true;
             };
-          extraConfigLua = ''
-            -- `vim.treesitter.start()` will enable highlight of `nvim-treesitter` and `rainbow-delimiters`
-            -- or highlights of `rainbow-delimiters` will show on the first buffer update
-            -- https://neovim.io/doc/user/treesitter.html#vim.treesitter.start()
-            -- https://neovim.io/doc/user/treesitter.html#vim.treesitter.language.add()
-            vim.api.nvim_create_autocmd('FileType', {
-              callback = function(args)
-                local lang = vim.treesitter.language.get_lang(args.match)
-                if vim.treesitter.language.add(lang) then
-                  vim.treesitter.start(args.buf, lang)
+          autoCmd = [
+            {
+              # `vim.treesitter.start()` will enable highlight of `nvim-treesitter` and `rainbow-delimiters`
+              # or highlights of `rainbow-delimiters` will show on the first buffer update
+              # https://neovim.io/doc/user/treesitter.html#vim.treesitter.start()
+              # https://neovim.io/doc/user/treesitter.html#vim.treesitter.language.add()
+              event = "FileType";
+              callback.__raw = ''
+                function(args)
+                  local lang = vim.treesitter.language.get_lang(args.match)
+                  if vim.treesitter.language.add(lang) then
+                    vim.treesitter.start(args.buf, lang)
+                  end
                 end
-              end
-            })
-          '';
+              '';
+            }
+          ];
         }
         {
           plugins.lspconfig.enable = true;
@@ -144,18 +147,22 @@
             foldmethod = "expr";
             foldexpr = "v:lua.vim.treesitter.foldexpr()";
           };
-          extraConfigLua = ''
-            -- https://neovim.io/doc/user/lsp.html#vim.lsp.foldexpr()
-            vim.api.nvim_create_autocmd('LspAttach', {
-              callback = function(args)
-                local client = vim.lsp.get_client_by_id(args.data.client_id)
-                if client:supports_method('textDocument/foldingRange') then
-                  local win = vim.api.nvim_get_current_win()
-                  vim.wo[win][0].foldexpr = 'v:lua.vim.lsp.foldexpr()'
+          autoCmd = [
+            {
+              # https://neovim.io/doc/user/lsp.html#vim.lsp.foldexpr()
+              event = "LspAttach";
+              callback.__raw = ''
+                function(args)
+                  local client = vim.lsp.get_client_by_id(args.data.client_id)
+                  if client:supports_method('textDocument/foldingRange') then
+                    local win = vim.api.nvim_get_current_win()
+                    vim.wo[win][0].foldexpr = 'v:lua.vim.lsp.foldexpr()'
+                  end
                 end
-              end,
-            })
-
+              '';
+            }
+          ];
+          extraConfigLua = ''
             -- https://stackoverflow.com/questions/74397698/how-to-remove-the-fold-level-numbers-in-vim/78238311#78238311
             local builtin = require('statuscol.builtin')
             require('statuscol').setup({
@@ -195,25 +202,33 @@
               };
             })
           ];
+          autoCmd =
+            let
+              modesToDisableScreenkey = "{i*,c,cr}*"; # https://neovim.io/doc/user/vimfn.html#mode()
+            in
+            [
+              {
+                event = "ModeChanged"; # https://neovim.io/doc/user/autocmd.html#ModeChanged
+                pattern = "*:" + modesToDisableScreenkey; # https://neovim.io/doc/user/autocmd.html#autocmd-pattern
+                callback.__raw = ''
+                  function()
+                    vim.g.screenkey_statusline_component = false
+                  end
+                '';
+              }
+              {
+                event = "ModeChanged";
+                pattern = modesToDisableScreenkey + ":*";
+                callback.__raw = ''
+                  function()
+                    vim.g.screenkey_statusline_component = true
+                  end
+                '';
+              }
+            ];
           extraConfigLua = ''
             -- https://github.com/NStefan002/screenkey.nvim/blob/16390931d847b1d5d77098daccac4e55654ac9e2/README.md#-how-to-use
             vim.g.screenkey_statusline_component = true
-            -- https://neovim.io/doc/user/vimfn.html#mode()
-            -- https://neovim.io/doc/user/autocmd.html#autocmd-pattern
-            local modes_to_disable_screenkey = '{i*,c,cr}*'
-            -- https://neovim.io/doc/user/autocmd.html#ModeChanged
-            vim.api.nvim_create_autocmd('ModeChanged', {
-              pattern = '*:' .. modes_to_disable_screenkey,
-              callback = function()
-                vim.g.screenkey_statusline_component = false
-              end
-            })
-            vim.api.nvim_create_autocmd('ModeChanged', {
-              pattern = modes_to_disable_screenkey .. ':*',
-              callback = function()
-                vim.g.screenkey_statusline_component = true
-              end
-            })
             require('screenkey').setup({
               clear_after = math.huge,
               filter = function(keys)
@@ -268,20 +283,26 @@
                 },
              },
           })
-
-          -- https://www.mitchellhanberg.com/modern-format-on-save-in-neovim/
-          vim.api.nvim_create_autocmd('LspAttach', {
-            group = vim.api.nvim_create_augroup('lsp', { clear = true }),
-            callback = function(args)
-              vim.api.nvim_create_autocmd('BufWritePre', {
-                buffer = args.buf,
-                callback = function()
-                  vim.lsp.buf.format { async = false, id = args.data.client_id }
-                end,
-              })
-            end
           })
         '';
+        # https://www.mitchellhanberg.com/modern-format-on-save-in-neovim/
+        autoGroups.lsp.clear = true;
+        autoCmd = [
+          {
+            event = "LspAttach";
+            group = "lsp";
+            callback.__raw = ''
+              function(args)
+                vim.api.nvim_create_autocmd('BufWritePre', {
+                  buffer = args.buf,
+                  callback = function()
+                    vim.lsp.buf.format { async = false, id = args.data.client_id }
+                  end,
+                })
+              end
+            '';
+          }
+        ];
       };
       environment.systemPackages = with pkgs; [
         nixd
