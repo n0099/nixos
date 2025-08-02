@@ -28,6 +28,7 @@
           ./system.nix
           ./nixvim.nix
           ./networking.nix
+          ./containers.nix
           home-manager.nixosModules.home-manager
           {
             home-manager = {
