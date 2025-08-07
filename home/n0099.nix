@@ -89,6 +89,7 @@
             (text "CPU")
             (bar "Memory")
             (bar "Swap")
+            (text "Zram")
           ]
         )
         // (

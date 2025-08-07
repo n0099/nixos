@@ -48,4 +48,5 @@
     enable = true;
     package = pkgs.docker_28;
   };
+  zramSwap.enable = true;
 }
