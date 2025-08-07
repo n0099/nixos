@@ -85,21 +85,21 @@
           with config.lib.htop;
           leftMeters [
             (graph "CPU")
-            (bar "AllCPUs2")
             (text "CPU")
-            (bar "Memory")
-            (bar "Swap")
-            (text "Zram")
+            (bar "AllCPUs2")
+            (bar "LoadAverage")
           ]
         )
         // (
           with config.lib.htop;
           rightMeters [
-            (bar "LoadAverage")
-            (bar "Uptime")
-            (text "Tasks")
-            (text "Memory")
             (graph "Memory")
+            (text "Memory")
+            (bar "Memory")
+            (bar "Swap")
+            (bar "Zram")
+            (text "Tasks")
+            (text "Uptime")
           ]
         );
     };

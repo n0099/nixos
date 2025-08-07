@@ -12,7 +12,10 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOLshjq9QWQoWa8lDt3wFuWtcaM6o7hj8rF0s9QGedkn"
     ];
   };
-  environment.systemPackages = with pkgs; [ _7zz ];
+  environment.systemPackages = with pkgs; [
+    _7zz
+    nvd
+  ];
   services = {
     openssh = {
       enable = true;
