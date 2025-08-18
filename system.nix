@@ -25,7 +25,6 @@
         PermitRootLogin = "no";
       };
     };
-    nginx.enable = true;
     vnstat.enable = true;
     netdata.enable = true;
     mysql = {

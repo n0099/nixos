@@ -26,6 +26,7 @@
         modules = [
           ./configuration.nix
           ./system.nix
+          ./nginx.nix
           ./nixvim.nix
           ./networking.nix
           ./containers.nix
