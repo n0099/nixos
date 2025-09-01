@@ -12,10 +12,15 @@
       lnav
       parallel
       nixfmt-tree
+      nvd
+      dig
+      ncdu
+      file
     ];
   };
   services.ssh-agent.enable = true;
   programs = {
+    nh.enable = true;
     atuin = {
       enable = true;
       enableZshIntegration = true;
