@@ -33,10 +33,6 @@
     };
     postgresql.enable = true;
   };
-  security = {
-    # https://unix.stackexchange.com/questions/382060/change-default-sudo-password-timeout
-    sudo.configFile = "Defaults timestamp_timeout=15";
-  };
   programs = {
     zsh.enable = true;
     git.enable = true;
@@ -49,6 +45,10 @@
   virtualisation.docker = {
     enable = true;
     package = pkgs.docker_28;
+  };
+  security = {
+    # https://unix.stackexchange.com/questions/382060/change-default-sudo-password-timeout
+    sudo.configFile = "Defaults timestamp_timeout=15";
   };
   zramSwap.enable = true;
 }
