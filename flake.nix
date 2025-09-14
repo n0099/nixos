@@ -20,5 +20,6 @@
         ./desktop.nix
         ./zfs.nix
       ];
+      home-manager = [ ./home/n0099.nix ];
     });
 }
