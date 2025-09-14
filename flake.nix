@@ -1,6 +1,4 @@
 {
-  # https://discourse.nixos.org/t/enable-different-priority-substituters-with-flake/56073/7
-  nixConfig.substituters = [ "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" ];
   inputs = {
     nixpkgs.url = "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixos-25.05/nixexprs.tar.xz";
     home-manager = {
@@ -22,8 +20,8 @@
       withModules =
         extraInputs:
         let
-          # https://jade.fyi/blog/flakes-arent-real/#injecting-dependencies
           specialArgs = {
+            # https://jade.fyi/blog/flakes-arent-real/#injecting-dependencies
             inputs = {
               inherit nixpkgs home-manager;
             }
@@ -36,6 +34,9 @@
             system = "x86_64-linux";
             inherit specialArgs;
             modules = [
+              {
+                nix.settings.substituters = [ "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" ]; # https://mirrors.tuna.tsinghua.edu.cn/help/nix-channels/
+              }
               ./system.nix
               ./nginx.nix
               ./nixvim.nix
@@ -43,8 +44,7 @@
               home-manager.nixosModules.home-manager
               {
                 home-manager = {
-                  # https://discourse.nixos.org/t/pass-specialargs-to-the-home-manager-module/33068
-                  extraSpecialArgs = specialArgs;
+                  extraSpecialArgs = specialArgs; # https://discourse.nixos.org/t/pass-specialargs-to-the-home-manager-module/33068
                   useGlobalPkgs = true;
                   useUserPackages = true;
                   users.n0099 = import ./home/n0099.nix extraModules.home-manager;
