@@ -25,25 +25,26 @@ lib.mkMerge [
       '';
       antidote = {
         enable = true;
-        plugins =
-          [ "getantidote/use-omz" ]
-          ++ omzPrefix [ "path:lib" ]
-          ++ omzPluginPrefix [
-            "common-aliases"
-            "colored-man-pages"
-            "extract"
-            "docker-compose"
-            "last-working-dir"
-            "git"
-            "isodate"
-            "safe-paste"
-            "sudo"
-            "systemd"
-          ]
-          ++ [
-            "zdharma-continuum/fast-syntax-highlighting"
-            "nix-community/nix-zsh-completions"
-          ];
+        plugins = [
+          "getantidote/use-omz"
+        ]
+        ++ omzPrefix [ "path:lib" ]
+        ++ omzPluginPrefix [
+          "common-aliases"
+          "colored-man-pages"
+          "extract"
+          "docker-compose"
+          "last-working-dir"
+          "git"
+          "isodate"
+          "safe-paste"
+          "sudo"
+          "systemd"
+        ]
+        ++ [
+          "zdharma-continuum/fast-syntax-highlighting"
+          "nix-community/nix-zsh-completions"
+        ];
       };
     };
   }

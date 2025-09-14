@@ -91,18 +91,17 @@
           '';
         }
         {
-          plugins =
-            {
-              treesitter = {
-                enable = true;
-                settings.indent.enable = true;
-              };
-              rainbow-delimiters.enable = true;
-            }
-            // {
-              dropbar.enable = true;
-              web-devicons.enable = true;
+          plugins = {
+            treesitter = {
+              enable = true;
+              settings.indent.enable = true;
             };
+            rainbow-delimiters.enable = true;
+          }
+          // {
+            dropbar.enable = true;
+            web-devicons.enable = true;
+          };
           autoCmd = [
             {
               # `vim.treesitter.start()` will enable highlight of `nvim-treesitter` and `rainbow-delimiters`
