@@ -14,31 +14,45 @@
   };
   outputs =
     {
-      self,
       nixpkgs,
       home-manager,
       ...
     }@inputs:
     {
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./configuration.nix
-          ./system.nix
-          ./nginx.nix
-          ./nixvim.nix
-          ./networking.nix
-          ./containers.nix
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.n0099 = ./home/n0099.nix;
-            };
-          }
-        ];
-      };
+      withModules =
+        extraInputs:
+        let
+          # https://jade.fyi/blog/flakes-arent-real/#injecting-dependencies
+          specialArgs = {
+            inputs = {
+              inherit nixpkgs home-manager;
+            }
+            // inputs
+            // extraInputs;
+          };
+        in
+        extraModules: {
+          nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            inherit specialArgs;
+            modules = [
+              ./system.nix
+              ./nginx.nix
+              ./nixvim.nix
+              ./containers.nix
+              home-manager.nixosModules.home-manager
+              {
+                home-manager = {
+                  # https://discourse.nixos.org/t/pass-specialargs-to-the-home-manager-module/33068
+                  extraSpecialArgs = specialArgs;
+                  useGlobalPkgs = true;
+                  useUserPackages = true;
+                  users.n0099 = import ./home/n0099.nix extraModules.home-manager;
+                };
+              }
+            ]
+            ++ extraModules.nixos;
+          };
+        };
     };
 }

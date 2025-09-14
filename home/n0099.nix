@@ -1,7 +1,8 @@
+extraModules:
 { pkgs, config, ... }:
 
 {
-  imports = [ ./zsh.nix ];
+  imports = [ ./zsh.nix ] ++ extraModules;
   home = {
     stateVersion = "25.05";
     shellAliases = {
@@ -16,6 +17,10 @@
       dig
       ncdu
       file
+      tree
+      pv
+      jq
+      comma
     ];
   };
   services.ssh-agent.enable = true;
