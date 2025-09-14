@@ -1,4 +1,16 @@
 {
+  nixConfig = {
+    extra-substituters = [
+      # https://discourse.nixos.org/t/enable-different-priority-substituters-with-flake/56073/7
+      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store/"
+      "https://cache.nixos.org"
+      # https://nix-community.org/cache/
+      "https://nix-community.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
+  };
   inputs = {
     base.url = "./base";
     nur = {
