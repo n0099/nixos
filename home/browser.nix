@@ -58,6 +58,32 @@ in
             "browser.newtabpage.activity-stream.topSitesRows" = 4;
             "browser.newtabpage.activity-stream.showSponsoredCheckboxes" = false;
           }
+          // {
+            # https://old.reddit.com/r/firefox/comments/18z7jp5/issues_with_policiesjson/
+            "browser.uiCustomization.state" = builtins.toJSON {
+              placements = {
+                nav-bar = [
+                  "sidebar-button"
+                  "alltabs-button"
+                  "firefox-view-button"
+                  "back-button"
+                  "forward-button"
+                  "stop-reload-button"
+                  "vertical-spacer"
+                  "urlbar-container"
+                  "fxa-toolbar-menu-button"
+                  "ublock0_raymondhill_net-browser-action"
+                  "_74145f27-f039-47ce-a470-a662b129930a_-browser-action"
+                  "_07c6b8e1-94f7-4bbf-8e91-26c0a8992ab5_-browser-action"
+                  "jid0-3guet1r69sqnsrca5p8kx9ezc3u_jetpack-browser-action"
+                  "wayback_machine_mozilla_org-browser-action"
+                  "unified-extensions-button"
+                  "downloads-button"
+                ];
+              };
+              currentVersion = 23;
+            };
+          }
         );
       };
     }
