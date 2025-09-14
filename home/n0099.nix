@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./ide.nix
     ./browser.nix
   ];
   home.packages =
