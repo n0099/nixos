@@ -51,10 +51,37 @@
       networking.networkmanager.enable = true;
     }
     {
-      fonts.packages = with pkgs; [
-        nerd-fonts.fira-code
-        source-han-sans-vf-otf
-      ];
+      fonts = {
+        packages = with pkgs; [
+          nerd-fonts.fira-code
+          source-han-sans-vf-otf
+        ];
+        fontconfig = {
+          enable = true;
+          localConf = ''
+            <match target="font">
+              <!-- https://discuss.kde.org/t/konsole-renders-btop-characters-not-properly/12502 -->
+              <!-- https://stackoverflow.com/questions/47501411/how-to-set-font-per-unicode-range-codepoint-in-fontconfig/47614324#47614324 -->
+              <!-- https://github.com/cjbassi/ytop/issues/79#issuecomment-676070893 -->
+              <test name="family" compare="eq">
+                <string>FreeMono</string>
+              </test>
+              <edit name="charset" mode="assign">
+                <minus>
+                  <name>charset</name>
+                  <charset>
+                    <range>
+                      <!-- https://codepoints.net/braille_patterns -->
+                      <int>0x2800</int>
+                      <int>0x28FF</int>
+                    </range>
+                  </charset>
+                </minus>
+              </edit>
+            </match>
+          '';
+        };
+      };
     }
   ];
 }
