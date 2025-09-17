@@ -10,6 +10,7 @@
   # https://discourse.nixos.org/t/mkmerge-as-the-body-of-a-configuration/9666
   config = lib.mkMerge [
     {
+      programs.nano.enable = false;
       programs.nixvim = lib.mkMerge [
         {
           enable = true;

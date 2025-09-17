@@ -20,7 +20,7 @@ lib.mkMerge [
       # https://github.com/nix-community/home-manager/blob/9b0873b46c9f9e4b7aa01eb634952c206af53068/modules/programs/zsh.nix#L803-L806
       # not using `oh-my-zsh.extraConfig` due to its requires enable oh-my-zsh and it's managed by antidote
       initContent = lib.mkOrder 800 ''
-        # https://superuser.com/questions/410965/command-history-in-zsh
+        # https://superuser.com/questions/410965/command-history-in-zsh/412439#412439
         setopt INC_APPEND_HISTORY
       '';
       antidote = {
