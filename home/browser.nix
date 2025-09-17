@@ -13,8 +13,24 @@ in
   programs.librewolf = lib.mkMerge [
     {
       enable = true;
+      settings =
+        # https://github.com/mozilla/policy-templates/issues/1101
+        {
+          "sidebar.revamp" = true;
+          "sidebar.verticalTabs" = true;
+        }
+        // {
+          "privacy.resistFingerprinting.letterboxing" = true; # https://old.reddit.com/r/TOR/comments/ebwcte/does_changing_the_window_size_still_reduce_my/
+        }
+        // {
+          # https://librewolf.net/docs/settings/#enable-autoscroll-safely
+          # https://gitlab.com/librewolf-community/browser/windows/-/issues/103
+          "middlemouse.paste" = false;
+          "general.autoScroll" = true;
+        };
       policies = {
-        DisplayBookmarksToolbar = "newtab";
+        ExtensionUpdate = false;
+        DisplayBookmarksToolbar = "never";
         Homepage.StartPage = "previous-session";
         SanitizeOnShutdown = {
           Locked = true;
@@ -27,10 +43,6 @@ in
           # https://github.com/mozilla/policy-templates
           # https://github.com/NixOS/nixpkgs/blob/b4c2c57c31e68544982226d07e4719a2d86302a8/nixos/modules/programs/firefox.nix#L340-L345
           {
-            "sidebar.revamp" = true;
-            "sidebar.verticalTabs" = true;
-          }
-          // {
             "browser.urlbar.trimURLs" = false;
           }
           // {
@@ -42,6 +54,10 @@ in
             "browser.newtabpage.activity-stream.section.highlights.rows" = 4;
             "browser.newtabpage.activity-stream.topSitesRows" = 4;
             "browser.newtabpage.activity-stream.showSponsoredCheckboxes" = false;
+          }
+          // {
+            "browser.download.autohideButton" = true;
+            "browser.download.alwaysOpenPanel" = true;
           }
           // {
             # https://old.reddit.com/r/firefox/comments/18z7jp5/issues_with_policiesjson/
@@ -301,54 +317,51 @@ in
         ];
       };
     }
-    (
-      {
-        profiles.default.extensions.packages = [
-          (addons.buildFirefoxXpiAddon {
-            # https://github.com/nix-community/nur-combined/blob/c0b354b97973b08cd9e55ca81e95fcfb16f93f5a/repos/rycee/pkgs/firefox-addons/default.nix#L9-L41
-            pname = "sidebery";
-            # https://github.com/mbnuqw/sidebery/pull/2016
-            # https://github.com/mbnuqw/sidebery/commit/86eb0ae2019ebb8b5557fd535e689624503bc1d6
-            version = "5.3.3.21";
-            addonId = "{3c078156-979c-498b-8990-85f7987dd929}";
-            url = "https://github.com/mbnuqw/sidebery/releases/download/v5.3.3/sidebery-5.3.3.21.xpi";
-            sha256 = "sha256-K3EktiWCCQtlzfVWc1T5LlT2dXwAL1gWsqRloHQHCtM=";
-            meta = addons.sidebery.meta;
-          })
-        ];
-        policies."3rdparty".Extensions."{3c078156-979c-498b-8990-85f7987dd929}".settings = {
-          # https://github.com/mbnuqw/sidebery/blob/b6fbb138614267a5cb9bf0757e8cd2e99a63f8b4/src/services/settings.actions.ts#L26-L29
-          nativeScrollbarsThin = false;
-          dndOutside = "data";
-          searchBarMode = "static";
-          activateAfterClosing = "prev_act";
-          tabsUnreadMark = true;
-          warnOnMultiTabClose = "none";
-          moveNewTab = "after";
-          colorizeTabs = true;
-          previewTabs = true;
-          previewTabsPopupWidth = 512;
-          previewTabsTitle = 10;
-          previewTabsUrl = 10;
-          density = "loose";
-          scrollThroughTabs = "global";
-          scrollThroughTabsCyclic = true;
-          tabsSecondClickActPrev = true;
-          syncUseFirefox = false;
-        };
-      }
-      // {
-        policies.Preferences = mkPreferences {
-          "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
-        };
-        profiles.default.userChrome = ''
+    {
+      profiles.default.extensions.packages = [
+        (addons.buildFirefoxXpiAddon {
+          pname = "sidebery";
+          # https://github.com/mbnuqw/sidebery/pull/2016
+          # https://github.com/mbnuqw/sidebery/commit/86eb0ae2019ebb8b5557fd535e689624503bc1d6
+          version = "5.3.3.21";
+          addonId = "{3c078156-979c-498b-8990-85f7987dd929}";
+          url = "https://github.com/mbnuqw/sidebery/releases/download/v5.3.3/sidebery-5.3.3.21.xpi";
+          sha256 = "sha256-K3EktiWCCQtlzfVWc1T5LlT2dXwAL1gWsqRloHQHCtM=";
+          meta = addons.sidebery.meta;
+        })
+      ];
+      policies."3rdparty".Extensions."{3c078156-979c-498b-8990-85f7987dd929}".settings = {
+        # https://github.com/mbnuqw/sidebery/blob/b6fbb138614267a5cb9bf0757e8cd2e99a63f8b4/src/services/settings.actions.ts#L26-L29
+        # delete item `settings` in moz-extension://d244b345-7b9d-4203-aaaa-564dd6bb0339/page.setup/setup.html#storage is required after managed storage changed
+        nativeScrollbarsThin = false;
+        dndOutside = "data";
+        searchBarMode = "static";
+        tabsUnreadMark = true;
+        warnOnMultiTabClose = "none";
+        moveNewTab = "after";
+        colorizeTabs = true;
+        previewTabs = true;
+        previewTabsPopupWidth = 512;
+        previewTabsTitle = 10;
+        previewTabsUrl = 10;
+        density = "loose";
+        scrollThroughTabs = "global";
+        scrollThroughTabsCyclic = true;
+        tabsSecondClickActPrev = true;
+        syncUseFirefox = false;
+      };
+    }
+    {
+      policies.Preferences = mkPreferences {
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+      };
+      profiles.default.userChrome = ''
+        #sidebar-panel-header {
           /* https://github.com/piroor/treestyletab/wiki/Code-snippets-for-custom-style-rules#hide-the-tree-style-tab-header-at-the-top-of-the-sidebar */
-          #sidebar-panel-header {
-            display: none;
-          }
-        '';
-      }
-    )
+          display: none;
+        }
+      '';
+    }
     {
       profiles.default = {
         extensions.packages = [ addons.kiss-translator ];
