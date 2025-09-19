@@ -5,11 +5,17 @@
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "base/nixpkgs"; # https://discourse.nixos.org/t/flake-how-make-nixpkgs-self-follow-another-inputs-nixpkgs/10867
     };
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "base/nixpkgs";
+      inputs.home-manager.follows = "base/home-manager";
+    };
   };
   outputs =
     {
       base,
       nur,
+      plasma-manager,
       ...
     }@inputs:
     (base.outputs.withModules ({ inherit nur; } // inputs) {
@@ -25,7 +31,11 @@
         ./configuration.nix
         ./desktop.nix
         ./zfs.nix
+        ./proxy.nix
       ];
-      home-manager = [ ./home/n0099.nix ];
+      home-manager = [
+        plasma-manager.homeModules.plasma-manager
+        ./home/n0099.nix
+      ];
     });
 }

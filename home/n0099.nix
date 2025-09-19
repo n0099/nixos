@@ -4,6 +4,7 @@
   imports = [
     ./ide.nix
     ./browser.nix
+    ./kde.nix
   ];
   home.packages =
     with pkgs;
