@@ -1,4 +1,9 @@
-{ lib, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 let
   mkContainer = name: subnetPrefix: configBuilder: {
@@ -19,6 +24,7 @@ let
         attrs:
         lib.recursiveUpdate (configBuilder attrs) {
           system.stateVersion = config.system.stateVersion;
+          nixpkgs.pkgs = lib.mkForce pkgs; # https://github.com/NixOS/nixpkgs/issues/65690
         };
     };
   };

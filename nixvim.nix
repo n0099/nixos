@@ -10,13 +10,15 @@
   # https://discourse.nixos.org/t/mkmerge-as-the-body-of-a-configuration/9666
   config = lib.mkMerge [
     {
-      programs.nano.enable = false;
+      environment.sessionVariables.EDITOR = "nvim"; # https://github.com/NixOS/nixpkgs/pull/444058
+      programs.nixvim.defaultEditor = true;
+    }
+    {
       programs.nixvim = lib.mkMerge [
         {
           enable = true;
           viAlias = true;
           vimAlias = true;
-          defaultEditor = true;
           colorscheme = "sorbet";
           plugins = {
             trim.enable = true;
@@ -24,6 +26,7 @@
             visual-whitespace.enable = true;
             guess-indent.enable = true;
             illuminate.enable = true;
+            comment.enable = true;
             fugitive.enable = true;
             gitsigns = {
               enable = true;
