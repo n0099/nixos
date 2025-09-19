@@ -49,4 +49,41 @@
       ];
     }
   ];
+  programs.konsole = {
+    enable = true;
+    defaultProfile = "default";
+    profiles.default = {
+      font = {
+        name = "FiraCode Nerd Font Ret";
+        size = 11; # https://github.com/nix-community/plasma-manager/pull/529
+      };
+      extraConfig = {
+        Appearance.UseFontLineChararacters = true;
+        General = {
+          DimWhenInactive = true;
+          TerminalColumns = 80;
+          TerminalRows = 24;
+        };
+        "Interaction Options" = {
+          AutoCopySelectedText = true;
+          TrimLeadingSpacesInSelectedText = true;
+          TrimTrailingSpacesInSelectedText = true;
+        };
+        Scrolling.HistorySize = 5000;
+      };
+    };
+    extraConfig = {
+      KonsoleWindow = {
+        AllowMenuAccelerators = false;
+        RememberWindowSize = false;
+        ShowWindowTitleOnTitleBar = true;
+      };
+      MainWindow.MenuBar = true;
+      TabBar = {
+        CloseTabOnMiddleMouseButton = true;
+        NewTabButton = true;
+      };
+      SplitView.SplitViewVisibility = "AlwaysHideSplitHeader";
+    };
+  };
 }
