@@ -55,7 +55,7 @@
     profiles.default = {
       font = {
         name = "FiraCode Nerd Font Ret";
-        size = 11; # https://github.com/nix-community/plasma-manager/pull/529
+        size = 11;
       };
       extraConfig = {
         Appearance.UseFontLineChararacters = true;
@@ -85,5 +85,11 @@
       };
       SplitView.SplitViewVisibility = "AlwaysHideSplitHeader";
     };
+  };
+  programs.librewolf = {
+    profiles.default.extensions.packages = [
+      pkgs.nur.repos.rycee.firefox-addons.plasma-integration
+    ];
+    nativeMessagingHosts = [ pkgs.kdePackages.plasma-browser-integration ];
   };
 }

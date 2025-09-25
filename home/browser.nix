@@ -105,7 +105,6 @@ in
         vue-js-devtools
         wayback-machine
         terms-of-service-didnt-read
-        plasma-integration
         offline-qr-code-generator
         hover-zoom-plus
         violentmonkey

@@ -5,7 +5,7 @@
   services.zfs.autoScrub.enable = true;
   services.sanoid = {
     enable = true;
-    interval = "*-*-* *:15:00";
+    interval = "*:0/15:00";
     datasets = lib.listToAttrs (
       map (fs: lib.nameValuePair fs.device { useTemplate = [ "default" ]; }) (
         lib.filter (fs: fs.fsType == "zfs") (lib.attrValues config.fileSystems)
