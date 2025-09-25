@@ -29,6 +29,7 @@
         }
         nur.modules.nixos.default # https://nur.nix-community.org/documentation/#using-the-flake-in-nixos
         ./configuration.nix
+        ./boot.nix
         ./desktop.nix
         ./zfs.nix
         ./proxy.nix
