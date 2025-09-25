@@ -15,6 +15,37 @@
       };
     }
     {
+      boot = {
+        kernelPackages = lib.mkForce pkgs.linuxPackages_lqx;
+        kernelPatches = [
+          {
+            name = "PREEMPT_RT";
+            patch = null;
+            structuredExtraConfig = {
+              PREEMPT_RT = lib.kernel.yes;
+              PREEMPT_VOLUNTARY = lib.mkForce lib.kernel.unset; # https://github.com/NixOS/nixpkgs/blob/d2ed99647a4b195f0bcc440f76edfa10aeb3b743/pkgs/os-specific/linux/kernel/common-config.nix#L1304
+            }
+            // lib.genAttrs [
+              # https://realtime-linux.org/getting-started-with-preempt_rt-guide/
+              # https://www.osadl.org/fileadmin/dam/presentations/COOL-03-2023/COOL-2023-03_Configuration-of-the-Linux-PREEMPT_RT-Kernel_Alexander-Baehr.pdf
+              # "DEBUG_LOCKDEP"
+              "DEBUG_PREEMPT"
+              "DEBUG_OBJECTS"
+              "SLUB_DEBUG"
+            ] (_: lib.kernel.no);
+          }
+          {
+            name = "DRM_I915_GVT";
+            patch = null;
+            structuredExtraConfig = lib.genAttrs [ "DRM_I915_GVT" "DRM_I915_GVT_KVMGT" ] (
+              # https://wiki.nixos.org/wiki/Linux_kernel#Custom_configuration
+              _: lib.mkForce lib.kernel.unset
+            );
+          }
+        ];
+      };
+    }
+    {
       nixpkgs.config.allowUnfreePredicate =
         pkg:
         lib.elem (lib.getName pkg) [
@@ -32,6 +63,29 @@
           openSha256 = "sha256-YB+mQD+oEDIIDa+e8KX1/qOlQvZMNKFrI5z3CoVKUjs=";
           settingsSha256 = "sha256-um53cr2Xo90VhZM1bM2CH4q9b/1W2YOqUcvXPV6uw2s=";
           persistencedSha256 = "sha256-lbYSa97aZ+k0CISoSxOMLyyMX//Zg2Raym6BC4COipU=";
+          patchesOpen = [
+            (pkgs.writeText "nvidia-patch"
+              # https://forums.developer.nvidia.com/t/inquiries-regarding-nvidias-support-for-preempt-rt/283007
+              ''
+                diff --git a/kernel-open/conftest.sh b/kernel-open/conftest.sh
+                index 7de4f4af..e3d65c9a 100755
+                --- a/kernel-open/conftest.sh
+                +++ b/kernel-open/conftest.sh
+                @@ -5057,10 +5057,7 @@ case "$5" in
+                         #
+                         VERBOSE=$6
+                -
+                -        if [ -n "$IGNORE_PREEMPT_RT_PRESENCE" ]; then
+                -            exit 0
+                -        fi
+                +        exit 0
+
+                         if test_configuration_option CONFIG_PREEMPT_RT; then
+                             PREEMPT_RT_PRESENT=1
+                         elif test_configuration_option CONFIG_PREEMPT_RT_FULL; then
+              ''
+            )
+          ];
         };
         powerManagement.enable = true; # https://wiki.nixos.org/wiki/NVIDIA#Graphical_corruption_and_system_crashes_on_suspend/resume
       };
@@ -42,9 +96,11 @@
         pulseaudio.enable = false;
         pipewire = {
           enable = true;
-          alsa.enable = true;
-          alsa.support32Bit = true;
           pulse.enable = true;
+          alsa = {
+            enable = true;
+            support32Bit = true;
+          };
         };
       };
     }
