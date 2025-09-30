@@ -10,6 +10,10 @@
       inputs.nixpkgs.follows = "base/nixpkgs";
       inputs.home-manager.follows = "base/home-manager";
     };
+    minegrub-world-sel-theme = {
+      url = "github:Lxtharia/minegrub-world-sel-theme";
+      inputs.nixpkgs.follows = "base/nixpkgs";
+    };
   };
   outputs =
     {

@@ -129,6 +129,27 @@
         "type": "github"
       }
     },
+    "minegrub-world-sel-theme": {
+      "inputs": {
+        "nixpkgs": [
+          "base",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1755441431,
+        "narHash": "sha256-X3AevoAmeyAAWkofXhK8vkfFO7lUSct0sAyKQ5MD6ak=",
+        "owner": "Lxtharia",
+        "repo": "minegrub-world-sel-theme",
+        "rev": "00254ae5e1836ede1ad502b74dac162eab8eebe2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Lxtharia",
+        "repo": "minegrub-world-sel-theme",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1759143472,
@@ -244,6 +265,7 @@
     "root": {
       "inputs": {
         "base": "base",
+        "minegrub-world-sel-theme": "minegrub-world-sel-theme",
         "nur": "nur",
         "plasma-manager": "plasma-manager"
       }

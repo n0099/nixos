@@ -1,10 +1,28 @@
-{ lib, ... }:
+{
+  config,
+  lib,
+  inputs,
+  ...
+}:
 
 {
+  imports = [ inputs.minegrub-world-sel-theme.nixosModules.default ];
   boot.loader = {
     systemd-boot.enable = lib.mkForce false;
     grub = {
       enable = true;
+      minegrub-world-sel = {
+        enable = true;
+        customIcons = with config.system; [
+          # https://github.com/Lxtharia/minegrub-world-sel-theme/pull/33
+          {
+            inherit name;
+            lineTop = with nixos; distroName + " " + codeName + " (" + version + ")";
+            lineBottom = "Survival Mode, No Cheats, Version: " + nixos.release;
+            imgName = "nixos";
+          }
+        ];
+      };
       efiSupport = true;
       enableCryptodisk = true;
       device = "nodev";

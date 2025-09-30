@@ -70,6 +70,19 @@
       ];
     }
     {
+      programs.plasma.workspace.splashScreen.theme = "minecraftworldloading-kde-splash";
+      xdg.dataFile."plasma/look-and-feel/minecraftworldloading-kde-splash" = {
+        enable = true;
+        source =
+          (pkgs.fetchFromGitHub {
+            owner = "Samsu-F";
+            repo = "minecraftworldloading-kde-splash";
+            rev = "db3dcf5751afe795d92eec80ff83a16222ca2a18";
+            hash = "sha256-XqzjrHjBDV1xTWQjZ0A4MAu6BlHqlEPNkk/48PjBZEI=";
+          }).outPath;
+      };
+    }
+    {
       programs.konsole = {
         enable = true;
         defaultProfile = "default";
