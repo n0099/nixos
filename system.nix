@@ -8,6 +8,7 @@
     optimise.automatic = true;
   };
   time.timeZone = "UTC";
+  i18n.defaultLocale = "C.UTF-8";
   users.users.n0099 = {
     extraGroups = [
       "wheel"

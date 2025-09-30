@@ -1,4 +1,9 @@
 {
+  nixConfig.experimental-features = [
+    # https://github.com/NixOS/nix/issues/5988
+    "nix-command"
+    "flakes"
+  ];
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     home-manager = {
@@ -35,7 +40,13 @@
             inherit specialArgs;
             modules = [
               {
-                nix.settings.substituters = [ "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" ]; # https://mirrors.tuna.tsinghua.edu.cn/help/nix-channels/
+                nix.settings = {
+                  substituters = [ "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" ]; # https://mirrors.tuna.tsinghua.edu.cn/help/nix-channels/
+                  experimental-features = [
+                    "nix-command"
+                    "flakes"
+                  ];
+                };
               }
               ./system.nix
               ./nginx.nix

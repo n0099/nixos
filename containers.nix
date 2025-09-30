@@ -23,7 +23,7 @@ let
       config =
         attrs:
         lib.recursiveUpdate (configBuilder attrs) {
-          system.stateVersion = config.system.stateVersion;
+          system = { inherit (config.system) stateVersion; };
           nixpkgs.pkgs = lib.mkForce pkgs; # https://github.com/NixOS/nixpkgs/issues/65690
         };
     };
