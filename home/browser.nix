@@ -10,6 +10,13 @@ let
   );
 in
 {
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "x-scheme-handler/http" = "librewolf.desktop";
+      "x-scheme-handler/https" = "librewolf.desktop";
+    };
+  };
   programs.librewolf = lib.mkMerge [
     {
       enable = true;
@@ -44,6 +51,8 @@ in
           # https://github.com/NixOS/nixpkgs/blob/b4c2c57c31e68544982226d07e4719a2d86302a8/nixos/modules/programs/firefox.nix#L340-L345
           {
             "browser.urlbar.trimURLs" = false;
+            "browser.urlbar.showSearchTerms.enabled" = false; # https://old.reddit.com/r/firefox/comments/142lu5w/firefox_doesnt_show_full_url_when_searching_with/jn547ro/
+            "widget.gtk.overlay-scrollbars.enabled" = false; # https://superuser.com/questions/1720362/firefox-scroll-bar-disappearing
           }
           // {
             "browser.newtabpage.activity-stream.feeds.topsites" = true;
@@ -326,7 +335,7 @@ in
           addonId = "{3c078156-979c-498b-8990-85f7987dd929}";
           url = "https://github.com/mbnuqw/sidebery/releases/download/v5.3.3/sidebery-5.3.3.21.xpi";
           sha256 = "sha256-K3EktiWCCQtlzfVWc1T5LlT2dXwAL1gWsqRloHQHCtM=";
-          meta = addons.sidebery.meta;
+          inherit (addons.sidebery) meta;
         })
       ];
       policies."3rdparty".Extensions."{3c078156-979c-498b-8990-85f7987dd929}".settings = {
