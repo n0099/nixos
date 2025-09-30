@@ -29,31 +29,29 @@ let
     };
   };
 in
-{
-  config = lib.mkMerge [
-    (mkContainer "php-fpm" "172.18.0." (
-      { ... }:
+lib.mkMerge [
+  (mkContainer "php-fpm" "172.18.0." (
+    { ... }:
 
-      {
-        users = {
-          users.www = {
-            isSystemUser = true;
-            group = "www";
-          };
-          groups.www = { };
-        };
-        services.phpfpm.pools.www = {
-          user = "www";
+    {
+      users = {
+        users.www = {
+          isSystemUser = true;
           group = "www";
-          settings = {
-            pm = "dynamic";
-            "pm.max_children" = 20;
-            "pm.start_servers" = 2;
-            "pm.min_spare_servers" = 1;
-            "pm.max_spare_servers" = 10;
-          };
         };
-      }
-    ))
-  ];
-}
+        groups.www = { };
+      };
+      services.phpfpm.pools.www = {
+        user = "www";
+        group = "www";
+        settings = {
+          pm = "dynamic";
+          "pm.max_children" = 20;
+          "pm.start_servers" = 2;
+          "pm.min_spare_servers" = 1;
+          "pm.max_spare_servers" = 10;
+        };
+      };
+    }
+  ))
+]
