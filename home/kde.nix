@@ -98,11 +98,7 @@
               TerminalColumns = 80;
               TerminalRows = 24;
             };
-            "Interaction Options" = {
-              AutoCopySelectedText = true;
-              TrimLeadingSpacesInSelectedText = true;
-              TrimTrailingSpacesInSelectedText = true;
-            };
+            "Interaction Options".AutoCopySelectedText = true;
             Scrolling.HistorySize = 5000;
           };
         };
