@@ -15,27 +15,30 @@ extraModules:
         shellAliases = {
           sudo = "sudo "; # https://askubuntu.com/questions/22037/aliases-not-available-when-using-sudo/22043#22043
         };
-        packages = with pkgs; [
-          certbot
-          lnav
-          parallel
-          nixfmt-tree
-          nvd
-          dig
-          ncdu
-          file
-          tree
-          pv
-          jq
-          comma
-        ];
       };
+    }
+    {
+      home.packages = with pkgs; [
+        certbot
+        lnav
+        parallel
+        nixfmt-tree
+        dig
+        ncdu
+        file
+        tree
+        lsof
+        pv
+        jq
+        yq
+        comma
+      ];
+    }
+    {
       services.ssh-agent.enable = true;
       programs = {
-        nh.enable = true;
         atuin = {
           enable = true;
-          enableZshIntegration = true;
           flags = [ "--disable-up-arrow" ];
           settings = {
             search_mode = "fulltext";
@@ -120,6 +123,14 @@ extraModules:
           );
         };
       };
+    }
+    {
+      programs.nh.enable = true;
+      home.packages = with pkgs; [
+        nvd
+        # dix # https://github.com/NixOS/nixpkgs/pull/409440
+        nix-output-monitor
+      ];
     }
   ];
 }
