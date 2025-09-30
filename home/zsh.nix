@@ -1,4 +1,9 @@
-{ lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   omzPrefix = suffixs: map (i: "ohmyzsh/ohmyzsh " + i) suffixs;
@@ -50,22 +55,32 @@ lib.mkMerge [
       }
       {
         antidote.plugins = [ "zsh-users/zsh-autosuggestions" ];
-        initContent = lib.mkOrder 800 ''
-          # https://github.com/zsh-users/zsh-autosuggestions/blob/85919cd1ffa7d2d5412f6d3fe437ebdbeeec4fc5/README.md#suggestion-strategy
-          ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
+        initContent = lib.mkMerge [
+          (lib.mkOrder 800 ''
+            # https://github.com/zsh-users/zsh-autosuggestions/blob/85919cd1ffa7d2d5412f6d3fe437ebdbeeec4fc5/README.md#suggestion-strategy
+            ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion)
 
-          # https://github.com/zsh-users/zsh-autosuggestions/issues/238#issuecomment-389324292
-          pasteinit() {
-            OLD_SELF_INSERT=''${''${(s.:.)widgets[self-insert]}[2,3]}
-            zle -N self-insert url-quote-magic # I wonder if you'd need `.url-quote-magic`?
-          }
+            # https://github.com/zsh-users/zsh-autosuggestions/issues/238#issuecomment-389324292
+            pasteinit() {
+              OLD_SELF_INSERT=''${''${(s.:.)widgets[self-insert]}[2,3]}
+              zle -N self-insert url-quote-magic # I wonder if you'd need `.url-quote-magic`?
+            }
 
-          pastefinish() {
-            zle -N self-insert $OLD_SELF_INSERT
-          }
-          zstyle :bracketed-paste-magic paste-init pasteinit
-          zstyle :bracketed-paste-magic paste-finish pastefinish
-        '';
+            pastefinish() {
+              zle -N self-insert $OLD_SELF_INSERT
+            }
+            zstyle :bracketed-paste-magic paste-init pasteinit
+            zstyle :bracketed-paste-magic paste-finish pastefinish
+          '')
+          (lib.mkIf (with config.programs.atuin; (enable && enableZshIntegration)) (
+            lib.mkOrder 1010 ''
+              # https://github.com/atuinsh/atuin/pull/2903
+              # https://stackoverflow.com/questions/3435355/remove-entry-from-array/52188874#52188874
+              ZSH_AUTOSUGGEST_STRATEGY_EXCLUDE=(atuin)
+              ZSH_AUTOSUGGEST_STRATEGY=''${ZSH_AUTOSUGGEST_STRATEGY:|ZSH_AUTOSUGGEST_STRATEGY_EXCLUDE}
+            ''
+          ))
+        ];
       }
       {
         antidote.plugins = omzPluginPrefix [ "docker" ];
