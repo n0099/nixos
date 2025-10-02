@@ -51,7 +51,6 @@
               ./system.nix
               ./nginx.nix
               ./nixvim.nix
-              ./containers.nix
               home-manager.nixosModules.home-manager
               {
                 home-manager = {
