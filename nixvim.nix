@@ -30,19 +30,26 @@
             fugitive.enable = true;
             nvim-surround.enable = true;
           };
-          extraPlugins = with pkgs; [
-            vimPlugins.vim-better-whitespace
-            vimPlugins.vim-pasta
-            (vimUtils.buildVimPlugin {
-              name = "auto-indent";
-              src = fetchFromGitHub {
-                owner = "VidocqH";
-                repo = "auto-indent.nvim";
-                rev = "46801cf8857d42a20a73c40b0a5d3dfe8b2b6192";
-                hash = "sha256-dubpVupLfc81Jvb4woSQ63n2+VsJCRjnvDzkFTQE2MQ=";
-              };
-            })
-          ];
+          extraPlugins =
+            with pkgs;
+            (
+              with vimPlugins;
+              [
+                vim-better-whitespace
+                vim-pasta
+              ]
+              ++ [
+                (vimUtils.buildVimPlugin {
+                  name = "auto-indent";
+                  src = fetchFromGitHub {
+                    owner = "VidocqH";
+                    repo = "auto-indent.nvim";
+                    rev = "46801cf8857d42a20a73c40b0a5d3dfe8b2b6192";
+                    hash = "sha256-dubpVupLfc81Jvb4woSQ63n2+VsJCRjnvDzkFTQE2MQ=";
+                  };
+                })
+              ]
+            );
           files = {
             "after/ftplugin/gitcommit.lua".localOpts.textwidth = 0; # https://unix.stackexchange.com/questions/138148/make-vim-stop-splitting-my-git-commit-messages
             "after/ftplugin/nix.lua".localOpts = {
@@ -261,9 +268,9 @@
               current_line_blame_opts.delay = 100;
             };
           };
-          extraPlugins = [
-            pkgs.vimPlugins.nvim-hlslens
-            pkgs.vimPlugins.nvim-scrollbar
+          extraPlugins = with pkgs.vimPlugins; [
+            nvim-hlslens
+            nvim-scrollbar
           ];
           extraConfigLua = ''
             -- https://github.com/petertriho/nvim-scrollbar/blob/5b103ef0fd2e8b9b4be3878ed38d224522192c6c/README.md#setup
@@ -291,10 +298,10 @@
             vim.g.coq_settings = { keymap = { recommended = false } }
 
             -- these mappings are coq recommended mappings unrelated to nvim-autopairs
-            remap('i', '<esc>', [[pumvisible() ? "<c-e><esc>" : "<esc>"]], { expr = true, noremap = true })
-            remap('i', '<c-c>', [[pumvisible() ? "<c-e><c-c>" : "<c-c>"]], { expr = true, noremap = true })
-            remap('i', '<tab>', [[pumvisible() ? "<c-n>" : "<tab>"]], { expr = true, noremap = true })
-            remap('i', '<s-tab>', [[pumvisible() ? "<c-p>" : "<bs>"]], { expr = true, noremap = true })
+            remap('i', '<esc>', [[pumvisible() ? '<c-e><esc>' : '<esc>']], { expr = true, noremap = true })
+            remap('i', '<c-c>', [[pumvisible() ? '<c-e><c-c>' : '<c-c>']], { expr = true, noremap = true })
+            remap('i', '<tab>', [[pumvisible() ? '<c-n>' : '<tab>']], { expr = true, noremap = true })
+            remap('i', '<s-tab>', [[pumvisible() ? '<c-p>' : '<bs>']], { expr = true, noremap = true })
 
             -- skip it, if you use another global object
             _G.MUtils= {}
