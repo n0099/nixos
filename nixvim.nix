@@ -28,6 +28,8 @@
             illuminate.enable = true;
             comment.enable = true;
             fugitive.enable = true;
+            nvim-surround.enable = true;
+            nvim-autopairs.enable = true;
             coq-nvim = {
               enable = true;
               installArtifacts = true;
@@ -48,18 +50,11 @@
             })
           ];
           files = {
-            "after/ftplugin/gitcommit.lua" = {
-              localOpts = {
-                textwidth = 0; # https://unix.stackexchange.com/questions/138148/make-vim-stop-splitting-my-git-commit-messages
-              };
-            };
-            "after/ftplugin/nix.lua" = {
+            "after/ftplugin/gitcommit.lua".localOpts.textwidth = 0; # https://unix.stackexchange.com/questions/138148/make-vim-stop-splitting-my-git-commit-messages
+            "after/ftplugin/nix.lua".localOpts = {
               # https://github.com/nix-community/nixvim/issues/2418#issuecomment-2413714276
-              localOpts = {
-                # https://github.com/nix-community/nixvim/pull/3535#discussion_r2191072494
-                tabstop = 2;
-                shiftwidth = 2;
-              };
+              tabstop = 2; # https://github.com/nix-community/nixvim/pull/3535#discussion_r2191072494
+              shiftwidth = 2;
             };
           };
           opts = {
@@ -139,20 +134,18 @@
             origami.enable = true;
           };
           opts = {
-            # https://github.com/kevinhwang91/nvim-ufo/issues/4#issuecomment-1157716294
-            foldcolumn = "1";
+            foldcolumn = "1"; # https://github.com/kevinhwang91/nvim-ufo/issues/4#issuecomment-1157716294
             fillchars = "foldopen:,foldsep: ,foldclose:";
-            # https://stackoverflow.com/questions/8316139/how-to-set-the-default-to-unfolded-when-you-open-a-file/26082966#26082966
-            foldlevelstart = 99;
+            foldlevelstart = 99; # https://stackoverflow.com/questions/8316139/how-to-set-the-default-to-unfolded-when-you-open-a-file/26082966#26082966
             # https://github.com/nvim-treesitter/nvim-treesitter/blob/42fc28ba918343ebfd5565147a42a26580579482/README.md#folding
             foldmethod = "expr";
             foldexpr = "v:lua.vim.treesitter.foldexpr()";
           };
           autoCmd = [
             {
-              # https://neovim.io/doc/user/lsp.html#vim.lsp.foldexpr()
               event = "LspAttach";
               callback.__raw = ''
+                -- https://neovim.io/doc/user/lsp.html#vim.lsp.foldexpr()
                 function(args)
                   local client = vim.lsp.get_client_by_id(args.data.client_id)
                   if client:supports_method('textDocument/foldingRange') then
@@ -189,8 +182,10 @@
             numberwidth = 1;
           };
           plugins = {
-            lualine.enable = true;
-            lualine.settings.theme = "powerline";
+            lualine = {
+              enable = true;
+              settings.theme = "powerline";
+            };
             modicator.enable = true;
           };
           extraPlugins = with pkgs; [
@@ -263,10 +258,6 @@
               },
             })
           '';
-        }
-        {
-          extraPlugins = [ pkgs.vimPlugins.ultimate-autopair-nvim ];
-          extraConfigLua = "require('ultimate-autopair').setup()";
         }
         {
           plugins.gitsigns = {
