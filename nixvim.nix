@@ -28,13 +28,6 @@
             illuminate.enable = true;
             comment.enable = true;
             fugitive.enable = true;
-            gitsigns = {
-              enable = true;
-              settings = {
-                current_line_blame = true;
-                current_line_blame_opts.delay = 100;
-              };
-            };
             coq-nvim = {
               enable = true;
               installArtifacts = true;
@@ -75,6 +68,9 @@
             tabstop = 4;
             shiftwidth = 4;
             expandtab = true;
+          }
+          // {
+            undofile = true;
           };
         }
         {
@@ -90,8 +86,10 @@
             })
           ];
           extraConfigLua = ''
-            -- https://github.com/nvimdev/indentmini.nvim/blob/0dc4bc2b3fc763420793e748b672292bc43ee722/README.md#config
-            require('indentmini').setup({ only_current = true })
+            require('indentmini').setup()
+            -- https://github.com/nvimdev/indentmini.nvim/blob/0dc4bc2b3fc763420793e748b672292bc43ee722/README.md#highlight
+            -- :h highlight-groups
+            vim.cmd.highlight('IndentLine guifg=#333333')
           '';
         }
         {
@@ -269,6 +267,25 @@
         {
           extraPlugins = [ pkgs.vimPlugins.ultimate-autopair-nvim ];
           extraConfigLua = "require('ultimate-autopair').setup()";
+        }
+        {
+          plugins.gitsigns = {
+            enable = true;
+            settings = {
+              current_line_blame = true;
+              current_line_blame_opts.delay = 100;
+            };
+          };
+          extraPlugins = [
+            pkgs.vimPlugins.nvim-hlslens
+            pkgs.vimPlugins.nvim-scrollbar
+          ];
+          extraConfigLua = ''
+            -- https://github.com/petertriho/nvim-scrollbar/blob/5b103ef0fd2e8b9b4be3878ed38d224522192c6c/README.md#setup
+            require('scrollbar').setup()
+            require('scrollbar.handlers.search').setup()
+            require('scrollbar.handlers.gitsigns').setup()
+          '';
         }
       ];
     }
