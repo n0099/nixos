@@ -29,12 +29,6 @@
             comment.enable = true;
             fugitive.enable = true;
             nvim-surround.enable = true;
-            nvim-autopairs.enable = true;
-            coq-nvim = {
-              enable = true;
-              installArtifacts = true;
-              settings.auto_start = "shut-up";
-            };
           };
           extraPlugins = with pkgs; [
             vimPlugins.vim-better-whitespace
@@ -277,6 +271,71 @@
             require('scrollbar.handlers.search').setup()
             require('scrollbar.handlers.gitsigns').setup()
           '';
+        }
+        {
+          plugins = {
+            nvim-autopairs.enable = true;
+            coq-nvim = {
+              enable = true;
+              installArtifacts = true;
+              settings.auto_start = "shut-up";
+            };
+          };
+          extraConfigLua = ''
+            -- https://github.com/windwp/nvim-autopairs/blob/23320e75953ac82e559c610bec5a90d9c6dfa743/README.md#mapping-cr
+            local remap = vim.api.nvim_set_keymap
+            local npairs = require('nvim-autopairs')
+
+            npairs.setup({ map_bs = false, map_cr = false })
+
+            vim.g.coq_settings = { keymap = { recommended = false } }
+
+            -- these mappings are coq recommended mappings unrelated to nvim-autopairs
+            remap('i', '<esc>', [[pumvisible() ? "<c-e><esc>" : "<esc>"]], { expr = true, noremap = true })
+            remap('i', '<c-c>', [[pumvisible() ? "<c-e><c-c>" : "<c-c>"]], { expr = true, noremap = true })
+            remap('i', '<tab>', [[pumvisible() ? "<c-n>" : "<tab>"]], { expr = true, noremap = true })
+            remap('i', '<s-tab>', [[pumvisible() ? "<c-p>" : "<bs>"]], { expr = true, noremap = true })
+
+            -- skip it, if you use another global object
+            _G.MUtils= {}
+
+            MUtils.CR = function()
+              if vim.fn.pumvisible() ~= 0 then
+                if vim.fn.complete_info({ 'selected' }).selected ~= -1 then
+                  return npairs.esc('<c-y>')
+                else
+                  return npairs.esc('<c-e>') .. npairs.autopairs_cr()
+                end
+              else
+                return npairs.autopairs_cr()
+              end
+            end
+            remap('i', '<cr>', 'v:lua.MUtils.CR()', { expr = true, noremap = true })
+
+            MUtils.BS = function()
+              if vim.fn.pumvisible() ~= 0 and vim.fn.complete_info({ 'mode' }).mode == 'eval' then
+                return npairs.esc('<c-e>') .. npairs.autopairs_bs()
+              else
+                return npairs.autopairs_bs()
+              end
+            end
+            remap('i', '<bs>', 'v:lua.MUtils.BS()', { expr = true, noremap = true })
+          '';
+        }
+        {
+          extraPlugins = [ pkgs.vimPlugins.treewalker-nvim ];
+          extraConfigLua = ''
+            require('treewalker').setup()
+            -- https://github.com/aaronik/treewalker.nvim/blob/e339e81951e96147b57f30abbb76a67d71b809ba/README.md#mapping
+            vim.keymap.set({ 'n', 'v' }, '<C-k>', '<cmd>Treewalker Up<cr>', { silent = true })
+            vim.keymap.set({ 'n', 'v' }, '<C-j>', '<cmd>Treewalker Down<cr>', { silent = true })
+            vim.keymap.set({ 'n', 'v' }, '<C-h>', '<cmd>Treewalker Left<cr>', { silent = true })
+            vim.keymap.set({ 'n', 'v' }, '<C-l>', '<cmd>Treewalker Right<cr>', { silent = true })
+          '';
+        }
+        {
+          extraPlugins = [ pkgs.vimPlugins.nvim-gomove ];
+          extraConfigLua = "require('gomove').setup()";
         }
       ];
     }
