@@ -19,18 +19,12 @@ extraModules:
     }
     {
       home.packages = with pkgs; [
-        certbot
         lnav
-        parallel
-        nixfmt-tree
-        dig
         ncdu
         file
         tree
         lsof
-        pv
-        jq
-        yq
+        nixfmt-tree
         comma
       ];
     }
