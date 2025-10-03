@@ -1,6 +1,7 @@
 {
   name,
   subnetPrefix,
+  containerConfig ? { },
 }:
 configBuilder:
 {
@@ -21,15 +22,23 @@ configBuilder:
   containers."${name}" = {
     autoStart = true;
     ephemeral = true;
-    privateUsers = "pick";
+    privateUsers = "identity"; # https://www.freedesktop.org/software/systemd/man/latest/systemd-nspawn.html#--private-users=
     privateNetwork = true;
     hostAddress = subnetPrefix + "1";
     localAddress = subnetPrefix + "2";
     config =
       attrs:
-      lib.recursiveUpdate (configBuilder attrs) {
-        system = { inherit (config.system) stateVersion; };
-        nixpkgs = lib.mkForce { inherit pkgs; }; # https://github.com/NixOS/nixpkgs/issues/65690
-      };
-  };
+      lib.mkMerge [
+        (configBuilder attrs)
+        {
+          system = { inherit (config.system) stateVersion; };
+          nixpkgs = lib.mkForce { inherit pkgs; }; # https://github.com/NixOS/nixpkgs/issues/65690
+          networking.firewall.allowedTCPPorts = lib.mkIf (containerConfig ? forwardPorts) (
+            # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#real-port-forwarding
+            lib.catAttrs "containerPort" containerConfig.forwardPorts
+          );
+        }
+      ];
+  }
+  // containerConfig;
 }
