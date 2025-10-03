@@ -21,6 +21,7 @@ lib.mkMerge [
         sslCertificateKey = selfSignedCert.key;
       };
       systemd.services."nginx-generate-self-signed-cert" = {
+        before = [ "nginx.service" ];
         wantedBy = [ "nginx.service" ];
         unitConfig = {
           ConditionFileNotEmpty = [
@@ -30,14 +31,15 @@ lib.mkMerge [
         };
         serviceConfig = {
           Type = "oneshot";
-          ExecStartPre = pkgs.coreutils + "/bin/mkdir " + selfSignedCertDir;
-          ExecStart =
-            pkgs.openssl.bin
-            + "/bin/openssl req -batch -x509 -newkey ed448 -days 3650 -keyout "
-            + selfSignedCert.key
-            + " -noenc -out "
-            + selfSignedCert.cert;
-          ExecStartPost = pkgs.coreutils + "/bin/chown -R nginx: " + selfSignedCertDir;
+          ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${selfSignedCertDir}";
+          # https://stackoverflow.com/questions/10175812/how-can-i-generate-a-self-signed-ssl-certificate-using-openssl/41366949#41366949
+          ExecStart = ''
+            ${pkgs.openssl.bin}/bin/openssl req \
+              -batch -x509 -newkey rsa:4096 -sha256 -days 365 \
+              -keyout ${selfSignedCert.key} \
+              -noenc -out ${selfSignedCert.cert}
+          '';
+          ExecStartPost = "${pkgs.coreutils}/bin/chown -R nginx: ${selfSignedCertDir}";
         };
       };
     }
