@@ -47,6 +47,7 @@
               }
               ./system.nix
               ./boot.nix
+              ./zfs.nix
               ./nginx.nix
               ./nixvim.nix
               home-manager.nixosModules.home-manager
