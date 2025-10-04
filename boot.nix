@@ -1,16 +1,9 @@
-{
-  config,
-  lib,
-  inputs,
-  ...
-}:
+{ config, inputs, ... }:
 
 {
   imports = [ inputs.minegrub-world-sel-theme.nixosModules.default ];
   boot.loader = {
-    systemd-boot.enable = lib.mkForce false;
     grub = {
-      enable = true;
       minegrub-world-sel = {
         enable = true;
         customIcons = with config.system; [
@@ -23,23 +16,12 @@
           }
         ];
       };
-      efiSupport = true;
-      enableCryptodisk = true;
-      device = "nodev";
-      extraGrubInstallArgs = [
-        # https://wiki.archlinux.org/title/GRUB#LUKS2
-        # https://github.com/dmoulding/grub-luks2-install/blob/525d757950685888455359618f3fe489c118ca81/grub-luks2-install#L329-L370
-        # https://wiki.archlinux.org/title/GRUB#Shim-lock
-        ''
-          --modules=
-            cryptodisk
-            luks2
-            gcry_rijndael
-            gcry_sha512
-            pbkdf2
-        ''
-      ];
+      extraEntries = ''
+        menuentry 'UEFI Setup' --class uefi {
+          # https://github.com/Lxtharia/minegrub-world-sel-theme/blob/00254ae5e1836ede1ad502b74dac162eab8eebe2/README.md#setting-icons-for-entries-like-uefi-settings
+          fwsetup
+        }
+      '';
     };
-    efi.efiSysMountPoint = "/efi";
   };
 }

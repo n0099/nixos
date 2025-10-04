@@ -25,9 +25,4 @@
       in
       [ pkgs-unfree.osu-lazer-bin ]
     );
-  programs.ssh = {
-    enable = true;
-    addKeysToAgent = "ask";
-    matchBlocks."*".identityFile = "~/.ssh/id/%r@%h.pem"; # https://askubuntu.com/questions/30788/does-ssh-key-need-to-be-named-id-rsa/423297#423297
-  };
 }

@@ -24,18 +24,12 @@
     }@inputs:
     (base.outputs.withModules ({ inherit nur; } // inputs) {
       nixos = [
-        {
-          nix.settings = {
-            # https://nix-community.org/cache/
-            substituters = [ "https://nix-community.cachix.org" ];
-            trusted-public-keys = [ "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" ];
-          };
-        }
         nur.modules.nixos.default # https://nur.nix-community.org/documentation/#using-the-flake-in-nixos
         ./configuration.nix
         ./boot.nix
         ./zfs.nix
         ./desktop.nix
+        ./substituters.nix
         ./containers
         ./proxy.nix
       ];
