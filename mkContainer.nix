@@ -1,6 +1,7 @@
 {
   name,
   subnetPrefix,
+  internetAccessInterface ? "",
   containerConfig ? { },
 }:
 configBuilder:
@@ -13,11 +14,11 @@ configBuilder:
 }:
 
 {
-  networking.nat = {
+  networking.nat = lib.mkIf (internetAccessInterface != "") {
     # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#give-internet-access
     enable = true;
     internalInterfaces = [ ("ve-" + name) ];
-    externalInterface = "eth0";
+    externalInterface = internetAccessInterface;
   };
   containers."${name}" = {
     autoStart = true;
@@ -33,9 +34,19 @@ configBuilder:
         {
           system = { inherit (config.system) stateVersion; };
           nixpkgs = lib.mkForce { inherit pkgs; }; # https://github.com/NixOS/nixpkgs/issues/65690
-          networking.firewall.allowedTCPPorts = lib.mkIf (containerConfig ? forwardPorts) (
-            # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#real-port-forwarding
-            lib.catAttrs "containerPort" containerConfig.forwardPorts
+          networking.firewall = lib.mkIf (containerConfig ? forwardPorts) (
+            let
+              portsByProtocol =
+                protocol:
+                lib.catAttrs "containerPort" (
+                  lib.filter (ports: ports.protocol or "tcp" == protocol) containerConfig.forwardPorts
+                );
+            in
+            {
+              # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#real-port-forwarding
+              allowedTCPPorts = portsByProtocol "tcp";
+              allowedUDPPorts = portsByProtocol "udp";
+            }
           );
         }
       ];

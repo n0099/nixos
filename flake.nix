@@ -57,11 +57,11 @@
                   extraSpecialArgs = specialArgs; # https://discourse.nixos.org/t/pass-specialargs-to-the-home-manager-module/33068
                   useGlobalPkgs = true;
                   useUserPackages = true;
-                  users.n0099 = import ./home/n0099.nix extraModules.home-manager;
+                  users.n0099 = import ./home/n0099.nix extraModules.home-manager or [ ];
                 };
               }
             ]
-            ++ extraModules.nixos;
+            ++ extraModules.nixos or [ ];
           };
         };
     };
