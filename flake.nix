@@ -40,15 +40,13 @@
             inherit specialArgs;
             modules = [
               {
-                nix.settings = {
-                  substituters = [ "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" ]; # https://mirrors.tuna.tsinghua.edu.cn/help/nix-channels/
-                  experimental-features = [
-                    "nix-command"
-                    "flakes"
-                  ];
-                };
+                nix.settings.experimental-features = [
+                  "nix-command"
+                  "flakes"
+                ];
               }
               ./system.nix
+              ./boot.nix
               ./nginx.nix
               ./nixvim.nix
               home-manager.nixosModules.home-manager
