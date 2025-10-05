@@ -1,5 +1,8 @@
 { ... }:
 
 {
-  imports = [ ./vaultwarden.nix ];
+  imports = [
+    ../base/mkContainer.nix
+    ./vaultwarden.nix
+  ];
 }

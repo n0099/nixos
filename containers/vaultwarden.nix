@@ -1,37 +1,31 @@
 { config, ... }:
 
 {
-  imports = [
-    (import ../base/mkContainer.nix
-      {
-        name = "vaultwarden";
-        subnetPrefix = "172.16.0.";
-        containerConfig = {
-          bindMounts = {
-            "/var/lib/vaultwarden" = {
-              hostPath = "/srv/vaultwarden";
-              isReadOnly = false;
-            };
-          }
-          // (
-            let
-              path = "/etc/ssl/self-signed";
-            in
-            {
-              ${path}.hostPath = path;
-            }
-          );
-          forwardPorts = [
-            {
-              containerPort = 443;
-              hostPort = 50000;
-            }
-          ];
+  n0099.containers.vaultwarden = {
+    subnetPrefix = "172.16.0.";
+    containerConfig = {
+      bindMounts = {
+        "/var/lib/vaultwarden" = {
+          hostPath = "/srv/vaultwarden";
+          isReadOnly = false;
         };
       }
-      (
+      // (
+        let
+          path = "/etc/ssl/self-signed";
+        in
+        {
+          ${path}.hostPath = path;
+        }
+      );
+      forwardPorts = [
+        {
+          containerPort = 443;
+          hostPort = 50000;
+        }
+      ];
+      config =
         { ... }:
-
         {
           services.vaultwarden = {
             enable = true;
@@ -53,8 +47,7 @@
               inherit (config.services.nginx.virtualHosts.default) sslCertificate sslCertificateKey;
             };
           };
-        }
-      )
-    )
-  ];
+        };
+    };
+  };
 }
