@@ -8,35 +8,28 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs"; # https://discourse.nixos.org/t/flake-how-make-nixpkgs-self-follow-another-inputs-nixpkgs/10867
     };
     nixvim = {
       url = "github:nix-community/nixvim/nixos-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs =
-    {
-      nixpkgs,
-      home-manager,
-      ...
-    }@inputs:
-    {
-      withModules =
-        extraInputs:
-        let
-          specialArgs = {
-            # https://jade.fyi/blog/flakes-arent-real/#injecting-dependencies
-            inputs = {
-              inherit nixpkgs home-manager;
-            }
-            // inputs
-            // extraInputs;
-          };
-        in
-        extraModules: {
-          nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+  outputs = inputs: {
+    withModules =
+      extraInputs:
+      let
+        specialArgs = {
+          # https://jade.fyi/blog/flakes-arent-real/#injecting-dependencies
+          inputs = inputs // extraInputs;
+        };
+      in
+      extraModules: {
+        nixosConfigurations.nixos = inputs.nixpkgs.lib.nixosSystem (
+          let
             system = "x86_64-linux";
+          in
+          {
             inherit specialArgs;
             modules = [
               {
@@ -50,7 +43,7 @@
               ./zfs.nix
               ./nginx.nix
               ./nixvim.nix
-              home-manager.nixosModules.home-manager
+              inputs.home-manager.nixosModules.home-manager
               {
                 home-manager = {
                   extraSpecialArgs = specialArgs; # https://discourse.nixos.org/t/pass-specialargs-to-the-home-manager-module/33068
@@ -61,7 +54,8 @@
               }
             ]
             ++ extraModules.nixos or [ ];
-          };
-        };
-    };
+          }
+        );
+      };
+  };
 }

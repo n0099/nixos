@@ -4,7 +4,6 @@
   services.zfs.autoScrub.enable = true;
   services.sanoid = {
     enable = true;
-    interval = "*:0/15:00";
     datasets = lib.listToAttrs (
       map (fs: lib.nameValuePair fs.device { useTemplate = [ "default" ]; }) (
         lib.filter (fs: fs.fsType == "zfs") (lib.attrValues config.fileSystems)
@@ -14,10 +13,6 @@
       autosnap = true;
       autoprune = true;
       monitor = "yes";
-
-      frequent_period = 5;
-      frequently_warn = "10m";
-      frequently_crit = "15m";
 
       hourly = 24;
       hourly_warn = "30m";

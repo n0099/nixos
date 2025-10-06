@@ -54,5 +54,8 @@
     # https://unix.stackexchange.com/questions/382060/change-default-sudo-password-timeout
     sudo.configFile = "Defaults timestamp_timeout=15";
   };
-  zramSwap.enable = true;
+  zramSwap = {
+    enable = true;
+    memoryPercent = 100;
+  };
 }
