@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   nix = {
@@ -9,16 +9,17 @@
   };
   time.timeZone = "UTC";
   i18n.defaultLocale = "C.UTF-8";
-  users.users.n0099 = {
-    extraGroups = [
-      "wheel"
-      "docker"
-    ];
-    isNormalUser = true;
-    shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOLshjq9QWQoWa8lDt3wFuWtcaM6o7hj8rF0s9QGedkn"
-    ];
+  users = {
+    mutableUsers = false;
+    users.n0099 = {
+      extraGroups = [
+        "wheel"
+        "docker"
+      ];
+      isNormalUser = true;
+      shell = pkgs.zsh;
+      hashedPasswordFile = config.age.secrets."users.n0099.hashedPassword".path;
+    };
   };
   services = {
     openssh = {
