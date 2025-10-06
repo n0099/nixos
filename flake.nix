@@ -31,7 +31,9 @@
         ./desktop.nix
         ./substituters.nix
         ./containers
+        ./secrets
         ./proxy.nix
+        ./wireguard.nix
       ];
       home-manager = [
         plasma-manager.homeModules.plasma-manager

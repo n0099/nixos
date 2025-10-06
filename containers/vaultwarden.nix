@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, lib, ... }:
 
 {
   n0099.containers.vaultwarden = {
@@ -26,18 +26,23 @@
       ];
       config =
         { ... }:
+
+        let
+          domain = (import ./base/toBeFilled/lib.nix lib).readString ../toBeFilled/vaultwarden/domain;
+        in
         {
           services.vaultwarden = {
             enable = true;
             config = {
               ROCKET_ADDRESS = "::1";
+              DOMAIN = "https://" + domain;
               SIGNUPS_ALLOWED = false;
               INVITATIONS_ALLOWED = false;
             };
           };
           services.nginx = {
             enable = true;
-            virtualHosts."_" = {
+            virtualHosts.${domain} = {
               locations."/" = {
                 proxyPass = "http://localhost:8000";
                 proxyWebsockets = true; # https://github.com/dani-garcia/vaultwarden/wiki/Enabling-WebSocket-notifications
