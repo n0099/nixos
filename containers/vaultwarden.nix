@@ -28,7 +28,7 @@
         { ... }:
 
         let
-          domain = (import ./base/toBeFilled/lib.nix lib).readString ../toBeFilled/vaultwarden/domain;
+          domain = (import ../base/toBeFilled/lib.nix lib).readString ../toBeFilled/vaultwarden/domain;
         in
         {
           services.vaultwarden = {

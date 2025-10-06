@@ -105,6 +105,7 @@ lib.mkMerge [
   }
   {
     networking.networkmanager.enable = true;
+    environment.systemPackages = [ pkgs.wl-clipboard-rs ];
   }
   {
     fonts = lib.mkMerge [
