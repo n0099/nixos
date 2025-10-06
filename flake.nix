@@ -14,6 +14,13 @@
       url = "github:nix-community/nixvim/nixos-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+      };
+    };
   };
   outputs = inputs: {
     withModules =
@@ -53,6 +60,13 @@
                 };
               }
             ]
+            ++ (with inputs.agenix; [
+              nixosModules.default
+              ./secrets
+              {
+                environment.systemPackages = [ packages.${system}.default ];
+              }
+            ])
             ++ extraModules.nixos or [ ];
           }
         );
