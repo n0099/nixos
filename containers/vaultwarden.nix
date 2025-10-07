@@ -35,7 +35,7 @@
             enable = true;
             config = {
               ROCKET_ADDRESS = "::1";
-              DOMAIN = "https://" + domain;
+              DOMAIN = "https://${domain}";
               SIGNUPS_ALLOWED = false;
               INVITATIONS_ALLOWED = false;
             };

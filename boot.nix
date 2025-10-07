@@ -10,8 +10,8 @@
           # https://github.com/Lxtharia/minegrub-world-sel-theme/pull/33
           {
             inherit name;
-            lineTop = with nixos; distroName + " " + codeName + " (" + version + ")";
-            lineBottom = "Survival Mode, No Cheats, Version: " + nixos.release;
+            lineTop = with nixos; "${distroName} ${codeName} (${version})";
+            lineBottom = "Survival Mode, No Cheats, Version: ${nixos.release}";
             imgName = "nixos";
           }
         ];
