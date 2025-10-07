@@ -12,10 +12,7 @@
   users = {
     mutableUsers = false;
     users.n0099 = {
-      extraGroups = [
-        "wheel"
-        "docker"
-      ];
+      extraGroups = [ "wheel" ];
       isNormalUser = true;
       shell = pkgs.zsh;
       hashedPasswordFile = config.age.secrets."users.n0099.hashedPassword".path;
@@ -46,10 +43,6 @@
       atopService.enable = false;
       settings.interval = 1;
     };
-  };
-  virtualisation.docker = {
-    enable = true;
-    package = pkgs.docker_28;
   };
   security = {
     # https://unix.stackexchange.com/questions/382060/change-default-sudo-password-timeout
