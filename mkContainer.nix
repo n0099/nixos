@@ -67,7 +67,7 @@
         (name: container: {
           # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#give-internet-access
           enable = true;
-          internalInterfaces = [ ("ve-" + name) ];
+          internalInterfaces = [ "ve-${name}" ];
           externalInterface = container.internetAccessInterface;
         })
         (lib.filterAttrs (_: container: container.internetAccessInterface != null) config.n0099.containers)
@@ -81,8 +81,8 @@
           ephemeral = true;
           privateUsers = "identity"; # https://www.freedesktop.org/software/systemd/man/latest/systemd-nspawn.html#--private-users=
           privateNetwork = true;
-          hostAddress = container.subnetPrefix + "1";
-          localAddress = container.subnetPrefix + "2";
+          hostAddress = "${container.subnetPrefix}1";
+          localAddress = "${container.subnetPrefix}2";
           config =
             _:
             lib.mkMerge [

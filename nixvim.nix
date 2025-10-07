@@ -207,7 +207,7 @@
             [
               {
                 event = "ModeChanged"; # https://neovim.io/doc/user/autocmd.html#ModeChanged
-                pattern = "*:" + modesToDisableScreenkey; # https://neovim.io/doc/user/autocmd.html#autocmd-pattern
+                pattern = "*:${modesToDisableScreenkey}"; # https://neovim.io/doc/user/autocmd.html#autocmd-pattern
                 callback.__raw = ''
                   function()
                     vim.g.screenkey_statusline_component = false
@@ -216,7 +216,7 @@
               }
               {
                 event = "ModeChanged";
-                pattern = modesToDisableScreenkey + ":*";
+                pattern = "${modesToDisableScreenkey}:*";
                 callback.__raw = ''
                   function()
                     vim.g.screenkey_statusline_component = true

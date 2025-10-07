@@ -6,8 +6,8 @@
 }:
 
 let
-  omzPrefix = suffixs: map (i: "ohmyzsh/ohmyzsh " + i) suffixs;
-  omzPluginPrefix = plugins: omzPrefix (map (i: "path:plugins/" + i) plugins);
+  omzPrefix = suffixs: map (i: "ohmyzsh/ohmyzsh ${i}") suffixs;
+  omzPluginPrefix = plugins: omzPrefix (map (i: "path:plugins/${i}") plugins);
 in
 lib.mkMerge [
   {

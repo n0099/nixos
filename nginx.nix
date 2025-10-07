@@ -6,8 +6,8 @@ lib.mkMerge [
     let
       selfSignedCertDir = "/etc/ssl/self-signed";
       selfSignedCert = {
-        key = selfSignedCertDir + "/key.pem";
-        cert = selfSignedCertDir + "/cert.pem";
+        key = "${selfSignedCertDir}/key.pem";
+        cert = "${selfSignedCertDir}/cert.pem";
       };
     in
     {
@@ -25,8 +25,8 @@ lib.mkMerge [
         wantedBy = [ "nginx.service" ];
         unitConfig = {
           ConditionFileNotEmpty = [
-            ("!" + selfSignedCert.key)
-            ("!" + selfSignedCert.cert)
+            "!${selfSignedCert.key}"
+            "!${selfSignedCert.cert}"
           ];
         };
         serviceConfig = {
