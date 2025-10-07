@@ -92,15 +92,13 @@
           sslCertificate = selfSignedCert.cert;
           sslCertificateKey = selfSignedCert.key;
         };
-        systemd.services."nginx-generate-self-signed-cert" = {
+        systemd.services.nginx-generate-self-signed-cert = {
           before = [ "nginx.service" ];
-          wantedBy = [ "nginx.service" ];
-          unitConfig = {
-            ConditionFileNotEmpty = [
-              "!${selfSignedCert.key}"
-              "!${selfSignedCert.cert}"
-            ];
-          };
+          requiredBy = [ "nginx.service" ];
+          unitConfig.ConditionFileNotEmpty = [
+            "!${selfSignedCert.key}"
+            "!${selfSignedCert.cert}"
+          ];
           serviceConfig = {
             Type = "oneshot";
             ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${selfSignedCertDir}";
