@@ -1,8 +1,36 @@
 { lib, pkgs, ... }:
 
 {
+  options.services.nginx.virtualHosts = lib.mkOption {
+    # https://discourse.nixos.org/t/nginx-default-locations-across-all-virtualhosts/16140/5
+    # https://discourse.nixos.org/t/infinite-recursion-in-module-with-mkmerge/10989
+    type =
+      with lib.types;
+      attrsOf (submodule {
+        config = {
+          locations."~ /\.(?!nuxt|cache)".return = 404; # https://github.com/crissyfield/repo-lookout
+          extraConfig = lib.mkBefore ''
+            more_set_headers "Strict-Transport-Security: max-age=63072000; includeSubDomains; preload";
+            more_set_headers "X-Frame-Options: DENY";
+            more_set_headers "X-Content-Type-Options: nosniff";
+            more_set_headers "X-XSS-Protection: 1; mode=block";
+          '';
+        };
+      });
+  };
   config = lib.mkMerge [
-    {      services.nginx.enable = true;    }
+    {
+      services.nginx = {
+        enable = true;
+        recommendedOptimisation = true;
+        recommendedTlsSettings = true;
+        recommendedGzipSettings = true;
+        recommendedBrotliSettings = true;
+        recommendedZstdSettings = true;
+        recommendedProxySettings = true;
+        additionalModules = [ pkgs.nginxModules.moreheaders ];
+      };
+    }
     (
       let
         selfSignedCertDir = "/etc/ssl/self-signed";
