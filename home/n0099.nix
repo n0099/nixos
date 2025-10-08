@@ -79,6 +79,7 @@ extraModules:
             show_merged_command = true;
             header_margin = false;
             cpu_count_from_one = true;
+            detailed_cpu_time = true;
             account_guest_in_cpu_meter = true;
             show_cpu_frequency = true;
             delay = 10;
