@@ -48,8 +48,8 @@
               ./system.nix
               ./boot.nix
               ./zfs.nix
-              ./nginx.nix
               ./nixvim.nix
+              ./nginx
               inputs.home-manager.nixosModules.home-manager
               {
                 home-manager = {

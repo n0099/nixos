@@ -8,7 +8,7 @@
       with lib.types;
       attrsOf (submodule {
         config = {
-          locations."~ /\.(?!nuxt|cache)".return = 404; # https://github.com/crissyfield/repo-lookout
+          locations."~ /\\.(?!nuxt|cache)".return = 404; # https://github.com/crissyfield/repo-lookout
           quic = true;
         };
       });
@@ -27,7 +27,7 @@
         {
           # not using https://github.com/NixOS/nixpkgs/blob/20c4598c84a671783f741e02bf05cbfaf4907cff/nixos/modules/services/web-servers/nginx/default.nix#L207-L221
           sslProtocols = "TLSv1.3"; # https://caniuse.com/tls1-3
-          sslDhparam = ./toBeFilled/nginx/dhparam.pem;
+          sslDhparam = ../toBeFilled/nginx/dhparam.pem;
           appendHttpConfig = ''
             ssl_ecdh_curve secp384r1; # https://community.letsencrypt.org/t/would-it-be-a-good-idea-to-use-x448-only-for-maximum-security/239502
 

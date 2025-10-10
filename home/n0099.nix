@@ -33,6 +33,7 @@ extraModules:
       programs.ssh = {
         enable = true;
         addKeysToAgent = "ask";
+        serverAliveInterval = 15;
         matchBlocks."*".identityFile = "~/.ssh/id/%r@%h:%p.pem"; # https://askubuntu.com/questions/30788/does-ssh-key-need-to-be-named-id-rsa/423297#423297
       };
     }
