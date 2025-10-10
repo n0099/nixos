@@ -5,6 +5,7 @@ let
 in
 {
   imports = [
+    ./log.nix
     ./https.nix
     ./http3.nix
   ];
