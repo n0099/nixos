@@ -23,6 +23,9 @@
           recommendedBrotliSettings = true;
           recommendedZstdSettings = true;
           recommendedProxySettings = true;
+          appendConfig = ''
+            worker_processes auto;
+          '';
         }
         {
           # not using https://github.com/NixOS/nixpkgs/blob/20c4598c84a671783f741e02bf05cbfaf4907cff/nixos/modules/services/web-servers/nginx/default.nix#L207-L221
@@ -84,11 +87,35 @@
       in
       {
         services.nginx.virtualHosts.default = {
-          serverAliases = [
-            "_"
-            ""
-          ];
-          forceSSL = true;
+          # https://serverfault.com/questions/914906/what-is-the-difference-between-server-name-and-server-name-in-nginx
+          serverName = "_";
+          serverAliases = [ "\"\"" ];
+          listen =
+            lib.map
+              (
+                listen:
+                listen
+                // {
+                  addr = "[::]";
+                  extraParameters = [
+                    "default_server"
+                    "reuseport" # https://stackoverflow.com/questions/30559164/nginxs-reuseport-for-same-ipport-pair-on-different-virtual-hosts
+                  ];
+                }
+              )
+              [
+                { port = 80; }
+                {
+                  port = 443;
+                  ssl = true;
+                }
+              ];
+          extraConfig = ''
+            ssl_reject_handshake on;
+            return 444;
+          '';
+          locations = lib.mkForce { };
+          addSSL = true;
           sslCertificate = selfSignedCert.cert;
           sslCertificateKey = selfSignedCert.key;
         };

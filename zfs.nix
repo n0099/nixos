@@ -38,5 +38,9 @@
         monthly_crit = "32d";
       };
     };
+    logrotate.settings.prefer-zfs-compression = {
+      compress = false;
+      global = true;
+    };
   };
 }
