@@ -5,16 +5,31 @@
   ...
 }:
 
+let
+  baseUrls = config.n0099.nginx.baseUrls;
+  logBaseDir = "/var/log/nginx";
+in
 {
   options.n0099.nginx.baseUrls = lib.mkOption {
     type = with lib.types; listOf str;
     default = [ ];
   };
-  config =
-    let
-      baseUrls = config.n0099.nginx.baseUrls;
-      logBaseDir = "/var/log/nginx";
-    in
+  config = lib.mkMerge [
+    {
+      services.nginx = {
+        commonHttpConfig = ''
+          # https://blog.neilsabol.site/post/goaccess-apache-httpd-logformat-log-format-combined-common-vhost/
+          # https://nginx.org/r/log_format
+          log_format combined_with_vhost '$host:$server_port '
+            '$remote_addr - $remote_user [$time_local] '
+            '"$request" $status $body_bytes_sent '
+            '"$http_referer" "$http_user_agent"';
+        '';
+        virtualHosts.default.extraConfig = ''
+          access_log ${logBaseDir}/access.log combined_with_vhost;
+        '';
+      };
+    }
     {
       services.nginx.appendHttpConfig = ''
         map $host$uri $baseUrlLogPath {
@@ -68,5 +83,6 @@
         # https://serverfault.com/questions/208006/logrotating-files-in-a-directories-and-its-subdirectories/840384#840384
         "${logBaseDir}/**/*.log"
       ];
-    };
+    }
+  ];
 }
