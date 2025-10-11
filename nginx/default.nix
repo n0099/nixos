@@ -62,20 +62,28 @@ in
                 listen:
                 listen
                 // {
-                  addr = "[::]";
                   extraParameters = [
                     "default_server"
                     "reuseport" # https://stackoverflow.com/questions/30559164/nginxs-reuseport-for-same-ipport-pair-on-different-virtual-hosts
                   ];
                 }
               )
-              [
-                { port = 80; }
-                {
-                  port = 443;
-                  ssl = true;
+              (
+                lib.mapCartesianProduct ({ listen, addr }: listen // addr) {
+                  listen = [
+                    { port = 80; }
+                    {
+                      port = 443;
+                      ssl = true;
+                    }
+                  ];
+                  addr = [
+                    # https://serverfault.com/questions/638367/do-you-need-separate-ipv4-and-ipv6-listen-directives-in-nginx
+                    { addr = "[::]"; }
+                    { addr = "0.0.0.0"; }
+                  ];
                 }
-              ];
+              );
           extraConfig = ''
             ssl_reject_handshake on;
             return 444;
