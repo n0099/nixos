@@ -35,11 +35,6 @@
     };
     vnstat.enable = true;
     netdata.enable = true;
-    mysql = {
-      enable = true;
-      package = pkgs.mariadb_114;
-    };
-    postgresql.enable = true;
   };
   programs = {
     zsh.enable = true;
