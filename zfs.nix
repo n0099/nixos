@@ -7,7 +7,9 @@
       enable = true;
       datasets = lib.listToAttrs (
         map (fs: lib.nameValuePair fs.device { useTemplate = [ "default" ]; }) (
-          lib.filter (fs: fs.fsType == "zfs") (lib.attrValues config.fileSystems)
+          lib.filter (fs: fs.fsType == "zfs") (
+            lib.attrValues (lib.filterAttrs (mountpoint: _: mountpoint != "/nix/store") config.fileSystems)
+          )
         )
       );
       templates.default = {
