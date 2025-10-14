@@ -27,6 +27,21 @@ in
           '';
         }
         {
+          appendHttpConfig = lib.mkMerge [
+            ''
+              charset utf-8;
+              aio threads;
+              directio 128k;
+              output_buffers 2 128k;
+            ''
+            ''
+              limit_req_zone $binary_remote_addr zone=ip:10m rate=50r/s;
+              limit_req zone=ip burst=100 nodelay;
+              limit_req_status 429;
+            ''
+          ];
+        }
+        {
           additionalModules = [ pkgs.nginxModules.moreheaders ];
           appendHttpConfig = ''
             # https://wiki.nixos.org/wiki/Nginx#Hardened_setup_with_TLS_and_HSTS_preloading
