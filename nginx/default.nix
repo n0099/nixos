@@ -30,6 +30,9 @@ in
           appendHttpConfig = lib.mkMerge [
             ''
               charset utf-8;
+              msie_padding off;
+            ''
+            ''
               aio threads;
               directio 128k;
               output_buffers 2 128k;
@@ -57,6 +60,10 @@ in
         80
         443
       ];
+    }
+    {
+      services.resolved.enable = true;
+      services.nginx.resolver.addresses = [ "127.0.0.53" ];
     }
     (
       let
