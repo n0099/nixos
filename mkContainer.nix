@@ -1,4 +1,5 @@
 {
+  options,
   config,
   lib,
   pkgs,
@@ -54,7 +55,7 @@
             type = nullOr str;
             default = null;
           };
-          containerConfig = mkOption { type = attrsOf anything; };
+          containerConfig = mkOption { type = options.containers.type.functor.payload.elemType; };
         };
       });
     }
@@ -71,8 +72,8 @@
         (lib.filterAttrs (_: container: container.internetAccessInterface != null) config.n0099.containers)
     );
     containers = lib.mapAttrs (
-      name: container:
-      (lib.mkMerge [
+      _: container:
+      lib.mkMerge [
         container.containerConfig
         {
           autoStart = true;
@@ -81,30 +82,26 @@
           privateNetwork = true;
           hostAddress = "${container.subnetPrefix}1";
           localAddress = "${container.subnetPrefix}2";
-          config =
-            _:
-            lib.mkMerge [
+          config = _: {
+            system = { inherit (config.system) stateVersion; };
+            nixpkgs = lib.mkForce { inherit pkgs; }; # https://github.com/NixOS/nixpkgs/issues/65690
+            networking.firewall = lib.mkIf (container.containerConfig ? forwardPorts) (
+              let
+                portsByProtocol =
+                  protocol:
+                  lib.catAttrs "containerPort" (
+                    lib.filter (ports: ports.protocol or "tcp" == protocol) container.containerConfig.forwardPorts
+                  );
+              in
               {
-                system = { inherit (config.system) stateVersion; };
-                nixpkgs = lib.mkForce { inherit pkgs; }; # https://github.com/NixOS/nixpkgs/issues/65690
-                networking.firewall = lib.mkIf (container.containerConfig ? forwardPorts) (
-                  let
-                    portsByProtocol =
-                      protocol:
-                      lib.catAttrs "containerPort" (
-                        lib.filter (ports: ports.protocol or "tcp" == protocol) container.containerConfig.forwardPorts
-                      );
-                  in
-                  {
-                    # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#real-port-forwarding
-                    allowedTCPPorts = portsByProtocol "tcp";
-                    allowedUDPPorts = portsByProtocol "udp";
-                  }
-                );
+                # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#real-port-forwarding
+                allowedTCPPorts = portsByProtocol "tcp";
+                allowedUDPPorts = portsByProtocol "udp";
               }
-            ];
+            );
+          };
         }
-      ])
+      ]
     ) config.n0099.containers;
   };
 }
