@@ -46,8 +46,11 @@
     };
   };
   security = {
-    # https://unix.stackexchange.com/questions/382060/change-default-sudo-password-timeout
-    sudo.configFile = "Defaults timestamp_timeout=15";
+    sudo.configFile = "Defaults timestamp_timeout=15"; # https://unix.stackexchange.com/questions/382060/change-default-sudo-password-timeout
+    dhparams = {
+      enable = true;
+      defaultBitSize = 4096;
+    };
   };
   zramSwap = {
     enable = true;
