@@ -73,16 +73,17 @@
     );
     containers = lib.mapAttrs (
       _: container:
-      lib.mkMerge [
-        container.containerConfig
-        {
-          autoStart = true;
-          ephemeral = true;
-          privateUsers = "identity"; # https://www.freedesktop.org/software/systemd/man/latest/systemd-nspawn.html#--private-users=
-          privateNetwork = true;
-          hostAddress = "${container.subnetPrefix}1";
-          localAddress = "${container.subnetPrefix}2";
-          config = _: {
+      container.containerConfig
+      // {
+        autoStart = true;
+        ephemeral = true;
+        privateUsers = "identity"; # https://www.freedesktop.org/software/systemd/man/latest/systemd-nspawn.html#--private-users=
+        privateNetwork = true;
+        hostAddress = "${container.subnetPrefix}1";
+        localAddress = "${container.subnetPrefix}2";
+        config =
+          _:
+          lib.recursiveUpdate container.containerConfig.config {
             system = { inherit (config.system) stateVersion; };
             nixpkgs = lib.mkForce { inherit pkgs; }; # https://github.com/NixOS/nixpkgs/issues/65690
             networking.firewall = lib.mkIf (container.containerConfig ? forwardPorts) (
@@ -100,8 +101,7 @@
               }
             );
           };
-        }
-      ]
+      }
     ) config.n0099.containers;
   };
 }
