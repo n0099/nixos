@@ -1,5 +1,4 @@
 {
-  options,
   config,
   lib,
   pkgs,
@@ -7,22 +6,20 @@
 }:
 
 {
-  options.n0099.containers = lib.mkOption (
-    with {
-      inherit (lib.types)
-        str
-        anything
-        submodule
-        nullOr
-        attrsOf
-        addCheck
-        ;
-      inherit (lib) mkOption;
-    };
-    {
-      type = attrsOf (submodule {
+  options.containers = lib.mkOption {
+    type =
+      with {
+        inherit (lib.types)
+          str
+          nullOr
+          attrsOf
+          submodule
+          addCheck
+          ;
+      };
+      attrsOf (submodule {
         options = {
-          subnetPrefix = mkOption {
+          subnetPrefix = lib.mkOption {
             type = addCheck str (
               value:
               let
@@ -51,39 +48,19 @@
                 false
             );
           };
-          internetAccessInterface = mkOption {
+          internetAccessInterface = lib.mkOption {
             type = nullOr str;
             default = null;
           };
-          containerConfig = mkOption { type = options.containers.type.functor.payload.elemType; };
         };
-      });
-    }
-  );
-  config = {
-    networking.nat = lib.mkMerge (
-      lib.mapAttrsToList
-        (name: container: {
-          # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#give-internet-access
-          enable = true;
-          internalInterfaces = [ "ve-${name}" ];
-          externalInterface = container.internetAccessInterface;
-        })
-        (lib.filterAttrs (_: container: container.internetAccessInterface != null) config.n0099.containers)
-    );
-    containers = lib.mapAttrs (
-      _: container:
-      container.containerConfig
-      // {
-        autoStart = true;
-        ephemeral = true;
-        privateUsers = "identity"; # https://www.freedesktop.org/software/systemd/man/latest/systemd-nspawn.html#--private-users=
-        privateNetwork = true;
-        hostAddress = "${container.subnetPrefix}1";
-        localAddress = "${container.subnetPrefix}2";
-        config =
-          _:
-          lib.recursiveUpdate container.containerConfig.config {
+        config = {
+          autoStart = true;
+          ephemeral = true;
+          privateUsers = "identity"; # https://www.freedesktop.org/software/systemd/man/latest/systemd-nspawn.html#--private-users=
+          privateNetwork = true;
+          hostAddress = "${container.subnetPrefix}1";
+          localAddress = "${container.subnetPrefix}2";
+          config = {
             system = { inherit (config.system) stateVersion; };
             nixpkgs = lib.mkForce { inherit pkgs; }; # https://github.com/NixOS/nixpkgs/issues/65690
             networking.firewall = lib.mkIf (container.containerConfig ? forwardPorts) (
@@ -101,7 +78,17 @@
               }
             );
           };
-      }
-    ) config.n0099.containers;
+        };
+      });
+  };
+  config = {
+    networking.nat = lib.mkMerge (
+      lib.mapAttrsToList (name: container: {
+        # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#give-internet-access
+        enable = true;
+        internalInterfaces = [ "ve-${name}" ];
+        externalInterface = container.internetAccessInterface;
+      }) (lib.filterAttrs (_: container: container.internetAccessInterface != null) config.containers)
+    );
   };
 }
