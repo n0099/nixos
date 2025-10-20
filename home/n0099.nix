@@ -73,6 +73,7 @@ extraModules:
             hide_userland_threads = true;
             shadow_other_users = true;
             show_thread_names = true;
+            show_program_path = false; # workaround for https://github.com/htop-dev/htop/pull/1789
             highlight_changes = true;
             highlight_changes_delay_secs = 3;
             highlight_base_name = true;
