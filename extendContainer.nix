@@ -22,41 +22,53 @@
           { ... }@container:
 
           {
-            options = {
-              subnetPrefix = lib.mkOption {
-                type = addCheck str (
-                  value:
-                  let
-                    matches = builtins.match "^([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})\\." value;
-                    octets = lib.map lib.toIntBase10 matches;
-                    isOctet = octet: octet >= 0 && octet <= 255;
-                  in
-                  if matches == null then
-                    false
-                  # https://datatracker.ietf.org/doc/rfc1918/
-                  else if lib.head octets == 10 then
-                    lib.all isOctet (lib.drop 1 octets)
-                  else if lib.head octets == 172 then
+            options =
+              with {
+                inherit (lib)
+                  mkOption
+                  map
+                  all
+                  head
+                  drop
+                  take
+                  elemAt
+                  toIntBase10
+                  ;
+              }; {
+                subnetPrefix = mkOption {
+                  type = addCheck str (
+                    value:
                     let
-                      octet = lib.elemAt octets 1;
+                      matches = builtins.match "^([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})\\." value;
+                      octets = map toIntBase10 matches;
+                      isOctet = octet: octet >= 0 && octet <= 255;
                     in
-                    octet >= 16 && octet <= 31 && isOctet (lib.elemAt octets 2)
-                  else if
-                    lib.take 2 octets == [
-                      192
-                      168
-                    ]
-                  then
-                    isOctet (lib.elemAt octets 2)
-                  else
-                    false
-                );
+                    if matches == null then
+                      false
+                    # https://datatracker.ietf.org/doc/rfc1918/
+                    else if head octets == 10 then
+                      all isOctet (drop 1 octets)
+                    else if head octets == 172 then
+                      let
+                        octet = elemAt octets 1;
+                      in
+                      octet >= 16 && octet <= 31 && isOctet (elemAt octets 2)
+                    else if
+                      take 2 octets == [
+                        192
+                        168
+                      ]
+                    then
+                      isOctet (elemAt octets 2)
+                    else
+                      false
+                  );
+                };
+                internetAccessInterface = mkOption {
+                  type = nullOr str;
+                  default = null;
+                };
               };
-              internetAccessInterface = lib.mkOption {
-                type = nullOr str;
-                default = null;
-              };
-            };
             config = {
               autoStart = true;
               ephemeral = true;
