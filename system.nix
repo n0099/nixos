@@ -31,6 +31,9 @@
         PasswordAuthentication = false;
         KbdInteractiveAuthentication = false;
         PermitRootLogin = "no";
+      }
+      // {
+        ClientAliveInterval = 15;
       };
     };
     vnstat.enable = true;
