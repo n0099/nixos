@@ -46,6 +46,7 @@
                 ];
               }
               ./system.nix
+              ./remoteBuild.nix
               ./boot.nix
               ./zfs.nix
               ./nixvim.nix
