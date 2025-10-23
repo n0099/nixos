@@ -37,6 +37,7 @@
               [
                 vim-better-whitespace
                 vim-pasta
+                switch-vim
               ]
               ++ [
                 (vimUtils.buildVimPlugin {
@@ -351,8 +352,7 @@
         plugins.lspconfig.enable = true;
         extraConfigLua = ''
           -- https://github.com/NixOS/nixfmt/blob/1f2589cb7198529c6c1eec9699eccd4d507d3600/README.md#neovim--nixd
-          local nvim_lsp = require('lspconfig')
-          nvim_lsp.nixd.setup({
+          vim.lsp.config.nixd = {
             settings = {
               nixd = {
                 formatting = {
@@ -360,7 +360,8 @@
                 },
               },
             },
-          })
+          }
+          vim.lsp.enable('nixd')
         '';
         # https://www.mitchellhanberg.com/modern-format-on-save-in-neovim/
         autoGroups.lsp.clear = true;
