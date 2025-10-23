@@ -30,7 +30,19 @@ lib.mkIf (lib.pathExists ./toBeFilled/remoteBuild) (
           supportedFeatures = config.nix.settings.system-features;
         }
       ];
-      settings.builders-use-substitutes = true;
+      settings = {
+        builders-use-substitutes = true;
+      }
+      // (
+        let
+          path = ./toBeFilled/remoteBuild/substituterPublicKey;
+        in
+        lib.mkIf (lib.pathExists path) {
+          # https://wiki.nixos.org/wiki/Distributed_build#Using_remote_builders_as_substituters
+          trusted-public-keys = [ (readString path) ];
+          substituters = [ "ssh-ng://${remote.host}" ];
+        }
+      );
     };
     programs.ssh = {
       extraConfig = ''
