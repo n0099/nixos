@@ -32,7 +32,7 @@ extraModules:
       services.ssh-agent.enable = true;
       programs.ssh = {
         enable = true;
-        addKeysToAgent = "ask";
+        addKeysToAgent = "1h"; # https://man7.org/linux/man-pages/man5/sshd_config.5.html#TIME_FORMATS
         serverAliveInterval = 15;
         matchBlocks."*".identityFile = "~/.ssh/id/%r@%h:%p.pem"; # https://askubuntu.com/questions/30788/does-ssh-key-need-to-be-named-id-rsa/423297#423297
       };
