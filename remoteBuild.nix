@@ -40,7 +40,7 @@ lib.mkIf (lib.pathExists ./toBeFilled/remoteBuild) (
         lib.mkIf (lib.pathExists path) {
           # https://wiki.nixos.org/wiki/Distributed_build#Using_remote_builders_as_substituters
           trusted-public-keys = [ (readString path) ];
-          substituters = [ "ssh-ng://${remote.host}" ];
+          substituters = [ "ssh://${remote.host}" ];
         }
       );
     };
@@ -52,6 +52,9 @@ lib.mkIf (lib.pathExists ./toBeFilled/remoteBuild) (
           IdentityFile ${remote.privateKey}
           User ${remote.user}
           Port ${remote.port} # https://github.com/NixOS/nix/issues/724
+          # https://unix.stackexchange.com/questions/767493/issue-with-ssh-client-alive-interval-in-sshd-config/767515#767515
+          # https://serverfault.com/questions/1162826/how-to-ensure-that-ssh-drops-the-connection-after-8-hours-of-no-typing/1162840#1162840
+          ChannelTimeout *=1m
       '';
       knownHosts.${remote.host}.publicKey = readString ./toBeFilled/remoteBuild/publicKey;
     };
