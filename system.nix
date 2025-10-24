@@ -55,8 +55,4 @@
       defaultBitSize = 4096;
     };
   };
-  zramSwap = {
-    enable = true;
-    memoryPercent = 100;
-  };
 }

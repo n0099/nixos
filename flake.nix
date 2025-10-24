@@ -49,6 +49,7 @@
               ./remoteBuild.nix
               ./boot.nix
               ./zfs.nix
+              ./zram.nix
               ./nixvim.nix
               ./nginx
               inputs.home-manager.nixosModules.home-manager
