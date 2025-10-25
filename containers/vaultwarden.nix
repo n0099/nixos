@@ -19,13 +19,11 @@
     );
     forwardPorts = [
       {
-        containerPort = 443;
         hostPort = 50000;
+        containerPort = 443;
       }
     ];
     config =
-      { ... }:
-
       let
         domain = (import ../base/toBeFilled/lib.nix lib).readString ../toBeFilled/vaultwarden/domain;
       in
