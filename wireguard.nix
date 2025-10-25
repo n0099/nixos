@@ -1,9 +1,9 @@
 { config, lib, ... }:
 
 {
-  networking.wireguard.interfaces.wg0 = with (import ./base/toBeFilled/lib.nix lib); {
+  networking.wg-quick.interfaces.wg0 = with (import ./base/toBeFilled/lib.nix lib); {
     privateKeyFile = config.age.secrets."wireguard.privateKey".path;
-    ips = readStrings ./toBeFilled/wireguard/ips;
+    address = readStrings ./toBeFilled/wireguard/address;
     peers = [
       {
         publicKey = readString ./toBeFilled/wireguard/peer/publicKey;

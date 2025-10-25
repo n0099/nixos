@@ -331,10 +331,10 @@ in
           pname = "sidebery";
           # https://github.com/mbnuqw/sidebery/pull/2016
           # https://github.com/mbnuqw/sidebery/commit/86eb0ae2019ebb8b5557fd535e689624503bc1d6
-          version = "5.3.3.21";
+          version = "5.3.3.32";
           addonId = "{3c078156-979c-498b-8990-85f7987dd929}";
-          url = "https://github.com/mbnuqw/sidebery/releases/download/v5.3.3/sidebery-5.3.3.21.xpi";
-          sha256 = "sha256-K3EktiWCCQtlzfVWc1T5LlT2dXwAL1gWsqRloHQHCtM=";
+          url = "https://github.com/mbnuqw/sidebery/releases/download/v5.3.3/sidebery-5.3.3.32.xpi";
+          sha256 = "sha256-iRb0N5f6ZZz8+v9HSuCM/6/LYbv1mfYCRS8yCHqt8KA=";
           inherit (addons.sidebery) meta;
         })
       ];
