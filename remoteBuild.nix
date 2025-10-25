@@ -51,7 +51,7 @@ lib.mkIf (lib.pathExists ./toBeFilled/remoteBuild) (
           IdentitiesOnly yes
           IdentityFile ${remote.privateKey}
           User ${remote.user}
-          Port ${remote.port} # https://github.com/NixOS/nix/issues/724
+          Port ${remote.port} # https://github.com/NixOS/nix/issues/7044 https://git.lix.systems/lix-project/lix/issues/196
           # https://unix.stackexchange.com/questions/767493/issue-with-ssh-client-alive-interval-in-sshd-config/767515#767515
           # https://serverfault.com/questions/1162826/how-to-ensure-that-ssh-drops-the-connection-after-8-hours-of-no-typing/1162840#1162840
           ChannelTimeout *=1m

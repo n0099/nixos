@@ -79,7 +79,7 @@
               config = {
                 system = { inherit (config.system) stateVersion; };
                 nixpkgs = lib.mkForce { inherit pkgs; }; # https://github.com/NixOS/nixpkgs/issues/65690
-                networking.firewall = lib.mkIf (config ? forwardPorts) (
+                networking.firewall = lib.mkIf (container.config ? forwardPorts) (
                   let
                     portsByProtocol =
                       protocol:
