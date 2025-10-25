@@ -50,20 +50,21 @@ in
             "http"
             "https"
           ];
-          logDirs =
+          logDirs = lib.unique (
             schemes
-            ++ lib.unique (
+            ++ (
               # https://github.com/NixOS/nixpkgs/pull/355616
               lib.mapCartesianProduct
                 (
                   { scheme, baseUrl }:
-                  "${scheme}/${lib.concatStringsSep "/" (lib.dropEnd 1 (lib.splitString "/" baseUrl))}"
+                  lib.concatStringsSep "/" ([ scheme ] ++ lib.dropEnd 1 (lib.splitString "/" baseUrl))
                 )
                 {
                   scheme = schemes;
                   baseUrl = baseUrls;
                 }
-            );
+            )
+          );
         in
         nginxLib.mkServiceRequiredByNginx {
           unitConfig.ConditionPathIsDirectory = nginxLib.mkServiceConditionAllOfPathsExists (
