@@ -65,19 +65,17 @@ in
                 }
             );
         in
-        {
+        nginxLib.mkServiceRequiredByNginx {
           unitConfig.ConditionPathIsDirectory = nginxLib.mkServiceConditionAllOfPathsExists (
             lib.map (path: "${logBaseDir}/${path}") logDirs
           );
-        }
-        // (nginxLib.mkServiceRequiredByNginx {
-          WorkingDirectory = logBaseDir;
+          serviceConfig.WorkingDirectory = logBaseDir;
           # https://stackoverflow.com/questions/34995385/nginx-create-directory-if-it-doesnt-exist
-          ExecStart = lib.map (path: "${pkgs.coreutils}/bin/mkdir -p ${path}") logDirs;
-          ExecStartPost = ''
+          script = ''
+            ${lib.concatMapStringsSep "\n" (path: "${pkgs.coreutils}/bin/mkdir -p ${path}") logDirs}
             ${pkgs.coreutils}/bin/chown -R nginx: .
           '';
-        });
+        };
       services.logrotate.settings.nginx.files = [
         # https://github.com/NixOS/nixpkgs/blob/20c4598c84a671783f741e02bf05cbfaf4907cff/nixos/modules/services/web-servers/nginx/default.nix#L1662-L1670
         # https://serverfault.com/questions/208006/logrotating-files-in-a-directories-and-its-subdirectories/840384#840384

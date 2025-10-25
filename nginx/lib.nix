@@ -14,15 +14,21 @@ lib:
     };
   mkServiceConditionAllOfPathsExists = lib.map (path: "|!${path}"); # https://stackoverflow.com/questions/37313677/what-is-the-difference-between-conditionpathexists-and-conditionpathexists-in/37313765#37313765
   mkServiceRequiredByNginx =
-    let
-      nginx = [ "nginx.service" ];
-    in
-    serviceConfig: {
-      before = nginx;
-      requiredBy = nginx;
-      serviceConfig = {
-        Type = "oneshot";
-      }
-      // serviceConfig;
-    };
+    config:
+    lib.mkMerge [
+      config
+      (
+        let
+          nginx = [ "nginx.service" ];
+        in
+        {
+          before = nginx;
+          requiredBy = nginx;
+          enableStrictShellChecks = true;
+          serviceConfig = {
+            Type = "oneshot";
+          };
+        }
+      )
+    ];
 }
