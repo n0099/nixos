@@ -22,7 +22,7 @@
           { ... }@container:
 
           {
-            options =
+            options.n0099 =
               with {
                 inherit (lib)
                   mkOption
@@ -74,17 +74,17 @@
               ephemeral = true;
               privateUsers = "identity"; # https://www.freedesktop.org/software/systemd/man/latest/systemd-nspawn.html#--private-users=
               privateNetwork = true;
-              hostAddress = "${container.config.subnetPrefix}1";
-              localAddress = "${container.config.subnetPrefix}2";
+              hostAddress = "${container.config.n0099.subnetPrefix}1";
+              localAddress = "${container.config.n0099.subnetPrefix}2";
               config = {
                 system = { inherit (config.system) stateVersion; };
                 nixpkgs = lib.mkForce { inherit pkgs; }; # https://github.com/NixOS/nixpkgs/issues/65690
-                networking.firewall = lib.mkIf (container.config ? forwardPorts) (
+                networking.firewall = lib.mkIf (container.config.n0099 ? forwardPorts) (
                   let
                     portsByProtocol =
                       protocol:
                       lib.catAttrs "containerPort" (
-                        lib.filter (ports: ports.protocol or "tcp" == protocol) container.config.forwardPorts
+                        lib.filter (ports: ports.protocol or "tcp" == protocol) container.config.n0099.forwardPorts
                       );
                   in
                   {
@@ -101,12 +101,15 @@
   };
   config = {
     networking.nat = lib.mkMerge (
-      lib.mapAttrsToList (name: container: {
-        # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#give-internet-access
-        enable = true;
-        internalInterfaces = [ "ve-${name}" ];
-        externalInterface = container.internetAccessInterface;
-      }) (lib.filterAttrs (_: container: container.internetAccessInterface != null) config.containers)
+      lib.mapAttrsToList
+        (name: container: {
+          # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#give-internet-access
+          # https://wiki.archlinux.org/title/Systemd-nspawn#Use_NAT_networking
+          enable = true;
+          internalInterfaces = [ "ve-${name}" ];
+          externalInterface = container.n0099.internetAccessInterface;
+        })
+        (lib.filterAttrs (_: container: container.n0099.internetAccessInterface != null) config.containers)
     );
   };
 }
