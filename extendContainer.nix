@@ -122,22 +122,27 @@ with {
                     inherit (lib.types)
                       str
                       port
-                      either
                       listOf
+                      strMatching
                       ;
                   };
-                  listOf attrsOf {
-                    hostListenStreams = listOf str; # https://github.com/NixOS/nixpkgs/blob/78e34d1667d32d8a0ffc3eba4591ff256e80576e/nixos/lib/systemd-unit-options.nix#L628
-                    containerPort = port;
-                    protocol = either "tcp" "udp";
-                  };
+                  listOf (submodule {
+                    options = {
+                      hostListenStreams = mkOption { type = listOf str; }; # https://github.com/NixOS/nixpkgs/blob/78e34d1667d32d8a0ffc3eba4591ff256e80576e/nixos/lib/systemd-unit-options.nix#L628
+                      containerPort = mkOption { type = port; };
+                      protocol = mkOption {
+                        type = strMatching "^(tcp|udp)$";
+                        default = "tcp";
+                      };
+                    };
+                  });
               };
               config.config.networking.firewall = lib.mkIf (container.config.n0099 ? forwardPorts) (
                 let
                   portsByProtocol =
                     protocol:
                     lib.catAttrs "containerPort" (
-                      lib.filter (ports: ports.protocol or "tcp" == protocol) container.config.n0099.forwardPorts
+                      lib.filter (ports: ports.protocol == protocol) container.config.n0099.forwardPorts
                     );
                 in
                 {
@@ -150,37 +155,42 @@ with {
           )
         );
       };
-      config.systemd = lib.mkMerge lib.mapAttrsToList (
-        name: container:
-        lib.map (
-          forwardPort:
-          let
-            unitName = "container@${name}-forward-port:${forwardPort.containerPort}.socket";
-          in
-          {
-            # https://www.freedesktop.org/software/systemd/man/latest/systemd-socket-proxyd.html#Simple%20Example
-            sockets.${unitName} = {
-              listenStreams = forwardPort.hostListenStreams;
-              wantedBy = [ "sockets.target" ];
-            };
-            services.${unitName} =
+      config.systemd = lib.mkMerge (
+        lib.flatten (
+          lib.mapAttrsToList (
+            name: container:
+            lib.map (
+              forwardPort:
               let
-                requiredUnits = [
-                  "container@${name}.service"
-                  "${unitName}.socket"
-                ];
+                containerPort = builtins.toString forwardPort.containerPort;
+                unitName = "container@${name}-forward-port:${containerPort}";
               in
               {
-                requires = requiredUnits;
-                after = requiredUnits;
-                serviceConfig = {
-                  Type = "notify";
-                  ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd ${container.config.localAddress}:${forwardPort.containerPort}"; # not using `systemd.services.*.script` to prevent https://github.com/systemd/systemd/blob/a6146b250efcce88ed836e62ead527f699049a8e/src/socket-proxy/socket-proxyd.c#L674-L678
+                # https://www.freedesktop.org/software/systemd/man/latest/systemd-socket-proxyd.html#Simple%20Example
+                sockets.${unitName} = {
+                  listenStreams = forwardPort.hostListenStreams;
+                  wantedBy = [ "sockets.target" ];
                 };
-              };
-          }
-        ) container.forwardPorts
-      ) config.containers;
+                services.${unitName} =
+                  let
+                    requiredUnits = [
+                      "container@${name}.service"
+                      "${unitName}.socket"
+                    ];
+                  in
+                  {
+                    requires = requiredUnits;
+                    after = requiredUnits;
+                    serviceConfig = {
+                      Type = "notify";
+                      ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd ${container.localAddress}:${containerPort}"; # not using `systemd.services.*.script` to prevent https://github.com/systemd/systemd/blob/a6146b250efcce88ed836e62ead527f699049a8e/src/socket-proxy/socket-proxyd.c#L674-L678
+                    };
+                  };
+              }
+            ) container.n0099.forwardPorts
+          ) config.containers
+        )
+      );
     }
   ];
 }
