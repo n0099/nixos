@@ -11,7 +11,9 @@
       with {
         inherit (lib.types)
           str
+          port
           nullOr
+          listOf
           attrsOf
           submodule
           addCheck
@@ -68,6 +70,13 @@
                   type = nullOr str;
                   default = null;
                 };
+                forwardPorts = mkOption {
+                  type = listOf attrsOf {
+                    hostListenStreams = listOf str; # https://github.com/NixOS/nixpkgs/blob/78e34d1667d32d8a0ffc3eba4591ff256e80576e/nixos/lib/systemd-unit-options.nix#L628
+                    containerPort = port;
+                    protocol = either "tcp" "udp";
+                  };
+                };
               };
             config = {
               autoStart = true;
@@ -100,6 +109,37 @@
       );
   };
   config = {
+    systemd = lib.mkMerge lib.mapAttrsToList (
+      name: container:
+      lib.map (
+        forwardPort:
+        let
+          unitName = "container@${name}-forward-port:${forwardPort.containerPort}.socket";
+        in
+        {
+          # https://www.freedesktop.org/software/systemd/man/latest/systemd-socket-proxyd.html#Simple%20Example
+          sockets.${unitName} = {
+            listenStreams = forwardPort.hostListenStreams;
+            wantedBy = [ "sockets.target" ];
+          };
+          services.${unitName} =
+            let
+              requiredUnits = [
+                "container@${name}.service"
+                "${unitName}.socket"
+              ];
+            in
+            {
+              requires = requiredUnits;
+              after = requiredUnits;
+              serviceConfig = {
+                Type = "notify";
+                ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd ${container.config.localAddress}:${forwardPort.containerPort}"; # not using `systemd.services.*.script` to prevent https://github.com/systemd/systemd/blob/a6146b250efcce88ed836e62ead527f699049a8e/src/socket-proxy/socket-proxyd.c#L674-L678
+              };
+            };
+        }
+      ) container.forwardPorts
+    ) config.containers;
     networking.nat = lib.mkMerge (
       lib.mapAttrsToList
         (name: container: {
