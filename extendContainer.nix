@@ -90,12 +90,22 @@ with {
     }
     {
       options.containers = mkOption {
-        type = attrsOf (submodule {
-          options.n0099.outboundInterface = mkOption {
-            type = with lib.types; nullOr str;
-            default = null;
-          };
-        });
+        type = attrsOf (
+          submodule (
+            { ... }@container:
+
+            {
+              options.n0099.outboundInterface = mkOption {
+                type = with lib.types; nullOr str;
+                default = null;
+              };
+              config.config = lib.mkIf (container.config.n0099.outboundInterface != null) {
+                services.resolved.enable = true;
+                networking.useHostResolvConf = false; # https://github.com/NixOS/nixpkgs/blob/daf6dc47aa4b44791372d6139ab7b25269184d55/nixos/modules/system/boot/resolved.nix#L177-L178
+              };
+            }
+          )
+        );
       };
       config.networking.nat = lib.mkMerge (
         lib.mapAttrsToList (name: container: {
