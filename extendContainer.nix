@@ -91,22 +91,20 @@ with {
     {
       options.containers = mkOption {
         type = attrsOf (submodule {
-          options.n0099.internetAccessInterface = mkOption {
+          options.n0099.outboundInterface = mkOption {
             type = with lib.types; nullOr str;
             default = null;
           };
         });
       };
       config.networking.nat = lib.mkMerge (
-        lib.mapAttrsToList
-          (name: container: {
-            # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#give-internet-access
-            # https://wiki.archlinux.org/title/Systemd-nspawn#Use_NAT_networking
-            enable = true;
-            internalInterfaces = [ "ve-${name}" ];
-            externalInterface = container.n0099.internetAccessInterface;
-          })
-          (lib.filterAttrs (_: container: container.n0099.internetAccessInterface != null) config.containers)
+        lib.mapAttrsToList (name: container: {
+          # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#give-internet-access
+          # https://wiki.archlinux.org/title/Systemd-nspawn#Use_NAT_networking
+          enable = true;
+          internalInterfaces = [ "ve-${name}" ];
+          externalInterface = container.n0099.outboundInterface;
+        }) (lib.filterAttrs (_: container: container.n0099.outboundInterface != null) config.containers)
       );
     }
     {
