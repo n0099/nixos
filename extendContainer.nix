@@ -136,8 +136,9 @@ with {
                       };
                     };
                   });
+                default = [ ];
               };
-              config.config.networking.firewall = lib.mkIf (container.config.n0099 ? forwardPorts) (
+              config.config.networking.firewall = lib.mkIf (container.config.n0099 != [ ]) (
                 let
                   portsByProtocol =
                     protocol:
