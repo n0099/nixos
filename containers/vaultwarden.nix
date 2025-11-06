@@ -2,7 +2,16 @@
 
 {
   containers.vaultwarden = {
-    subnetPrefix = "172.16.0.";
+    n0099 = {
+      subnetPrefix = "172.16.0.";
+      forwardPorts = [
+        {
+          hostListenStreams = [ "50000" ];
+          containerPort = 443;
+          protocol = "tcp";
+        }
+      ];
+    };
     bindMounts = {
       "/var/lib/vaultwarden" = {
         hostPath = "/srv/vaultwarden";
@@ -17,12 +26,6 @@
         ${path}.hostPath = path;
       }
     );
-    forwardPorts = [
-      {
-        hostPort = 50000;
-        containerPort = 443;
-      }
-    ];
     config =
       let
         domain = (import ../base/toBeFilled/lib.nix lib).readString ../toBeFilled/vaultwarden/domain;
