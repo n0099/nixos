@@ -63,7 +63,7 @@ lib.mkMerge [
         settingsSha256 = "sha256-mjKkMEPV6W69PO8jKAKxAS861B82CtCpwVTeNr5CqUY=";
         persistencedSha256 = "sha256-BMpo2PIabhHjZQqUQi/W5DYhgAPmfCdFvXdN6ND2Bfs=";
         patchesOpen = [
-          (pkgs.writeText "nvidia-patch"
+          (pkgs.writeText "PREEMPT_RT.patch"
             # https://forums.developer.nvidia.com/t/inquiries-regarding-nvidias-support-for-preempt-rt/283007
             ''
               diff --git a/kernel-open/conftest.sh b/kernel-open/conftest.sh

@@ -1,6 +1,6 @@
 { config, lib, ... }:
 
-{
+lib.mkIf (lib.pathExists ./toBeFilled/wireguard) {
   networking.wg-quick.interfaces.wg0 = with (import ./base/toBeFilled/lib.nix lib); {
     privateKeyFile = config.age.secrets."wireguard.privateKey".path;
     address = readStrings ./toBeFilled/wireguard/address;
