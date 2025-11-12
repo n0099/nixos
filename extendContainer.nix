@@ -173,10 +173,10 @@ with {
         |> lib.mapAttrsToList (
           name: container:
           container.n0099.forwardPorts
-          |> lib.map (
+          |> map (
             forwardPort:
             let
-              containerPort = forwardPort.containerPort |> builtins.toString;
+              containerPort = forwardPort.containerPort |> toString;
               unitName = "container@${name}-forward-port:${containerPort}";
             in
             {

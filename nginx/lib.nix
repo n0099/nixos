@@ -12,7 +12,7 @@ lib:
           inherit config;
         });
     };
-  mkServiceConditionAllOfPathsExists = lib.map (path: "|!${path}"); # https://stackoverflow.com/questions/37313677/what-is-the-difference-between-conditionpathexists-and-conditionpathexists-in/37313765#37313765
+  mkServiceConditionAllOfPathsExists = map (path: "|!${path}"); # https://stackoverflow.com/questions/37313677/what-is-the-difference-between-conditionpathexists-and-conditionpathexists-in/37313765#37313765
   mkServiceRequiredByNginx =
     config:
     lib.mkMerge [

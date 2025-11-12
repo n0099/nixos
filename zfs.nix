@@ -10,7 +10,7 @@
         |> lib.filterAttrs (mountpoint: _: mountpoint != "/nix/store")
         |> lib.attrValues
         |> lib.filter (fs: fs.fsType == "zfs")
-        |> lib.map (fs: lib.nameValuePair fs.device { useTemplate = [ "default" ]; })
+        |> map (fs: lib.nameValuePair fs.device { useTemplate = [ "default" ]; })
         |> lib.listToAttrs;
       templates.default = {
         autosnap = true;

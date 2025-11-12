@@ -66,7 +66,7 @@ in
         in
         nginxLib.mkServiceRequiredByNginx {
           unitConfig.ConditionPathIsDirectory =
-            logDirs |> lib.map (path: "${logBaseDir}/${path}") |> nginxLib.mkServiceConditionAllOfPathsExists;
+            logDirs |> map (path: "${logBaseDir}/${path}") |> nginxLib.mkServiceConditionAllOfPathsExists;
           serviceConfig.WorkingDirectory = logBaseDir;
           # https://stackoverflow.com/questions/34995385/nginx-create-directory-if-it-doesnt-exist
           script = ''
