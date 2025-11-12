@@ -5,13 +5,13 @@
     zfs.autoScrub.enable = true;
     sanoid = {
       enable = true;
-      datasets = lib.listToAttrs (
-        map (fs: lib.nameValuePair fs.device { useTemplate = [ "default" ]; }) (
-          lib.filter (fs: fs.fsType == "zfs") (
-            lib.attrValues (lib.filterAttrs (mountpoint: _: mountpoint != "/nix/store") config.fileSystems)
-          )
-        )
-      );
+      datasets =
+        config.fileSystems
+        |> lib.filterAttrs (mountpoint: _: mountpoint != "/nix/store")
+        |> lib.attrValues
+        |> lib.filter (fs: fs.fsType == "zfs")
+        |> lib.map (fs: lib.nameValuePair fs.device { useTemplate = [ "default" ]; })
+        |> lib.listToAttrs;
       templates.default = {
         autosnap = true;
         autoprune = true;

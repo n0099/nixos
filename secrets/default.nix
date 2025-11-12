@@ -2,7 +2,8 @@
 
 {
   age.secrets = # https://github.com/ryantm/agenix/pull/348
-    lib.genAttrs (lib.map (lib.removeSuffix ".age") (lib.attrNames (import ./secrets.nix))) (name: {
+    (name: {
       file = ./${name}.age;
-    });
+    })
+    |> lib.genAttrs (import ./secrets.nix |> lib.attrNames |> lib.map (lib.removeSuffix ".age"));
 }

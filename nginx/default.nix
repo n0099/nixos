@@ -91,7 +91,7 @@ in
                 }
               )
               (
-                lib.mapCartesianProduct ({ listen, addr }: listen // addr) {
+                {
                   listen = [
                     { port = 80; }
                     {
@@ -105,6 +105,7 @@ in
                     { addr = "0.0.0.0"; }
                   ];
                 }
+                |> lib.mapCartesianProduct ({ listen, addr }: listen // addr)
               );
           extraConfig = ''
             ssl_reject_handshake on;
@@ -116,9 +117,8 @@ in
           sslCertificateKey = selfSignedCert.key;
         };
         systemd.services.nginx-generate-self-signed-cert = nginxLib.mkServiceRequiredByNginx {
-          unitConfig.ConditionFileNotEmpty = nginxLib.mkServiceConditionAllOfPathsExists (
-            lib.attrValues selfSignedCert
-          );
+          unitConfig.ConditionFileNotEmpty =
+            selfSignedCert |> lib.attrValues |> nginxLib.mkServiceConditionAllOfPathsExists;
           script = ''
             ${pkgs.coreutils}/bin/mkdir -p ${selfSignedCertDir}
             # https://stackoverflow.com/questions/10175812/how-can-i-generate-a-self-signed-ssl-certificate-using-openssl/41366949#41366949

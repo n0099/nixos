@@ -50,26 +50,23 @@ in
             "http"
             "https"
           ];
-          logDirs = lib.unique (
-            schemes
-            ++ (
-              # https://github.com/NixOS/nixpkgs/pull/355616
-              lib.mapCartesianProduct
-                (
-                  { scheme, baseUrl }:
-                  lib.concatStringsSep "/" ([ scheme ] ++ lib.dropEnd 1 (lib.splitString "/" baseUrl))
-                )
-                {
-                  scheme = schemes;
-                  baseUrl = baseUrls;
-                }
+          logDirs =
+            (
+              {
+                scheme = schemes;
+                baseUrl = baseUrls;
+              }
+              |> lib.mapCartesianProduct (
+                { scheme, baseUrl }:
+                (baseUrl |> lib.splitString "/" |> lib.dropEnd 1) ++ [ scheme ] |> lib.concatStringsSep "/"
+              )
             )
-          );
+            ++ schemes
+            |> lib.unique; # https://github.com/NixOS/nixpkgs/pull/355616
         in
         nginxLib.mkServiceRequiredByNginx {
-          unitConfig.ConditionPathIsDirectory = nginxLib.mkServiceConditionAllOfPathsExists (
-            lib.map (path: "${logBaseDir}/${path}") logDirs
-          );
+          unitConfig.ConditionPathIsDirectory =
+            logDirs |> lib.map (path: "${logBaseDir}/${path}") |> nginxLib.mkServiceConditionAllOfPathsExists;
           serviceConfig.WorkingDirectory = logBaseDir;
           # https://stackoverflow.com/questions/34995385/nginx-create-directory-if-it-doesnt-exist
           script = ''

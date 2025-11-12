@@ -21,7 +21,8 @@
       isNormalUser = true;
       shell = pkgs.zsh;
       hashedPasswordFile = config.age.secrets."users.n0099.hashedPassword".path;
-      openssh.authorizedKeys.keys = (import ./toBeFilled/lib.nix lib).readStrings ./toBeFilled/users/n0099/sshPublicKeys;
+      openssh.authorizedKeys.keys =
+        ./toBeFilled/users/n0099/sshPublicKeys |> (import ./toBeFilled/lib.nix lib).readStrings;
     };
   };
   services = {

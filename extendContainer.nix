@@ -54,27 +54,27 @@ with {
                   type = addCheck str (
                     value:
                     let
-                      matches = builtins.match "^([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})\\." value;
-                      octets = map toIntBase10 matches;
+                      matches = value |> builtins.match "^([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})\\.";
+                      octets = matches |> map toIntBase10;
                       isOctet = octet: octet >= 0 && octet <= 255;
                     in
                     if matches == null then
                       false
                     # https://datatracker.ietf.org/doc/rfc1918/
                     else if head octets == 10 then
-                      all isOctet (drop 1 octets)
+                      octets |> drop 1 |> all isOctet
                     else if head octets == 172 then
                       let
-                        octet = elemAt octets 1;
+                        octet = 1 |> elemAt octets;
                       in
-                      octet >= 16 && octet <= 31 && isOctet (elemAt octets 2)
+                      octet >= 16 && octet <= 31 && (2 |> elemAt octets |> isOctet)
                     else if
                       take 2 octets == [
                         192
                         168
                       ]
                     then
-                      isOctet (elemAt octets 2)
+                      2 |> elemAt octets |> isOctet
                     else
                       false
                   );
@@ -107,15 +107,19 @@ with {
           )
         );
       };
-      config.networking.nat = lib.mkMerge (
-        lib.mapAttrsToList (name: container: {
-          # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#give-internet-access
-          # https://wiki.archlinux.org/title/Systemd-nspawn#Use_NAT_networking
-          enable = true;
-          internalInterfaces = [ "ve-${name}" ];
-          externalInterface = container.n0099.outboundInterface;
-        }) (lib.filterAttrs (_: container: container.n0099.outboundInterface != null) config.containers)
-      );
+      config.networking.nat =
+        config.containers
+        |> lib.filterAttrs (_: container: container.n0099.outboundInterface != null)
+        |> lib.mapAttrsToList (
+          name: container: {
+            # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#give-internet-access
+            # https://wiki.archlinux.org/title/Systemd-nspawn#Use_NAT_networking
+            enable = true;
+            internalInterfaces = [ "ve-${name}" ];
+            externalInterface = container.n0099.outboundInterface;
+          }
+        )
+        |> lib.mkMerge;
     }
     {
       options.containers = mkOption {
@@ -150,9 +154,9 @@ with {
                 let
                   portsByProtocol =
                     protocol:
-                    lib.catAttrs "containerPort" (
-                      lib.filter (ports: ports.protocol == protocol) container.config.n0099.forwardPorts
-                    );
+                    container.config.n0099.forwardPorts
+                    |> lib.filter (ports: ports.protocol == protocol)
+                    |> lib.catAttrs "containerPort";
                 in
                 {
                   # https://blog.beardhatcode.be/2020/12/Declarative-Nixos-Containers.html#real-port-forwarding
@@ -164,42 +168,44 @@ with {
           )
         );
       };
-      config.systemd = lib.mkMerge (
-        lib.flatten (
-          lib.mapAttrsToList (
-            name: container:
-            lib.map (
-              forwardPort:
-              let
-                containerPort = builtins.toString forwardPort.containerPort;
-                unitName = "container@${name}-forward-port:${containerPort}";
-              in
-              {
-                # https://www.freedesktop.org/software/systemd/man/latest/systemd-socket-proxyd.html#Simple%20Example
-                sockets.${unitName} = {
-                  listenStreams = forwardPort.hostListenStreams;
-                  wantedBy = [ "sockets.target" ];
-                };
-                services.${unitName} =
-                  let
-                    requiredUnits = [
-                      "container@${name}.service"
-                      "${unitName}.socket"
-                    ];
-                  in
-                  {
-                    requires = requiredUnits;
-                    after = requiredUnits;
-                    serviceConfig = {
-                      Type = "notify";
-                      ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd ${container.localAddress}:${containerPort}"; # not using `systemd.services.*.script` to prevent https://github.com/systemd/systemd/blob/a6146b250efcce88ed836e62ead527f699049a8e/src/socket-proxy/socket-proxyd.c#L674-L678
-                    };
+      config.systemd =
+        config.containers
+        |> lib.mapAttrsToList (
+          name: container:
+          container.n0099.forwardPorts
+          |> lib.map (
+            forwardPort:
+            let
+              containerPort = forwardPort.containerPort |> builtins.toString;
+              unitName = "container@${name}-forward-port:${containerPort}";
+            in
+            {
+              # https://www.freedesktop.org/software/systemd/man/latest/systemd-socket-proxyd.html#Simple%20Example
+              sockets.${unitName} = {
+                listenStreams = forwardPort.hostListenStreams;
+                wantedBy = [ "sockets.target" ];
+              };
+              services.${unitName} =
+                let
+                  requiredUnits = [
+                    "container@${name}.service"
+                    "${unitName}.socket"
+                  ];
+                in
+                {
+                  requires = requiredUnits;
+                  after = requiredUnits;
+                  serviceConfig = {
+                    Type = "notify";
+                    # not using `systemd.services.*.script` to prevent https://github.com/systemd/systemd/blob/a6146b250efcce88ed836e62ead527f699049a8e/src/socket-proxy/socket-proxyd.c#L674-L678
+                    ExecStart = "${pkgs.systemd}/lib/systemd/systemd-socket-proxyd ${container.localAddress}:${containerPort}";
                   };
-              }
-            ) container.n0099.forwardPorts
-          ) config.containers
+                };
+            }
+          )
         )
-      );
+        |> lib.flatten
+        |> lib.mkMerge;
     }
   ];
 }

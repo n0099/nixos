@@ -9,10 +9,10 @@ with { inherit ((import ./toBeFilled/lib.nix) lib) readString; };
 lib.mkIf (lib.pathExists ./toBeFilled/remoteBuild) (
   let
     remote = rec {
-      host = readString ./toBeFilled/remoteBuild/host;
-      port = readString ./toBeFilled/remoteBuild/port;
-      maxJobs = lib.toIntBase10 (readString ./toBeFilled/remoteBuild/maxJobs);
-      speedFactor = lib.toIntBase10 (readString ./toBeFilled/remoteBuild/speedFactor);
+      host = ./toBeFilled/remoteBuild/host |> readString;
+      port = ./toBeFilled/remoteBuild/port |> readString;
+      maxJobs = ./toBeFilled/remoteBuild/maxJobs |> readString |> lib.toIntBase10;
+      speedFactor = ./toBeFilled/remoteBuild/speedFactor |> readString |> lib.toIntBase10;
       user = "nix-remote-build";
       privateKey = "/home/n0099/.ssh/id/${user}@${host}:${port}.pem";
     };
@@ -56,7 +56,7 @@ lib.mkIf (lib.pathExists ./toBeFilled/remoteBuild) (
           # https://serverfault.com/questions/1162826/how-to-ensure-that-ssh-drops-the-connection-after-8-hours-of-no-typing/1162840#1162840
           ChannelTimeout *=1m
       '';
-      knownHosts.${remote.host}.publicKey = readString ./toBeFilled/remoteBuild/publicKey;
+      knownHosts.${remote.host}.publicKey = ./toBeFilled/remoteBuild/publicKey |> readString;
     };
   }
 )

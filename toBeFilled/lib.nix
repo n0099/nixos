@@ -4,10 +4,10 @@ let
   readString =
     path:
     let
-      content = lib.trim (lib.readFile path);
+      content = path |> lib.readFile |> lib.trim;
     in
     lib.throwIf (content == "") "Please fill content of file `${path}`." content;
-  readStrings = path: lib.splitString "\n" (readString path);
+  readStrings = path: path |> readString |> lib.splitString "\n";
 in
 {
   inherit readString readStrings;
