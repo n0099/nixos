@@ -15,7 +15,27 @@ lib.mkMerge [
   }
   {
     boot = {
-      kernelPackages = lib.mkForce pkgs.linuxPackages_lqx;
+      kernelPackages = pkgs.linuxPackagesFor (
+        pkgs.linuxKernel.kernels.linux_lqx.override {
+          # wait for zfs 2.4 to support kernel up to 6.17
+          # https://wiki.nixos.org/wiki/Linux_kernel#Pinning_a_kernel_version
+          argsOverride =
+            let
+              version = "6.16.12";
+              versionWithSuffix = "${version}-lqx1"; # https://github.com/NixOS/nixpkgs/blob/ca534a76c4afb2bdc07b681dbc11b453bab21af8/pkgs/os-specific/linux/kernel/zen-kernels.nix#L27
+            in
+            {
+              src = pkgs.fetchFromGitHub {
+                owner = "zen-kernel";
+                repo = "zen-kernel";
+                rev = "v${versionWithSuffix}";
+                hash = "sha256-Phagc5ua8mwbvZEwEvJmUPR4g5geYqs65dYXj9PXFW8=";
+              };
+              inherit version;
+              modDirVersion = versionWithSuffix;
+            };
+        }
+      );
       kernelPatches = [
         {
           name = "PREEMPT_RT";
