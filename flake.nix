@@ -3,6 +3,7 @@
     # https://github.com/NixOS/nix/issues/5988
     "nix-command"
     "flakes"
+    "pipe-operators"
   ];
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
@@ -23,55 +24,51 @@
     };
   };
   outputs = inputs: {
-    withModules =
-      extraInputs:
-      let
-        specialArgs = {
-          # https://jade.fyi/blog/flakes-arent-real/#injecting-dependencies
-          inputs = inputs // extraInputs;
-        };
-      in
-      extraModules: {
-        nixosConfigurations.nixos = inputs.nixpkgs.lib.nixosSystem (
-          let
-            system = "x86_64-linux";
-          in
-          {
-            inherit specialArgs;
-            modules = [
-              {
-                nix.settings.experimental-features = [
-                  "nix-command"
-                  "flakes"
-                ];
-              }
-              ./system.nix
-              ./remoteBuild.nix
-              ./boot.nix
-              ./zfs.nix
-              ./zram.nix
-              ./nixvim.nix
-              ./nginx
-              inputs.home-manager.nixosModules.home-manager
-              {
-                home-manager = {
-                  extraSpecialArgs = specialArgs; # https://discourse.nixos.org/t/pass-specialargs-to-the-home-manager-module/33068
-                  useGlobalPkgs = true;
-                  useUserPackages = true;
-                  users.n0099 = import ./home/n0099.nix extraModules.home-manager or [ ];
-                };
-              }
-            ]
-            ++ (with inputs.agenix; [
-              nixosModules.default
-              ./secrets
-              {
-                environment.systemPackages = [ packages.${system}.default ];
-              }
-            ])
-            ++ extraModules.nixos or [ ];
-          }
-        );
-      };
+    withModules = extraInputs: extraModules: {
+      nixosConfigurations.nixos = inputs.nixpkgs.lib.nixosSystem (
+        let
+          specialArgs = {
+            # https://jade.fyi/blog/flakes-arent-real/#injecting-dependencies
+            inputs = inputs // extraInputs;
+          };
+        in
+        {
+          inherit specialArgs;
+          modules = [
+            {
+              nix.settings.experimental-features = [
+                "nix-command"
+                "flakes"
+                "pipe-operators"
+              ];
+            }
+            ./system.nix
+            ./remoteBuild.nix
+            ./boot.nix
+            ./zfs.nix
+            ./zram.nix
+            ./nixvim.nix
+            ./nginx
+            inputs.home-manager.nixosModules.home-manager
+            {
+              home-manager = {
+                extraSpecialArgs = specialArgs; # https://discourse.nixos.org/t/pass-specialargs-to-the-home-manager-module/33068
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.n0099 = import ./home/n0099.nix extraModules.home-manager or [ ];
+              };
+            }
+          ]
+          ++ (with inputs.agenix; [
+            nixosModules.default
+            ./secrets
+            {
+              environment.systemPackages = [ packages."x86_64-linux".default ];
+            }
+          ])
+          ++ extraModules.nixos or [ ];
+        }
+      );
+    };
   };
 }
