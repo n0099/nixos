@@ -53,6 +53,7 @@
     sudo.configFile = "Defaults timestamp_timeout=15"; # https://unix.stackexchange.com/questions/382060/change-default-sudo-password-timeout
     dhparams = {
       enable = true;
+      stateful = false;
       defaultBitSize = 4096;
     };
   };
