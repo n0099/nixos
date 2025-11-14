@@ -72,14 +72,15 @@ lib.mkMerge [
             zstyle :bracketed-paste-magic paste-init pasteinit
             zstyle :bracketed-paste-magic paste-finish pastefinish
           '')
-          (lib.mkIf (with config.programs.atuin; (enable && enableZshIntegration)) (
+          (
             lib.mkOrder 1010 ''
               # https://github.com/atuinsh/atuin/pull/2903
               # https://stackoverflow.com/questions/3435355/remove-entry-from-array/52188874#52188874
               ZSH_AUTOSUGGEST_STRATEGY_EXCLUDE=(atuin)
               ZSH_AUTOSUGGEST_STRATEGY=''${ZSH_AUTOSUGGEST_STRATEGY:|ZSH_AUTOSUGGEST_STRATEGY_EXCLUDE}
             ''
-          ))
+            |> lib.mkIf (with config.programs.atuin; (enable && enableZshIntegration))
+          )
         ];
       }
       {

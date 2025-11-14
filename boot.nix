@@ -2,7 +2,7 @@
 
 {
   boot.loader = {
-    systemd-boot.enable = lib.mkForce false;
+    systemd-boot.enable = false |> lib.mkForce;
     efi.efiSysMountPoint = "/efi";
     grub = {
       enable = true;

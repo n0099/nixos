@@ -21,7 +21,7 @@ with {
             privateNetwork = true;
             config = {
               system = { inherit (config.system) stateVersion; };
-              nixpkgs = lib.mkForce { inherit pkgs; }; # https://github.com/NixOS/nixpkgs/issues/65690
+              nixpkgs = { inherit pkgs; } |> lib.mkForce; # https://github.com/NixOS/nixpkgs/issues/65690
             };
           };
         });

@@ -111,7 +111,7 @@ in
             ssl_reject_handshake on;
             return 444;
           '';
-          locations = lib.mkForce { };
+          locations = { } |> lib.mkForce;
           addSSL = true;
           sslCertificate = selfSignedCert.cert;
           sslCertificateKey = selfSignedCert.key;
