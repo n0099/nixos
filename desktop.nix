@@ -15,8 +15,8 @@ lib.mkMerge [
   }
   {
     boot = {
-      kernelPackages = pkgs.linuxPackagesFor (
-        pkgs.linuxKernel.kernels.linux_lqx.override {
+      kernelPackages =
+        {
           # wait for zfs 2.4 to support kernel up to 6.17
           # https://wiki.nixos.org/wiki/Linux_kernel#Pinning_a_kernel_version
           argsOverride =
@@ -35,14 +35,15 @@ lib.mkMerge [
               modDirVersion = versionWithSuffix;
             };
         }
-      );
+        |> pkgs.linuxKernel.kernels.linux_lqx.override
+        |> pkgs.linuxPackagesFor;
       kernelPatches = [
         {
           name = "PREEMPT_RT";
           patch = null;
           structuredExtraConfig = {
             PREEMPT_RT = lib.kernel.yes;
-            PREEMPT_VOLUNTARY = lib.mkForce lib.kernel.unset; # https://github.com/NixOS/nixpkgs/blob/d2ed99647a4b195f0bcc440f76edfa10aeb3b743/pkgs/os-specific/linux/kernel/common-config.nix#L1304
+            PREEMPT_VOLUNTARY = lib.kernel.unset |> lib.mkForce; # https://github.com/NixOS/nixpkgs/blob/d2ed99647a4b195f0bcc440f76edfa10aeb3b743/pkgs/os-specific/linux/kernel/common-config.nix#L1304
           }
           // lib.genAttrs [
             # https://realtime-linux.org/getting-started-with-preempt_rt-guide/
@@ -58,7 +59,7 @@ lib.mkMerge [
           patch = null;
           structuredExtraConfig = lib.genAttrs [ "DRM_I915_GVT" "DRM_I915_GVT_KVMGT" ] (
             # https://wiki.nixos.org/wiki/Linux_kernel#Custom_configuration
-            _: lib.mkForce lib.kernel.unset
+            _: lib.kernel.unset |> lib.mkForce
           );
         }
       ];
