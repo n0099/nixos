@@ -25,16 +25,14 @@
         # https://github.com/jimsalterjrs/sanoid/issues/720
         # https://github.com/jimsalterjrs/sanoid/issues/617
         # https://github.com/jimsalterjrs/sanoid/issues/560
-        # T04:00+08:00
-        daily_hour = 20;
+        daily_hour = 4;
         daily_min = 0;
         daily_warn = "25h";
         daily_crit = "36h";
 
         monthly = 1;
-        # ---02T03:00+08:00 https://stackoverflow.com/questions/25161485/is-the-mm-dd-format-for-month-day-part-of-iso-8601
         monthly_mday = 1;
-        monthly_hour = 19;
+        monthly_hour = 3;
         monthly_min = 0;
         monthly_warn = "31d";
         monthly_crit = "32d";
