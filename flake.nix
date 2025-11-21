@@ -29,6 +29,7 @@
         ./boot.nix
         ./zfs.nix
         ./march.nix
+        ./stdenv.nix
         ./desktop.nix
         ./substituters.nix
         ./containers
