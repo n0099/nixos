@@ -44,6 +44,7 @@
             }
             ./system.nix
             ./remoteBuild.nix
+            ./unfree.nix
             ./boot.nix
             ./zfs.nix
             ./zram.nix
