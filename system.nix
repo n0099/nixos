@@ -45,8 +45,12 @@
     git.enable = true;
     atop = {
       enable = true;
-      atopService.enable = false;
+      # netatop.enable = true; # https://github.com/Atoptool/atop/issues/351
       settings.interval = 1;
+    }
+    // {
+      atopService.enable = false;
+      atopRotateTimer.enable = false;
     };
   };
   security = {
