@@ -66,12 +66,10 @@ lib.mkMerge [
     };
   }
   {
-    nixpkgs.config.allowUnfreePredicate =
-      pkg:
-      lib.elem (lib.getName pkg) [
-        "nvidia-x11"
-        "nvidia-settings"
-      ];
+    n0099.permittedUnfreePackages = [
+      "nvidia-x11"
+      "nvidia-settings"
+    ];
     services.xserver.videoDrivers = [ "nvidia" ];
     hardware.nvidia = {
       open = true;
