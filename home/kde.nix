@@ -124,4 +124,10 @@ lib.mkMerge [
       nativeMessagingHosts = [ pkgs.kdePackages.plasma-browser-integration ];
     };
   }
+  {
+    programs.plasma.powerdevil.AC = {
+      autoSuspend.action = "nothing";
+      powerProfile = "performance";
+    };
+  }
 ]

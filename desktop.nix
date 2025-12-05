@@ -126,4 +126,10 @@ lib.mkMerge [
     networking.networkmanager.enable = true;
     environment.systemPackages = [ pkgs.wl-clipboard-rs ];
   }
+  {
+    powerManagement = {
+      cpufreq.min = 5000000; # 5GHz
+      resumeCommands = config.systemd.services.cpufreq.serviceConfig.ExecStart;
+    };
+  }
 ]
