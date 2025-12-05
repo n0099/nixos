@@ -32,6 +32,7 @@
         ./stdenv.nix
         ./desktop.nix
         ./font.nix
+        ./game.nix
         ./substituters.nix
         ./containers
         ./secrets
