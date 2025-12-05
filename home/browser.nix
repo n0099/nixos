@@ -41,13 +41,15 @@ in
           "general.autoScroll" = true;
         };
       policies = {
-        ExtensionUpdate = false;
         DisplayBookmarksToolbar = "never";
         Homepage.StartPage = "previous-session";
         SanitizeOnShutdown = {
           Locked = true;
           Cache = false;
           Cookies = false;
+          # https://old.reddit.com/r/firefox/comments/7s111d/how_do_i_clear_downloads_automatically_when/
+          # https://bugzilla.mozilla.org/show_bug.cgi?id=857402
+          # Downloads = true;
         };
         Preferences = mkPreferences (
           # about:policies
@@ -109,6 +111,27 @@ in
             };
           }
         );
+      };
+    }
+    {
+      policies = {
+        ExtensionUpdate = false; # disable auto update https://support.mozilla.org/en-US/questions/952162
+        ExtensionSettings =
+          (lib.genAttrs
+            (config.programs.librewolf.profiles.default.extensions.packages |> map (pkg: pkg.addonId))
+            (addonId: {
+              installation_mode = "force_installed";
+              install_url = "~/.librewolf/default/extensions/${addonId}.xpi";
+            })
+          )
+          // {
+            "*" = {
+              updates_disabled = true; # disable manually update
+              allowed_types = "extension";
+              installation_mode = "blocked";
+              blocked_install_message = "Please use home-manager to manage extensions.";
+            };
+          };
       };
     }
     {
@@ -206,6 +229,14 @@ in
           addonId = "{7c53a467-2542-497a-86fb-59c2904a56d1}";
           url = "https://addons.mozilla.org/firefox/downloads/file/4494744";
           sha256 = "sha256-G8W+ZB5iJsBYXhcn9AZFWwiYwLWjwPuSfK+5I4vEZNw=";
+          meta = { };
+        })
+        (addons.buildFirefoxXpiAddon {
+          pname = "youtube-tweak";
+          version = "1.1.4";
+          addonId = "youtubetweak@dark495.me";
+          url = "https://addons.mozilla.org/firefox/downloads/file/4634049";
+          sha256 = "sha256-f1RyLq8yMwckNEVgHRBqqxEdOnUUW6AiT0AtlG9ARZc=";
           meta = { };
         })
         /*
@@ -331,18 +362,7 @@ in
       };
     }
     {
-      profiles.default.extensions.packages = [
-        (addons.buildFirefoxXpiAddon {
-          pname = "sidebery";
-          # https://github.com/mbnuqw/sidebery/pull/2016
-          # https://github.com/mbnuqw/sidebery/commit/86eb0ae2019ebb8b5557fd535e689624503bc1d6
-          version = "5.3.3.32";
-          addonId = "{3c078156-979c-498b-8990-85f7987dd929}";
-          url = "https://github.com/mbnuqw/sidebery/releases/download/v5.3.3/sidebery-5.3.3.32.xpi";
-          sha256 = "sha256-iRb0N5f6ZZz8+v9HSuCM/6/LYbv1mfYCRS8yCHqt8KA=";
-          inherit (addons.sidebery) meta;
-        })
-      ];
+      profiles.default.extensions.packages = [ addons.sidebery ];
       policies."3rdparty".Extensions."{3c078156-979c-498b-8990-85f7987dd929}".settings = {
         # https://github.com/mbnuqw/sidebery/blob/b6fbb138614267a5cb9bf0757e8cd2e99a63f8b4/src/services/settings.actions.ts#L26-L29
         # delete item `settings` in moz-extension://d244b345-7b9d-4203-aaaa-564dd6bb0339/page.setup/setup.html#storage is required after managed storage changed
