@@ -31,6 +31,7 @@
         ./march.nix
         ./stdenv.nix
         ./desktop.nix
+        ./kde.nix
         ./font.nix
         ./game.nix
         ./substituters.nix
@@ -40,6 +41,7 @@
         ./wireguard.nix
       ];
       home-manager = [
+        # nur.modules.homeManager.default # https://haseebmajid.dev/posts/2023-06-22-til-use-nur-with-home-manager-flake/
         plasma-manager.homeModules.plasma-manager
         ./home/n0099.nix
       ];
