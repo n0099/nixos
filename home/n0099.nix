@@ -3,6 +3,7 @@ extraModules:
   lib,
   pkgs,
   config,
+  osConfig,
   ...
 }:
 
@@ -11,7 +12,7 @@ extraModules:
   config = lib.mkMerge [
     {
       home = {
-        stateVersion = "25.05";
+        stateVersion = osConfig.system.nixos.release;
         shellAliases = {
           sudo = "sudo "; # https://askubuntu.com/questions/22037/aliases-not-available-when-using-sudo/22043#22043
         };
@@ -32,9 +33,12 @@ extraModules:
       services.ssh-agent.enable = true;
       programs.ssh = {
         enable = true;
-        addKeysToAgent = "1h"; # https://man.archlinux.org/man/sshd_config.5#TIME_FORMATS
-        serverAliveInterval = 15;
-        matchBlocks."*".identityFile = "~/.ssh/id/%r@%h:%p.pem"; # https://askubuntu.com/questions/30788/does-ssh-key-need-to-be-named-id-rsa/423297#423297
+        enableDefaultConfig = false;
+        matchBlocks."*" = {
+          addKeysToAgent = "1h"; # https://man.archlinux.org/man/sshd_config.5#TIME_FORMATS
+          serverAliveInterval = 15;
+          identityFile = "~/.ssh/id/%r@%h:%p.pem"; # https://askubuntu.com/questions/30788/does-ssh-key-need-to-be-named-id-rsa/423297#423297
+        };
       };
     }
     {
@@ -50,11 +54,15 @@ extraModules:
         };
         git = {
           enable = true;
-          userName = "n0099";
-          userEmail = "n@n0099.net";
-          extraConfig.push.autoSetupRemote = true;
-          difftastic.enable = true;
+          settings = {
+            user = {
+              name = "n0099";
+              email = "n@n0099.net";
+            };
+            push.autoSetupRemote = true;
+          };
         };
+        difftastic.enable = true;
         tmux = {
           enable = true;
           mouse = true;

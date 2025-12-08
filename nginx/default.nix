@@ -20,7 +20,6 @@ in
           recommendedOptimisation = true;
           recommendedGzipSettings = true;
           recommendedBrotliSettings = true;
-          recommendedZstdSettings = true;
           recommendedProxySettings = true;
           appendConfig = ''
             worker_processes auto;
