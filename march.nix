@@ -27,6 +27,7 @@ lib.mkMerge [
     nix.settings.keep-outputs = true; # https://discourse.nixos.org/t/rebuild-nixos-offline/3679/16
   }
   {
+    # https://stackoverflow.com/questions/69971612/how-does-march-native-affect-floating-point-accuracy
     nixpkgs.overlays = lib.mkIf enable [
       (
         self: super:
@@ -60,6 +61,31 @@ lib.mkMerge [
           libreoffice-fresh = override super.libreoffice-still;
           libreoffice-qt-fresh = override super.libreoffice-qt-still;
           libreoffice-collabora = override super.libreoffice-collabora;
+        }
+      )
+      (self: super: {
+        assimp = super.assimp.overrideAttrs { doCheck = false; }; # https://github.com/assimp/assimp/issues/6342
+      })
+      (
+        self: super:
+        let
+          overrideAttrs =
+            ffmpeg:
+            ffmpeg.overrideAttrs (prev: {
+              postPatch = (prev.postPatch or "") + ''
+                # https://github.com/NixOS/nixpkgs/issues/398625
+                sed -i '/fate-vsynth%-huffyuvbgra/d' tests/fate/vcodec.mak
+                sed -i 's/huffyuvbgra//' tests/fate/vcodec.mak
+              '';
+            });
+        in
+        {
+          ffmpeg = overrideAttrs super.ffmpeg;
+          ffmpeg-full = overrideAttrs super.ffmpeg;
+          ffmpeg-headless = overrideAttrs super.ffmpeg-headless;
+          ffmpeg_8 = overrideAttrs super.ffmpeg;
+          ffmpeg_8-full = overrideAttrs super.ffmpeg;
+          ffmpeg_8-headless = overrideAttrs super.ffmpeg-headless;
         }
       )
     ];
