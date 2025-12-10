@@ -12,7 +12,7 @@
       clash-verge-rev
       kdePackages.krdc
       kdePackages.krfb
-      libreoffice-qt6-fresh
+      libreoffice-qt-fresh
     ]
     ++ (
       let
