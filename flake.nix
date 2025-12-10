@@ -31,6 +31,7 @@
         ./march.nix
         ./stdenv.nix
         ./desktop.nix
+        ./malloc.nix
         ./kde.nix
         ./font.nix
         ./game.nix
