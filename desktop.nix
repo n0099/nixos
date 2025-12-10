@@ -17,11 +17,10 @@ lib.mkMerge [
     boot = {
       kernelPackages =
         {
-          # wait for zfs 2.4 to support kernel up to 6.17
           # https://wiki.nixos.org/wiki/Linux_kernel#Pinning_a_kernel_version
           argsOverride =
             let
-              version = "6.16.12";
+              version = "6.17.11";
               versionWithSuffix = "${version}-lqx1"; # https://github.com/NixOS/nixpkgs/blob/ca534a76c4afb2bdc07b681dbc11b453bab21af8/pkgs/os-specific/linux/kernel/zen-kernels.nix#L27
             in
             {
@@ -29,7 +28,7 @@ lib.mkMerge [
                 owner = "zen-kernel";
                 repo = "zen-kernel";
                 rev = "v${versionWithSuffix}";
-                hash = "sha256-Phagc5ua8mwbvZEwEvJmUPR4g5geYqs65dYXj9PXFW8=";
+                hash = "sha256-Qulw4uBfHE9qOMiXdEsna+ko9QG7aZSM2mc6FXJ8lLY=";
               };
               inherit version;
               modDirVersion = versionWithSuffix;
@@ -76,11 +75,11 @@ lib.mkMerge [
       package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
         # https://github.com/NixOS/nixpkgs/issues/416023#issuecomment-3109657947
         # $ version=xxx.xx.xx sh -xc 'nix store prefetch-file https://download.nvidia.com/XFree86/Linux-x86_64/${version}/NVIDIA-Linux-x86_64-${version}.run && echo open-gpu-kernel-modules nvidia-{settings,persistenced} | tr " " "\n" | xargs -I{} , nix-prefetch-github NVIDIA {} --rev $version'
-        version = "580.105.08";
-        sha256_64bit = "sha256-2cboGIZy8+t03QTPpp3VhHn6HQFiyMKMjRdiV2MpNHU=";
-        openSha256 = "sha256-FGmMt3ShQrw4q6wsk8DSvm96ie5yELoDFYinSlGZcwQ=";
-        settingsSha256 = "sha256-YvzWO1U3am4Nt5cQ+b5IJ23yeWx5ud1HCu1U0KoojLY=";
-        persistencedSha256 = "sha256-qh8pKGxUjEimCgwH7q91IV7wdPyV5v5dc5/K/IcbruI=";
+        version = "590.44.01";
+        sha256_64bit = "sha256-VbkVaKwElaazojfxkHnz/nN/5olk13ezkw/EQjhKPms=";
+        openSha256 = "sha256-ft8FEnBotC9Bl+o4vQA1rWFuRe7gviD/j1B8t0MRL/o=";
+        settingsSha256 = "sha256-wVf1hku1l5OACiBeIePUMeZTWDQ4ueNvIk6BsW/RmF4=";
+        persistencedSha256 = "sha256-nHzD32EN77PG75hH9W8ArjKNY/7KY6kPKSAhxAWcuS4=";
         patchesOpen = [
           (pkgs.writeText "PREEMPT_RT.patch"
             # https://forums.developer.nvidia.com/t/inquiries-regarding-nvidias-support-for-preempt-rt/283007
