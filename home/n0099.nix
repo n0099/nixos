@@ -62,7 +62,13 @@ extraModules:
             push.autoSetupRemote = true;
           };
         };
-        difftastic.enable = true;
+        difftastic = {
+          enable = true;
+          git = {
+            enable = true;
+            diffToolMode = true;
+          };
+        };
         tmux = {
           enable = true;
           mouse = true;
