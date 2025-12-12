@@ -1,4 +1,3 @@
-extraModules:
 {
   lib,
   pkgs,
@@ -8,7 +7,7 @@ extraModules:
 }:
 
 {
-  imports = [ ./zsh.nix ] ++ extraModules;
+  imports = [ ./zsh.nix ];
   config = lib.mkMerge [
     {
       home = {

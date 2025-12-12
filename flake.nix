@@ -22,54 +22,52 @@
         home-manager.follows = "home-manager";
       };
     };
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
-  outputs = inputs: {
-    withModules = extraInputs: extraModules: {
-      nixosConfigurations.nixos = inputs.nixpkgs.lib.nixosSystem (
-        let
-          specialArgs = {
-            # https://jade.fyi/blog/flakes-arent-real/#injecting-dependencies
-            inputs = inputs // extraInputs;
-          };
-        in
-        {
-          inherit specialArgs;
-          modules = [
-            {
-              nix.settings.experimental-features = [
+  outputs =
+    { flake-parts, ... }@inputs:
+
+    flake-parts.lib.mkFlake { inherit inputs; } (
+      { lib, ... }:
+
+      {
+        imports = [
+          flake-parts.flakeModules.modules
+          inputs.home-manager.flakeModules.home-manager
+        ];
+        flake = {
+          nixosModules =
+            lib.genAttrs' [
+              ./system.nix
+              ./remoteBuild.nix
+              ./unfree.nix
+              ./boot.nix
+              ./zfs.nix
+              ./zram.nix
+              ./nixvim.nix
+              ./nginx
+            ] (path: lib.nameValuePair (builtins.baseNameOf path) path)
+            // {
+              nix.nix.settings.experimental-features = [
                 "nix-command"
                 "flakes"
                 "pipe-operators"
               ];
             }
-            ./system.nix
-            ./remoteBuild.nix
-            ./unfree.nix
-            ./boot.nix
-            ./zfs.nix
-            ./zram.nix
-            ./nixvim.nix
-            ./nginx
-            inputs.home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                extraSpecialArgs = specialArgs; # https://discourse.nixos.org/t/pass-specialargs-to-the-home-manager-module/33068
+            // {
+              secrets = ./secrets;
+              agenix = inputs.agenix.nixosModules.default;
+              agenix-cli.environment.systemPackages = [ inputs.agenix.packages.x86_64-linux.default ];
+            }
+            // {
+              home-manager = inputs.home-manager.nixosModules.home-manager;
+              home-manager-nixos-module.home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                users.n0099 = import ./home/n0099.nix extraModules.home-manager or [ ];
               };
-            }
-          ]
-          ++ (with inputs.agenix; [
-            nixosModules.default
-            ./secrets
-            {
-              environment.systemPackages = [ packages."x86_64-linux".default ];
-            }
-          ])
-          ++ extraModules.nixos or [ ];
-        }
-      );
-    };
-  };
+            };
+          homeModules.n0099 = ./home/n0099.nix;
+        };
+      }
+    );
 }
