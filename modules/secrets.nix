@@ -5,5 +5,5 @@
     (name: {
       file = ./${name}.age;
     })
-    |> lib.genAttrs (import ./secrets.nix |> lib.attrNames |> map (lib.removeSuffix ".age"));
+    |> lib.genAttrs (import ../secrets/secrets.nix |> lib.attrNames |> map (lib.removeSuffix ".age"));
 }
