@@ -1,93 +1,96 @@
-{ pkgs, lib, ... }:
+{
+  flake.modules.nixos.march =
+    { pkgs, lib, ... }:
 
-let
-  enable = true;
-in
-lib.mkMerge [
-  (
     let
-      arch = "skylake";
+      enable = true;
     in
-    {
-      # https://wiki.nixos.org/wiki/Build_flags#Building_the_whole_system_on_NixOS
-      # https://wiki.gentoo.org/wiki/GCC_optimization#-march
-      # https://news.ycombinator.com/item?id=45758392
-      # https://wiki.debian.org/ArchitectureVariants
-      nixpkgs.hostPlatform = lib.mkIf enable {
-        gcc = {
-          inherit arch;
-          tune = arch;
-        };
-        system = "x86_64-linux";
-      };
-      nix.settings.system-features = [ "gccarch-${arch}" ];
-    }
-  )
-  {
-    nix.settings.keep-outputs = true; # https://discourse.nixos.org/t/rebuild-nixos-offline/3679/16
-  }
-  {
-    # https://stackoverflow.com/questions/69971612/how-does-march-native-affect-floating-point-accuracy
-    nixpkgs.overlays = lib.mkIf enable [
+    lib.mkMerge [
       (
-        self: super:
         let
-          override =
-            libreoffice:
-            libreoffice.override (prev: {
-              unwrapped = prev.unwrapped.overrideAttrs (prev: {
-                patches = prev.patches ++ [
-                  (pkgs.writeText "skip-testArrayFormulasFODS.patch" ''
-                    diff --git a/sc/qa/unit/functions_array.cxx b/sc/qa/unit/functions_array.cxx
-                    index ef0da39f5..43caa9002 100644
-                    --- a/sc/qa/unit/functions_array.cxx
-                    +++ b/sc/qa/unit/functions_array.cxx
-                    @@ -25,6 +25,7 @@ void ArrayFunctionsTest::testArrayFormulasFODS()
+          arch = "skylake";
+        in
+        {
+          # https://wiki.nixos.org/wiki/Build_flags#Building_the_whole_system_on_NixOS
+          # https://wiki.gentoo.org/wiki/GCC_optimization#-march
+          # https://news.ycombinator.com/item?id=45758392
+          # https://wiki.debian.org/ArchitectureVariants
+          nixpkgs.hostPlatform = lib.mkIf enable {
+            gcc = {
+              inherit arch;
+              tune = arch;
+            };
+            system = "x86_64-linux";
+          };
+          nix.settings.system-features = [ "gccarch-${arch}" ];
+        }
+      )
+      {
+        nix.settings.keep-outputs = true; # https://discourse.nixos.org/t/rebuild-nixos-offline/3679/16
+      }
+      {
+        # https://stackoverflow.com/questions/69971612/how-does-march-native-affect-floating-point-accuracy
+        nixpkgs.overlays = lib.mkIf enable [
+          (
+            self: super:
+            let
+              override =
+                libreoffice:
+                libreoffice.override (prev: {
+                  unwrapped = prev.unwrapped.overrideAttrs (prev: {
+                    patches = prev.patches ++ [
+                      (pkgs.writeText "skip-testArrayFormulasFODS.patch" ''
+                        diff --git a/sc/qa/unit/functions_array.cxx b/sc/qa/unit/functions_array.cxx
+                        index ef0da39f5..43caa9002 100644
+                        --- a/sc/qa/unit/functions_array.cxx
+                        +++ b/sc/qa/unit/functions_array.cxx
+                        @@ -25,6 +25,7 @@ void ArrayFunctionsTest::testArrayFormulasFODS()
 
-                     void ArrayFunctionsTest::testDubiousArrayFormulasFODS()
-                     {
-                    +    return; // flaky https://github.com/NixOS/nixpkgs/issues/398633
-                         //TODO: sc/qa/unit/data/functions/array/dubious/fods/linest.fods produces widely different
-                         // values when built with -ffp-contract enabled (-ffp-contract=on default on Clang 14,
-                         // -ffp-contract=fast default when building with optimizations on GCC) on at least aarch64
-                  '')
-                ];
-              });
-            });
-        in
-        {
-          libreoffice-still = override super.libreoffice-still;
-          libreoffice-qt-still = override super.libreoffice-qt-still;
-          libreoffice-fresh = override super.libreoffice-still;
-          libreoffice-qt-fresh = override super.libreoffice-qt-still;
-          libreoffice-collabora = override super.libreoffice-collabora;
-        }
-      )
-      (self: super: {
-        assimp = super.assimp.overrideAttrs { doCheck = false; }; # https://github.com/assimp/assimp/issues/6342
-      })
-      (
-        self: super:
-        let
-          overrideAttrs =
-            ffmpeg:
-            ffmpeg.overrideAttrs (prev: {
-              postPatch = (prev.postPatch or "") + ''
-                # https://github.com/NixOS/nixpkgs/issues/398625
-                sed -i '/fate-vsynth%-huffyuvbgra/d' tests/fate/vcodec.mak
-                sed -i 's/huffyuvbgra//' tests/fate/vcodec.mak
-              '';
-            });
-        in
-        {
-          ffmpeg = overrideAttrs super.ffmpeg;
-          ffmpeg-full = overrideAttrs super.ffmpeg;
-          ffmpeg-headless = overrideAttrs super.ffmpeg-headless;
-          ffmpeg_8 = overrideAttrs super.ffmpeg;
-          ffmpeg_8-full = overrideAttrs super.ffmpeg;
-          ffmpeg_8-headless = overrideAttrs super.ffmpeg-headless;
-        }
-      )
+                         void ArrayFunctionsTest::testDubiousArrayFormulasFODS()
+                         {
+                        +    return; // flaky https://github.com/NixOS/nixpkgs/issues/398633
+                             //TODO: sc/qa/unit/data/functions/array/dubious/fods/linest.fods produces widely different
+                             // values when built with -ffp-contract enabled (-ffp-contract=on default on Clang 14,
+                             // -ffp-contract=fast default when building with optimizations on GCC) on at least aarch64
+                      '')
+                    ];
+                  });
+                });
+            in
+            {
+              libreoffice-still = override super.libreoffice-still;
+              libreoffice-qt-still = override super.libreoffice-qt-still;
+              libreoffice-fresh = override super.libreoffice-still;
+              libreoffice-qt-fresh = override super.libreoffice-qt-still;
+              libreoffice-collabora = override super.libreoffice-collabora;
+            }
+          )
+          (self: super: {
+            assimp = super.assimp.overrideAttrs { doCheck = false; }; # https://github.com/assimp/assimp/issues/6342
+          })
+          (
+            self: super:
+            let
+              overrideAttrs =
+                ffmpeg:
+                ffmpeg.overrideAttrs (prev: {
+                  postPatch = (prev.postPatch or "") + ''
+                    # https://github.com/NixOS/nixpkgs/issues/398625
+                    sed -i '/fate-vsynth%-huffyuvbgra/d' tests/fate/vcodec.mak
+                    sed -i 's/huffyuvbgra//' tests/fate/vcodec.mak
+                  '';
+                });
+            in
+            {
+              ffmpeg = overrideAttrs super.ffmpeg;
+              ffmpeg-full = overrideAttrs super.ffmpeg;
+              ffmpeg-headless = overrideAttrs super.ffmpeg-headless;
+              ffmpeg_8 = overrideAttrs super.ffmpeg;
+              ffmpeg_8-full = overrideAttrs super.ffmpeg;
+              ffmpeg_8-headless = overrideAttrs super.ffmpeg-headless;
+            }
+          )
+        ];
+      }
     ];
-  }
-]
+}

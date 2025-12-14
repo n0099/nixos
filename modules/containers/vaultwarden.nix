@@ -1,57 +1,60 @@
-{ config, lib, ... }:
-
 {
-  containers.vaultwarden = {
-    n0099 = {
-      subnetPrefix = "172.16.0.";
-      forwardPorts = [
-        {
-          hostListenStreams = [ "50000" ];
-          containerPort = 443;
-          protocol = "tcp";
+  flake.modules.nixos.vaultwarden =
+    { config, lib, ... }:
+
+    {
+      containers.vaultwarden = {
+        n0099 = {
+          subnetPrefix = "172.16.0.";
+          forwardPorts = [
+            {
+              hostListenStreams = [ "50000" ];
+              containerPort = 443;
+              protocol = "tcp";
+            }
+          ];
+        };
+        bindMounts = {
+          "/var/lib/vaultwarden" = {
+            hostPath = "/srv/vaultwarden";
+            isReadOnly = false;
+          };
         }
-      ];
-    };
-    bindMounts = {
-      "/var/lib/vaultwarden" = {
-        hostPath = "/srv/vaultwarden";
-        isReadOnly = false;
-      };
-    }
-    // (
-      let
-        path = "/etc/ssl/self-signed";
-      in
-      {
-        ${path}.hostPath = path;
-      }
-    );
-    config =
-      let
-        domain = ../toBeFilled/vaultwarden/domain |> (import ../base/toBeFilled/lib.nix lib).readString;
-      in
-      {
-        services.vaultwarden = {
-          enable = true;
-          config = {
-            ROCKET_ADDRESS = "::1";
-            DOMAIN = "https://${domain}";
-            SIGNUPS_ALLOWED = false;
-            INVITATIONS_ALLOWED = false;
-          };
-        };
-        services.nginx = {
-          enable = true;
-          virtualHosts.${domain} = {
-            locations."/" = {
-              proxyPass = "http://localhost:8000";
-              proxyWebsockets = true; # https://github.com/dani-garcia/vaultwarden/wiki/Enabling-WebSocket-notifications
-              recommendedProxySettings = true;
+        // (
+          let
+            path = "/etc/ssl/self-signed";
+          in
+          {
+            ${path}.hostPath = path;
+          }
+        );
+        config =
+          let
+            domain = ../toBeFilled/vaultwarden/domain |> (import ../base/toBeFilled/lib.nix lib).readString;
+          in
+          {
+            services.vaultwarden = {
+              enable = true;
+              config = {
+                ROCKET_ADDRESS = "::1";
+                DOMAIN = "https://${domain}";
+                SIGNUPS_ALLOWED = false;
+                INVITATIONS_ALLOWED = false;
+              };
             };
-            forceSSL = true;
-            inherit (config.services.nginx.virtualHosts.default) sslCertificate sslCertificateKey;
+            services.nginx = {
+              enable = true;
+              virtualHosts.${domain} = {
+                locations."/" = {
+                  proxyPass = "http://localhost:8000";
+                  proxyWebsockets = true; # https://github.com/dani-garcia/vaultwarden/wiki/Enabling-WebSocket-notifications
+                  recommendedProxySettings = true;
+                };
+                forceSSL = true;
+                inherit (config.services.nginx.virtualHosts.default) sslCertificate sslCertificateKey;
+              };
+            };
           };
-        };
       };
-  };
+    };
 }
