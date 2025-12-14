@@ -21,6 +21,9 @@
     with { inherit (base.inputs) flake-parts import-tree; };
     flake-parts.lib.mkFlake { inputs = base.inputs // inputs; } {
       imports = [
+        { flake.modules.nixos.configuration.imports = [ ./configuration.nix ]; }
+      ]
+      ++ [
         flake-parts.flakeModules.modules
         (import-tree [
           ./base/modules
