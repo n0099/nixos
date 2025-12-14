@@ -61,6 +61,13 @@ lib.mkMerge [
             _: lib.kernel.unset |> lib.mkForce
           );
         }
+        {
+          name = "SCHED_MUQSS";
+          patch = null;
+          # https://github.com/zen-kernel/zen-kernel/wiki/Detailed-Feature-List#muqss
+          # https://lwn.net/Articles/720227/
+          structuredExtraConfig.SCHED_MUQSS = lib.kernel.yes;
+        }
       ];
     };
   }
@@ -108,6 +115,34 @@ lib.mkMerge [
     };
   }
   {
+    n0099.permittedUnfreePackages = [
+      # https://discourse.nixosstag.fcio.net/t/how-to-show-all-the-required-allowunfreepredicate-at-once/65816
+      "cuda-merged"
+      "cuda_cuobjdump"
+      "cuda_gdb"
+      "cuda_nvcc"
+      "cuda_nvdisasm"
+      "cuda_nvprune"
+      "cuda_cccl"
+      "cuda_cudart"
+      "cuda_cupti"
+      "cuda_cuxxfilt"
+      "cuda_nvml_dev"
+      "cuda_nvrtc"
+      "cuda_nvtx"
+      "cuda_profiler_api"
+      "cuda_sanitizer_api"
+      "libcublas"
+      "libcufft"
+      "libcurand"
+      "libcusolver"
+      "libnvjitlink"
+      "libcusparse"
+      "libnpp"
+    ];
+    environment.systemPackages = [ pkgs.nvtopPackages.nvidia ];
+  }
+  {
     security.rtkit.enable = true;
     services = {
       pulseaudio.enable = false;
@@ -122,6 +157,10 @@ lib.mkMerge [
     };
   }
   {
+    hardware.bluetooth.enable = true;
+    programs.kdeconnect.enable = true;
+  }
+  {
     networking.networkmanager.enable = true;
     environment.systemPackages = [ pkgs.wl-clipboard-rs ];
   }
@@ -130,5 +169,12 @@ lib.mkMerge [
       cpufreq.min = 5000000; # 5GHz
       resumeCommands = config.systemd.services.cpufreq.serviceConfig.ExecStart;
     };
+  }
+  {
+    hardware.rasdaemon.enable = true;
+  }
+  {
+    environment.systemPackages = [ pkgs.pcm ];
+    boot.kernelModules = [ "msr" ];
   }
 ]

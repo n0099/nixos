@@ -115,6 +115,9 @@ lib.mkMerge [
         SplitView.SplitViewVisibility = "AlwaysHideSplitHeader";
       };
     };
+    # https://github.com/nix-community/plasma-manager/issues/327
+    # https://forum.manjaro.org/t/after-last-update-konsole-keyboard-shortcut-issue-with-alt-f/161923
+    # https://bugs.kde.org/show_bug.cgi?id=482628
   }
   {
     programs.librewolf = {
@@ -129,5 +132,8 @@ lib.mkMerge [
       autoSuspend.action = "nothing";
       powerProfile = "performance";
     };
+  }
+  {
+    programs.plasma.configFile.baloofilerc."Basic Settings"."Indexing-Enabled" = false;
   }
 ]

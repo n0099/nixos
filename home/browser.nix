@@ -2,6 +2,7 @@
   lib,
   pkgs,
   config,
+  osConfig,
   ...
 }:
 
@@ -41,6 +42,10 @@ in
           "general.autoScroll" = true;
         };
       policies = {
+        Proxy = {
+          Mode = "manual";
+          SOCKSProxy = 1 |> lib.elemAt (lib.splitString "://" osConfig.networking.proxy.default);
+        };
         DisplayBookmarksToolbar = "never";
         Homepage.StartPage = "previous-session";
         SanitizeOnShutdown = {
