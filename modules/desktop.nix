@@ -63,13 +63,6 @@
                 _: lib.kernel.unset |> lib.mkForce
               );
             }
-            {
-              name = "SCHED_MUQSS";
-              patch = null;
-              # https://github.com/zen-kernel/zen-kernel/wiki/Detailed-Feature-List#muqss
-              # https://lwn.net/Articles/720227/
-              structuredExtraConfig.SCHED_MUQSS = lib.kernel.yes;
-            }
           ];
         };
       }
