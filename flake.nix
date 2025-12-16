@@ -7,11 +7,17 @@
     };
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "base/nixpkgs";
-      inputs.home-manager.follows = "base/home-manager";
+      inputs = {
+        nixpkgs.follows = "base/nixpkgs";
+        home-manager.follows = "base/home-manager";
+      };
     };
     minegrub-world-sel-theme = {
       url = "github:Lxtharia/minegrub-world-sel-theme";
+      inputs.nixpkgs.follows = "base/nixpkgs";
+    };
+    nix-cachyos-kernel = {
+      url = "github:xddxdd/nix-cachyos-kernel";
       inputs.nixpkgs.follows = "base/nixpkgs";
     };
   };

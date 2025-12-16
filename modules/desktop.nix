@@ -4,6 +4,7 @@
       config,
       lib,
       pkgs,
+      inputs,
       ...
     }:
 
@@ -16,55 +17,15 @@
         };
       }
       {
-        boot = {
-          kernelPackages =
-            {
-              # https://wiki.nixos.org/wiki/Linux_kernel#Pinning_a_kernel_version
-              argsOverride =
-                let
-                  version = "6.17.11";
-                  versionWithSuffix = "${version}-lqx1"; # https://github.com/NixOS/nixpkgs/blob/ca534a76c4afb2bdc07b681dbc11b453bab21af8/pkgs/os-specific/linux/kernel/zen-kernels.nix#L27
-                in
-                {
-                  src = pkgs.fetchFromGitHub {
-                    owner = "zen-kernel";
-                    repo = "zen-kernel";
-                    rev = "v${versionWithSuffix}";
-                    hash = "sha256-Qulw4uBfHE9qOMiXdEsna+ko9QG7aZSM2mc6FXJ8lLY=";
-                  };
-                  inherit version;
-                  modDirVersion = versionWithSuffix;
-                };
-            }
-            |> pkgs.linuxKernel.kernels.linux_lqx.override
-            |> pkgs.linuxPackagesFor;
-          kernelPatches = [
-            {
-              name = "PREEMPT_RT";
-              patch = null;
-              structuredExtraConfig = {
-                PREEMPT_RT = lib.kernel.yes;
-                PREEMPT_VOLUNTARY = lib.kernel.unset |> lib.mkForce; # https://github.com/NixOS/nixpkgs/blob/d2ed99647a4b195f0bcc440f76edfa10aeb3b743/pkgs/os-specific/linux/kernel/common-config.nix#L1304
-              }
-              // lib.genAttrs [
-                # https://realtime-linux.org/getting-started-with-preempt_rt-guide/
-                # https://www.osadl.org/fileadmin/dam/presentations/COOL-03-2023/COOL-2023-03_Configuration-of-the-Linux-PREEMPT_RT-Kernel_Alexander-Baehr.pdf
-                # "DEBUG_LOCKDEP"
-                "DEBUG_PREEMPT"
-                "DEBUG_OBJECTS"
-                "SLUB_DEBUG"
-              ] (_: lib.kernel.no);
-            }
-            {
-              name = "DRM_I915_GVT";
-              patch = null;
-              structuredExtraConfig = lib.genAttrs [ "DRM_I915_GVT" "DRM_I915_GVT_KVMGT" ] (
-                # https://wiki.nixos.org/wiki/Linux_kernel#Custom_configuration
-                _: lib.kernel.unset |> lib.mkForce
-              );
-            }
-          ];
-        };
+        # https://discourse.nixos.org/t/chaotic-nyx-is-archved-what-are-some-alternatives/73073
+        nixpkgs.overlays = [ inputs.nix-cachyos-kernel.outputs.overlay ]; # https://github.com/xddxdd/nix-cachyos-kernel/blob/dc3941ceb1cc0b303ddefc5e5fa1577a2d7856d7/flake.nix#L95
+        boot.kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-bore-lto.extend (
+          final: prev: {
+            kernel = prev.kernel.override {
+              inherit (pkgs.linuxPackages_6_17.kernel) version src; # https://github.com/xddxdd/nix-cachyos-kernel/blob/dc3941ceb1cc0b303ddefc5e5fa1577a2d7856d7/kernel-cachyos/default.nix#L16
+            };
+          }
+        ); # https://wiki.cachyos.org/features/kernel/#variants
       }
       {
         n0099.permittedUnfreePackages = [
