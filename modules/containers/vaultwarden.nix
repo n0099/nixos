@@ -30,7 +30,8 @@
         );
         config =
           let
-            domain = ../toBeFilled/vaultwarden/domain |> (import ../base/toBeFilled/lib.nix lib).readString;
+            domain =
+              ../../toBeFilled/vaultwarden/domain |> (import ../../base/toBeFilled/lib.nix lib).readString;
           in
           {
             services.vaultwarden = {
