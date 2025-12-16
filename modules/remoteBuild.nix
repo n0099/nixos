@@ -7,13 +7,13 @@
       ...
     }:
 
-    with { inherit ((import ./toBeFilled/lib.nix) lib) readString; };
+    with { inherit ((import ../toBeFilled/lib.nix) lib) readString; };
     let
       remote = rec {
-        host = ./toBeFilled/remoteBuild/host |> readString;
-        port = ./toBeFilled/remoteBuild/port |> readString;
-        maxJobs = ./toBeFilled/remoteBuild/maxJobs |> readString |> lib.toIntBase10;
-        speedFactor = ./toBeFilled/remoteBuild/speedFactor |> readString |> lib.toIntBase10;
+        host = ../toBeFilled/remoteBuild/host |> readString;
+        port = ../toBeFilled/remoteBuild/port |> readString;
+        maxJobs = ../toBeFilled/remoteBuild/maxJobs |> readString |> lib.toIntBase10;
+        speedFactor = ../toBeFilled/remoteBuild/speedFactor |> readString |> lib.toIntBase10;
         user = "nix-remote-build";
         privateKey = "/home/n0099/.ssh/id/${user}@${host}:${port}.pem";
       };
@@ -36,7 +36,7 @@
         }
         // (
           let
-            path = ./toBeFilled/remoteBuild/substituterPublicKey;
+            path = ../toBeFilled/remoteBuild/substituterPublicKey;
           in
           lib.mkIf (lib.pathExists path) {
             # https://wiki.nixos.org/wiki/Distributed_build#Using_remote_builders_as_substituters
@@ -57,8 +57,8 @@
             # https://serverfault.com/questions/1162826/how-to-ensure-that-ssh-drops-the-connection-after-8-hours-of-no-typing/1162840#1162840
             ChannelTimeout *=1m
         '';
-        knownHosts.${remote.host}.publicKey = ./toBeFilled/remoteBuild/publicKey |> readString;
+        knownHosts.${remote.host}.publicKey = ../toBeFilled/remoteBuild/publicKey |> readString;
       };
     }
-    |> lib.mkIf (lib.pathExists ./toBeFilled/remoteBuild);
+    |> lib.mkIf (lib.pathExists ../toBeFilled/remoteBuild);
 }
