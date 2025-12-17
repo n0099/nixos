@@ -48,29 +48,6 @@
             openSha256 = "sha256-ft8FEnBotC9Bl+o4vQA1rWFuRe7gviD/j1B8t0MRL/o=";
             settingsSha256 = "sha256-wVf1hku1l5OACiBeIePUMeZTWDQ4ueNvIk6BsW/RmF4=";
             persistencedSha256 = "sha256-nHzD32EN77PG75hH9W8ArjKNY/7KY6kPKSAhxAWcuS4=";
-            patchesOpen = [
-              (pkgs.writeText "PREEMPT_RT.patch"
-                # https://forums.developer.nvidia.com/t/inquiries-regarding-nvidias-support-for-preempt-rt/283007
-                ''
-                  diff --git a/kernel-open/conftest.sh b/kernel-open/conftest.sh
-                  index 7de4f4af..e3d65c9a 100755
-                  --- a/kernel-open/conftest.sh
-                  +++ b/kernel-open/conftest.sh
-                  @@ -5057,10 +5057,7 @@ case "$5" in
-                           #
-                           VERBOSE=$6
-                  -
-                  -        if [ -n "$IGNORE_PREEMPT_RT_PRESENCE" ]; then
-                  -            exit 0
-                  -        fi
-                  +        exit 0
-
-                           if test_configuration_option CONFIG_PREEMPT_RT; then
-                               PREEMPT_RT_PRESENT=1
-                           elif test_configuration_option CONFIG_PREEMPT_RT_FULL; then
-                ''
-              )
-            ];
           };
           powerManagement.enable = true; # https://wiki.nixos.org/wiki/NVIDIA#Graphical_corruption_and_system_crashes_on_suspend/resume
         };
