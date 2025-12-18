@@ -28,6 +28,10 @@
                 url = "mirror://kernel/linux/kernel/v${lib.versions.major version}.x/linux-${version}.tar.xz";
                 hash = "sha256-bQiAO5U8UJ30jUTTKB7TklJDIdi7NT6yHAVVeQyPjgY=";
               };
+              structuredExtraConfig = with lib.kernel; {
+                LTO_CLANG_FULL = yes;
+                LTO_CLANG_THIN = no; # https://github.com/xddxdd/nix-cachyos-kernel/blob/52d03c7f4e6f78cbf9e1ec1d78101b2369ff8f7c/kernel-cachyos/mkCachyKernel.nix#L108-L111
+              };
             };
           }
         ); # https://wiki.cachyos.org/features/kernel/#variants
@@ -114,6 +118,13 @@
       {
         environment.systemPackages = [ pkgs.pcm ];
         boot.kernelModules = [ "msr" ];
+      }
+      {
+        systemd.coredump.extraConfig = ''
+          # https://www.freedesktop.org/software/systemd/man/247/systemd-coredump.html#Disabling%20coredump%20processing
+          Storage=none
+          ProcessSizeMax=0
+        '';
       }
     ];
 }
