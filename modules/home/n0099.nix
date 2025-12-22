@@ -49,8 +49,7 @@
       {
         programs.nh.enable = true;
         home.packages = with pkgs; [
-          nvd
-          # dix # https://github.com/NixOS/nixpkgs/pull/409440
+          dix
           nix-output-monitor
         ];
       }
