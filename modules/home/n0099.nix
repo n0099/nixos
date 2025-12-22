@@ -18,6 +18,14 @@
         programs = {
           atuin = {
             enable = true;
+            package = pkgs.atuin.overrideAttrs (prev: {
+              patches = prev.patches ++ [
+                (pkgs.fetchpatch2 {
+                  url = "https://github.com/atuinsh/atuin/pull/2903.patch";
+                  hash = "sha256-mBS7XzUSDK/Rxm1AeAYXnP2AflG8Ldp4+yaG6riWJ28=";
+                })
+              ];
+            });
             flags = [ "--disable-up-arrow" ];
             settings = {
               search_mode = "fulltext";
