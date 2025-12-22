@@ -28,35 +28,19 @@
         };
       };
       services = {
-        openssh = {
-          enable = true;
-          settings = {
-            PasswordAuthentication = false;
-            KbdInteractiveAuthentication = false;
-            PermitRootLogin = "no";
-          }
-          // {
-            ClientAliveInterval = 15;
-          };
-        };
         vnstat.enable = true;
         netdata.enable = true;
       };
-      programs = {
-        zsh.enable = true;
-        git.enable = true;
-        atop = {
-          enable = true;
-          # netatop.enable = true; # https://github.com/Atoptool/atop/issues/351
-          settings.interval = 1;
-        }
-        // {
-          atopService.enable = false;
-          atopRotateTimer.enable = false;
-        };
+      programs.atop = {
+        enable = true;
+        # netatop.enable = true; # https://github.com/Atoptool/atop/issues/351
+        settings.interval = 1;
+      }
+      // {
+        atopService.enable = false;
+        atopRotateTimer.enable = false;
       };
       security = {
-        sudo.configFile = "Defaults timestamp_timeout=15"; # https://unix.stackexchange.com/questions/382060/change-default-sudo-password-timeout
         dhparams = {
           enable = true;
           stateful = false;
