@@ -3,7 +3,7 @@
 {
   flake.modules.homeManager = {
     nur = inputs.nur.modules.homeManager.default;
-    browser =
+    librewolf =
       {
         lib,
         pkgs,

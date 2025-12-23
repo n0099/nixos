@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.kde =
+  flake.modules.nixos.kde-optimize-XDG_DATA_DIRS =
     { pkgs, ... }:
 
     {
