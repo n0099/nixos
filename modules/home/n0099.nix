@@ -15,6 +15,13 @@
         ];
       }
       {
+        programs.nh.enable = true;
+        home.packages = with pkgs; [
+          dix
+          nix-output-monitor
+        ];
+      }
+      {
         programs = {
           atuin = {
             enable = true;
@@ -22,7 +29,7 @@
               patches = prev.patches ++ [
                 (pkgs.fetchpatch2 {
                   url = "https://github.com/atuinsh/atuin/pull/2903.patch";
-                  hash = "sha256-mBS7XzUSDK/Rxm1AeAYXnP2AflG8Ldp4+yaG6riWJ28=";
+                  hash = "sha256-mh+qSMTk6AUXw2ruwBo0tkVMD8nu8b7YAJV/LCy48fY=";
                 })
               ];
             });
@@ -45,13 +52,6 @@
             '';
           };
         };
-      }
-      {
-        programs.nh.enable = true;
-        home.packages = with pkgs; [
-          dix
-          nix-output-monitor
-        ];
       }
     ];
 }

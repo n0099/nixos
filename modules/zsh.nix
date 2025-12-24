@@ -2,12 +2,7 @@
   flake.modules = {
     nixos.zsh.programs.zsh.enable = true;
     homeManager.zsh =
-      {
-        config,
-        lib,
-        pkgs,
-        ...
-      }:
+      { lib, pkgs, ... }:
 
       let
         omzPrefix = suffixs: map (i: "ohmyzsh/ohmyzsh ${i}") suffixs;
