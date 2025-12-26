@@ -1,7 +1,7 @@
 {
   flake.modules = {
     nixos.jetbrains.n0099.permittedUnfreePackages = [
-      "idea-ultimate"
+      "idea"
       "datagrip"
       "phpstorm"
       "rider"
@@ -11,7 +11,7 @@
 
       {
         home.packages = with pkgs.jetbrains; [
-          idea-ultimate
+          idea
           datagrip
           phpstorm
           rider
