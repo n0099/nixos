@@ -26,7 +26,7 @@
           {
             protocol = "ssh-ng";
             hostName = remote.host;
-            inherit (pkgs) system;
+            inherit (pkgs.stdenv.hostPlatform) system;
             inherit (remote) maxJobs speedFactor;
             supportedFeatures = config.nix.settings.system-features;
           }
