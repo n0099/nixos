@@ -15,7 +15,7 @@
           # https://wiki.gentoo.org/wiki/GCC_optimization#-march
           # https://news.ycombinator.com/item?id=45758392
           # https://wiki.debian.org/ArchitectureVariants
-          nixpkgs.hostPlatform = lib.mkIf enable {
+          nixpkgs.hostPlatform = {
             gcc = {
               inherit arch;
               tune = arch;
@@ -30,9 +30,9 @@
       }
       {
         # https://stackoverflow.com/questions/69971612/how-does-march-native-affect-floating-point-accuracy
-        nixpkgs.overlays = lib.mkIf enable [
+        nixpkgs.overlays = [
           (
-            self: super:
+            final: prev:
             let
               override =
                 libreoffice:
@@ -58,18 +58,18 @@
                 });
             in
             {
-              libreoffice-still = override super.libreoffice-still;
-              libreoffice-qt-still = override super.libreoffice-qt-still;
-              libreoffice-fresh = override super.libreoffice-still;
-              libreoffice-qt-fresh = override super.libreoffice-qt-still;
-              libreoffice-collabora = override super.libreoffice-collabora;
+              libreoffice-still = override prev.libreoffice-still;
+              libreoffice-qt-still = override prev.libreoffice-qt-still;
+              libreoffice-fresh = override prev.libreoffice-still;
+              libreoffice-qt-fresh = override prev.libreoffice-qt-still;
+              libreoffice-collabora = override prev.libreoffice-collabora;
             }
           )
-          (self: super: {
-            assimp = super.assimp.overrideAttrs { doCheck = false; }; # https://github.com/assimp/assimp/issues/6342
+          (final: prev: {
+            assimp = prev.assimp.overrideAttrs { doCheck = false; }; # https://github.com/assimp/assimp/issues/6342
           })
           (
-            self: super:
+            final: prev:
             let
               overrideAttrs =
                 ffmpeg:
@@ -82,15 +82,16 @@
                 });
             in
             {
-              ffmpeg = overrideAttrs super.ffmpeg;
-              ffmpeg-full = overrideAttrs super.ffmpeg;
-              ffmpeg-headless = overrideAttrs super.ffmpeg-headless;
-              ffmpeg_8 = overrideAttrs super.ffmpeg;
-              ffmpeg_8-full = overrideAttrs super.ffmpeg;
-              ffmpeg_8-headless = overrideAttrs super.ffmpeg-headless;
+              ffmpeg = overrideAttrs prev.ffmpeg;
+              ffmpeg-full = overrideAttrs prev.ffmpeg;
+              ffmpeg-headless = overrideAttrs prev.ffmpeg-headless;
+              ffmpeg_8 = overrideAttrs prev.ffmpeg;
+              ffmpeg_8-full = overrideAttrs prev.ffmpeg;
+              ffmpeg_8-headless = overrideAttrs prev.ffmpeg-headless;
             }
           )
         ];
       }
-    ];
+    ]
+    |> lib.mkIf enable;
 }
