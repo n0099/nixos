@@ -8,7 +8,7 @@
     }:
 
     let
-      baseUrls = config.n0099.nginx.baseUrls;
+      baseUrls = config.services.nginx.n0099.baseUrls;
       logBaseDir = "/var/log/nginx";
     in
     lib.mkMerge [

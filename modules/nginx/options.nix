@@ -6,7 +6,7 @@
 
     {
       options = {
-        n0099.nginx = {
+        services.nginx.n0099 = {
           baseUrls = lib.mkOption {
             type = with lib.types; listOf str;
             default = [ ];
@@ -18,7 +18,7 @@
         };
       };
       config.services.nginx.enable =
-        with config.n0099.nginx;
+        with config.services.nginx.n0099;
         !(baseUrls == [ ] || proxyPassByUrl == { }) |> lib.mkDefault;
     };
 }

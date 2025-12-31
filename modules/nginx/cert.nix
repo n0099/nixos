@@ -16,7 +16,7 @@
           sslCertificateKey = "${certBasePath}/privkey.pem";
         };
       baseDomains =
-        config.n0099.nginx.baseUrls |> map (lib.splitString "/") |> map lib.head |> lib.unique;
+        config.services.nginx.n0099.baseUrls |> map (lib.splitString "/") |> map lib.head |> lib.unique;
       withWWWSubDomain = map (domain: "www.${domain}");
     in
     {

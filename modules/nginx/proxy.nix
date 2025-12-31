@@ -3,11 +3,11 @@
     { config, lib, ... }:
 
     let
-      proxyPassByUrl = config.n0099.nginx.proxyPassByUrl;
+      proxyPassByUrl = config.services.nginx.n0099.proxyPassByUrl;
     in
     {
-      config = {
-        n0099.nginx.baseUrls =
+      config.services.nginx = {
+        n0099.baseUrls =
           proxyPassByUrl
           |> lib.mapAttrsToList (
             domain: urlPathsKeyByProxyPass:
@@ -21,7 +21,7 @@
             )
           )
           |> lib.flatten;
-        services.nginx.virtualHosts = (
+        virtualHosts = (
           lib.mapAttrs (_: baseUrlsKeyByProxyPass: {
             locations =
               baseUrlsKeyByProxyPass
