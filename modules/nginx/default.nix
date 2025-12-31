@@ -1,6 +1,11 @@
 {
   flake.modules.nixos.nginx =
-    { lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
 
     let
       nginxLib = import ./_lib.nix lib;
@@ -13,7 +18,6 @@
         {
           services.nginx = lib.mkMerge [
             {
-              enable = true;
               recommendedOptimisation = true;
               recommendedGzipSettings = true;
               recommendedBrotliSettings = true;
@@ -58,7 +62,7 @@
           ];
         }
         {
-          services.resolved.enable = true;
+          services.resolved.enable = config.services.nginx.enable;
           services.nginx.resolver.addresses = [ "127.0.0.53" ];
         }
         (

@@ -2,14 +2,13 @@
   flake.modules.nixos.nginx-proxy =
     { config, lib, ... }:
 
+    let
+      proxyPassByUrl = config.n0099.nginx.proxyPassByUrl;
+    in
     {
-      options.n0099.nginx.proxyPassByUrl = lib.mkOption {
-        type = with lib.types; str |> attrsOf |> listOf |> attrsOf;
-        default = { };
-      };
       config = {
         n0099.nginx.baseUrls =
-          config.n0099.nginx.proxyPassByUrl
+          proxyPassByUrl
           |> lib.mapAttrsToList (
             domain: urlPathsKeyByProxyPass:
             urlPathsKeyByProxyPass
@@ -28,7 +27,7 @@
               baseUrlsKeyByProxyPass
               |> map (lib.mapAttrs (_: proxyPass: { proxyPass = "http://${proxyPass}"; }))
               |> lib.mkMerge;
-          }) config.n0099.nginx.proxyPassByUrl
+          }) proxyPassByUrl
         );
       };
     };
