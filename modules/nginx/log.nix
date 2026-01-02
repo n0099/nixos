@@ -55,11 +55,11 @@
                 }
                 |> lib.mapCartesianProduct (
                   { scheme, baseUrl }:
-                  (baseUrl |> lib.splitString "/" |> lib.dropEnd 1) ++ [ scheme ] |> lib.concatStringsSep "/"
+                  [ scheme ] ++ (baseUrl |> lib.splitString "/" |> lib.dropEnd 1) |> lib.concatStringsSep "/"
                 )
               )
               ++ schemes
-              |> lib.unique; # https://github.com/NixOS/nixpkgs/pull/355616
+              |> lib.uniqueStrings;
           in
           nginxLib.mkServiceRequiredByNginx {
             unitConfig.ConditionPathIsDirectory =

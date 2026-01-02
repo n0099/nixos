@@ -16,7 +16,10 @@
           sslCertificateKey = "${certBasePath}/privkey.pem";
         };
       baseDomains =
-        config.services.nginx.n0099.baseUrls |> map (lib.splitString "/") |> map lib.head |> lib.unique;
+        config.services.nginx.n0099.baseUrls
+        |> map (lib.splitString "/")
+        |> map lib.head
+        |> lib.uniqueStrings;
       withWWWSubDomain = map (domain: "www.${domain}");
     in
     {
@@ -24,7 +27,7 @@
         (lib.genAttrs baseDomains certByDomain)
         (lib.genAttrs
           # https://news.ycombinator.com/item?id=2455864
-          (baseDomains |> map secondLevelDomain |> lib.unique |> withWWWSubDomain)
+          (baseDomains |> map secondLevelDomain |> lib.uniqueStrings |> withWWWSubDomain)
           (
             domain:
             certByDomain domain
