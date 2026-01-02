@@ -5,7 +5,7 @@
     let
       readToBeFilled =
         filename:
-        ../../toBeFilled/vaultwarden/${filename} |> (import ../../base/toBeFilled/lib.nix lib).readString;
+        ../toBeFilled/vaultwarden/${filename} |> (import ../base/toBeFilled/lib.nix lib).readString;
       domain = readToBeFilled "domain";
       listen = {
         address = config.containers.vaultwarden.localAddress;
@@ -31,19 +31,21 @@
           networking.firewall.allowedTCPPorts = [ listen.port ];
           services.vaultwarden = {
             enable = true;
-            config = {
-              ROCKET_ADDRESS = listen.address;
-              DOMAIN = "https://${domain}";
-              SIGNUPS_ALLOWED = false;
-              INVITATIONS_ALLOWED = false;
-            }
-            // (lib.mkIf (lib.pathExists ../toBeFilled/vaultwarden/pushInstallation/id) {
-              PUSH_ENABLED = true;
-              PUSH_INSTALLATION_ID = readToBeFilled "pushInstallation/id";
-              PUSH_INSTALLATION_KEY = readToBeFilled "pushInstallation/key";
-              PUSH_RELAY_URI = readToBeFilled "pushRelayUri";
-              PUSH_IDENTITY_URI = readToBeFilled "pushIdentityUri";
-            });
+            config = lib.mkMerge [
+              {
+                ROCKET_ADDRESS = listen.address;
+                DOMAIN = "https://${domain}";
+                SIGNUPS_ALLOWED = false;
+                INVITATIONS_ALLOWED = false;
+              }
+              (lib.mkIf (lib.pathExists ../toBeFilled/vaultwarden/pushInstallation/id) {
+                PUSH_ENABLED = true;
+                PUSH_INSTALLATION_ID = readToBeFilled "pushInstallation/id";
+                PUSH_INSTALLATION_KEY = readToBeFilled "pushInstallation/key";
+                PUSH_RELAY_URI = readToBeFilled "pushRelayUri";
+                PUSH_IDENTITY_URI = readToBeFilled "pushIdentityUri";
+              })
+            ];
           };
         };
       };
