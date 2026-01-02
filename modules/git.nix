@@ -7,7 +7,7 @@
         settings = {
           user = {
             name = "n0099";
-            email = "n@n0099.net";
+            email = "git@n0099.com";
           };
           push.autoSetupRemote = true;
         };
