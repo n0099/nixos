@@ -2,31 +2,12 @@
   flake.modules.nixos.march =
     { pkgs, lib, ... }:
 
-    let
-      enable = true;
-    in
     lib.mkMerge [
-      (
-        let
-          arch = "skylake";
-        in
-        {
-          # https://wiki.nixos.org/wiki/Build_flags#Building_the_whole_system_on_NixOS
-          # https://wiki.gentoo.org/wiki/GCC_optimization#-march
-          # https://news.ycombinator.com/item?id=45758392
-          # https://wiki.debian.org/ArchitectureVariants
-          nixpkgs.hostPlatform = {
-            gcc = {
-              inherit arch;
-              tune = arch;
-            };
-            system = "x86_64-linux";
-          };
-          nix.settings.system-features = [ "gccarch-${arch}" ];
-        }
-      )
       {
-        nix.settings.keep-outputs = true; # https://discourse.nixos.org/t/rebuild-nixos-offline/3679/16
+        n0099.march = {
+          enable = true;
+          arch = "skylake";
+        };
       }
       {
         # https://stackoverflow.com/questions/69971612/how-does-march-native-affect-floating-point-accuracy
@@ -92,6 +73,5 @@
           )
         ];
       }
-    ]
-    |> lib.mkIf enable;
+    ];
 }
