@@ -65,6 +65,44 @@
           services.resolved.enable = config.services.nginx.enable;
           services.nginx.resolver.addresses = [ "127.0.0.53" ];
         }
+        {
+          services.nginx.virtualHosts.default = {
+            # https://serverfault.com/questions/914906/what-is-the-difference-between-server-name-and-server-name-in-nginx
+            serverName = "_";
+            serverAliases = [ "\"\"" ];
+            listen =
+              {
+                listen = [
+                  { port = 80; }
+                  {
+                    port = 443;
+                    ssl = true;
+                  }
+                ];
+                addr = [
+                  # https://serverfault.com/questions/638367/do-you-need-separate-ipv4-and-ipv6-listen-directives-in-nginx
+                  { addr = "[::]"; }
+                  { addr = "0.0.0.0"; }
+                ];
+              }
+              |> lib.mapCartesianProduct ({ listen, addr }: listen // addr)
+              |> lib.map (
+                listen:
+                listen
+                // {
+                  extraParameters = [
+                    "default_server"
+                    "reuseport" # https://stackoverflow.com/questions/30559164/nginxs-reuseport-for-same-ipport-pair-on-different-virtual-hosts
+                  ];
+                }
+              );
+            extraConfig = ''
+              ssl_reject_handshake on;
+              return 444;
+            '';
+            locations = { } |> lib.mkForce;
+          };
+        }
         (
           let
             selfSignedCertDir = "/etc/ssl/self-signed";
@@ -75,43 +113,6 @@
           in
           {
             services.nginx.virtualHosts.default = {
-              # https://serverfault.com/questions/914906/what-is-the-difference-between-server-name-and-server-name-in-nginx
-              serverName = "_";
-              serverAliases = [ "\"\"" ];
-              listen =
-                lib.map
-                  (
-                    listen:
-                    listen
-                    // {
-                      extraParameters = [
-                        "default_server"
-                        "reuseport" # https://stackoverflow.com/questions/30559164/nginxs-reuseport-for-same-ipport-pair-on-different-virtual-hosts
-                      ];
-                    }
-                  )
-                  (
-                    {
-                      listen = [
-                        { port = 80; }
-                        {
-                          port = 443;
-                          ssl = true;
-                        }
-                      ];
-                      addr = [
-                        # https://serverfault.com/questions/638367/do-you-need-separate-ipv4-and-ipv6-listen-directives-in-nginx
-                        { addr = "[::]"; }
-                        { addr = "0.0.0.0"; }
-                      ];
-                    }
-                    |> lib.mapCartesianProduct ({ listen, addr }: listen // addr)
-                  );
-              extraConfig = ''
-                ssl_reject_handshake on;
-                return 444;
-              '';
-              locations = { } |> lib.mkForce;
               addSSL = true;
               sslCertificate = selfSignedCert.cert;
               sslCertificateKey = selfSignedCert.key;

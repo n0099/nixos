@@ -22,9 +22,9 @@
           )
           |> lib.flatten;
         virtualHosts = (
-          lib.mapAttrs (_: baseUrlsKeyByProxyPass: {
+          lib.mapAttrs (_: proxyPassKeyByBaseUrl: {
             locations =
-              baseUrlsKeyByProxyPass
+              proxyPassKeyByBaseUrl
               |> map (lib.mapAttrs (_: proxyPass: { proxyPass = "http://${proxyPass}"; }))
               |> lib.mkMerge;
           }) proxyPassByUrl
