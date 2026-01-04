@@ -29,7 +29,7 @@
       }
       {
         services.nginx.appendHttpConfig = ''
-          map $host$uri $baseUrlLogPath {
+          map $host$request_uri $baseUrlLogPath {
             ${lib.concatMapStringsSep "\n" (
               baseUrl: "~^${lib.escapeRegex baseUrl} $scheme/${baseUrl};"
             ) baseUrls}

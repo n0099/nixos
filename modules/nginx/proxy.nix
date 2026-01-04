@@ -25,7 +25,24 @@
           lib.mapAttrs (_: proxyPassKeyByBaseUrl: {
             locations =
               proxyPassKeyByBaseUrl
-              |> map (lib.mapAttrs (_: proxyPass: { proxyPass = "http://${proxyPass}"; }))
+              |> map (
+                lib.concatMapAttrs (
+                  location: proxyPass:
+                  let
+                    locationBlock = {
+                      proxyPass = "http://${proxyPass}";
+                    };
+                  in
+                  if location == "/" then
+                    { ${location} = locationBlock; }
+                  else
+                    {
+                      # https://stackoverflow.com/questions/5948659/when-should-i-use-a-trailing-slash-in-my-url
+                      "= ${location}".return = "302 ${location}/";
+                      "${location}/" = locationBlock;
+                    }
+                )
+              )
               |> lib.mkMerge;
           }) proxyPassByUrl
         );
