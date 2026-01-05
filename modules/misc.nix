@@ -37,5 +37,8 @@
           ProcessSizeMax=0
         '';
       }
+      {
+        n0099.stdenv.enable = true;
+      }
     ];
 }
