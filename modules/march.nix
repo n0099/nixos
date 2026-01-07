@@ -49,28 +49,6 @@
           (final: prev: {
             assimp = prev.assimp.overrideAttrs { doCheck = false; }; # https://github.com/assimp/assimp/issues/6342
           })
-          (
-            final: prev:
-            let
-              overrideAttrs =
-                ffmpeg:
-                ffmpeg.overrideAttrs (prev: {
-                  postPatch = (prev.postPatch or "") + ''
-                    # https://github.com/NixOS/nixpkgs/issues/398625
-                    sed -i '/fate-vsynth%-huffyuvbgra/d' tests/fate/vcodec.mak
-                    sed -i 's/huffyuvbgra//' tests/fate/vcodec.mak
-                  '';
-                });
-            in
-            {
-              ffmpeg = overrideAttrs prev.ffmpeg;
-              ffmpeg-full = overrideAttrs prev.ffmpeg;
-              ffmpeg-headless = overrideAttrs prev.ffmpeg-headless;
-              ffmpeg_8 = overrideAttrs prev.ffmpeg;
-              ffmpeg_8-full = overrideAttrs prev.ffmpeg;
-              ffmpeg_8-headless = overrideAttrs prev.ffmpeg-headless;
-            }
-          )
         ];
       }
     ];
