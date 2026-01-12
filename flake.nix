@@ -28,6 +28,10 @@
       url = "github:nix-community/home-manager/release-25.11";
     };
     import-tree.url = "github:vic/import-tree";
+    nix-cachyos-kernel = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:xddxdd/nix-cachyos-kernel";
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixvim = {
       inputs.nixpkgs.follows = "nixpkgs";
