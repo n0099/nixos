@@ -31,10 +31,9 @@
           final: prev: {
             kernel = prev.kernel.override {
               inherit (cfg.baseKernel) version src;
-              modDirVersion = final.kernel.version; # https://github.com/NixOS/nixpkgs/blob/d03088749a110d52a4739348f39a63f84bb0be14/pkgs/os-specific/linux/kernel/manual-config.nix#L326
               structuredExtraConfig =
                 with lib.kernel;
-                lib.mkIf (lib.hasSuffix "-lto" cfg.variant) {
+                lib.optionalAttrs (lib.hasSuffix "-lto" cfg.variant) {
                   LTO_CLANG_FULL = yes; # https://www.kernelconfig.io/config_lto_clang_full
                   LTO_CLANG_THIN = no; # https://github.com/xddxdd/nix-cachyos-kernel/blob/52d03c7f4e6f78cbf9e1ec1d78101b2369ff8f7c/kernel-cachyos/mkCachyKernel.nix#L108-L111
                 };
