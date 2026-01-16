@@ -123,10 +123,10 @@
               script = ''
                 ${pkgs.coreutils}/bin/mkdir -p ${selfSignedCertDir}
                 # https://stackoverflow.com/questions/10175812/how-can-i-generate-a-self-signed-ssl-certificate-using-openssl/41366949#41366949
-                ${pkgs.openssl.bin}/bin/openssl req \
-                  -batch -x509 -newkey rsa:4096 -sha256 -days 365 \
-                  -keyout ${selfSignedCert.key} \
-                  -noenc -out ${selfSignedCert.cert}
+                ${lib.getExe pkgs.openssl} req \
+                  -batch -x509 -newkey ed448 -days 365 \
+                  -noenc -keyout ${selfSignedCert.key} \
+                  -out ${selfSignedCert.cert}
                 ${pkgs.coreutils}/bin/chown -R nginx: ${selfSignedCertDir}
               '';
             };
