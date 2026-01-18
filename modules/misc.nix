@@ -27,5 +27,18 @@
       {
         n0099.stdenv.enable = true;
       }
+      {
+        environment.systemPackages = [ pkgs.devenv ];
+        nixpkgs.overlays = [
+          (final: prev: {
+            haskellPackages = prev.haskellPackages.extend (
+              # https://github.com/NixOS/nixpkgs/issues/26561
+              final: prev: {
+                cryptonite = prev.cryptonite.overrideAttrs { doCheck = false; }; # test fails at `verify sig` of `Ed448`: https://github.com/haskell-crypto/cryptonite/blob/d163f69512a3d162baa69a95927f3d6369833f7d/tests/KAT_Ed448.hs#L89
+              }
+            );
+          })
+        ];
+      }
     ];
 }

@@ -83,9 +83,6 @@
         programs.kdeconnect.enable = true;
       }
       {
-        environment.systemPackages = [ pkgs.wl-clipboard-rs ];
-      }
-      {
         environment.systemPackages = [
           pkgs.wineWowPackages.waylandFull
           # pkgs.winetricks # https://github.com/Winetricks/winetricks/issues/2084#issuecomment-1902843148

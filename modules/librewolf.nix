@@ -131,15 +131,14 @@
                 (lib.genAttrs
                   (config.programs.librewolf.profiles.default.extensions.packages |> map (pkg: pkg.addonId))
                   (addonId: {
-                    installation_mode = "force_installed";
-                    install_url = "~/.librewolf/default/extensions/${addonId}.xpi";
+                    installation_mode = "normal_installed";
+                    install_url = "~/.librewolf/default/extensions/${addonId}.xpi"; # given this and `installation_mode` will prevent this extension being removed
+                    updates_disabled = true; # disable auto and prevent manually update in `about:addons`
                   })
                 )
                 // {
                   "*" = {
-                    updates_disabled = true; # disable manually update
-                    allowed_types = "extension";
-                    installation_mode = "blocked";
+                    installation_mode = "blocked"; # this won't prevent update extensions managed by home-manager via manually re-install them from AMO
                     blocked_install_message = "Please use home-manager to manage extensions.";
                   };
                 };
@@ -170,6 +169,7 @@
               tab-session-manager
               indie-wiki-buddy
               canvasblocker
+              decentraleyes
               (addons.buildFirefoxXpiAddon {
                 pname = "dimensions";
                 version = "2.1.1resigned1";
