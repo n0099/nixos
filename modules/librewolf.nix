@@ -87,6 +87,9 @@
                   "browser.download.alwaysOpenPanel" = true;
                 }
                 // {
+                  "browser.translations.automaticallyPopup" = false;
+                }
+                // {
                   # https://old.reddit.com/r/firefox/comments/18z7jp5/issues_with_policiesjson/
                   "browser.uiCustomization.state" = builtins.toJSON {
                     placements = {
