@@ -69,7 +69,6 @@
                 # https://github.com/NixOS/nixpkgs/blob/b4c2c57c31e68544982226d07e4719a2d86302a8/nixos/modules/programs/firefox.nix#L340-L345
                 {
                   "browser.urlbar.trimURLs" = false;
-                  "browser.urlbar.showSearchTerms.enabled" = false; # https://old.reddit.com/r/firefox/comments/142lu5w/firefox_doesnt_show_full_url_when_searching_with/jn547ro/
                   "widget.gtk.overlay-scrollbars.enabled" = false; # https://superuser.com/questions/1720362/firefox-scroll-bar-disappearing
                 }
                 // lib.concatMapAttrs (name: value: { "browser.newtabpage.activity-stream.${name}" = value; }) {
@@ -424,6 +423,66 @@
                 }
               '';
             };
+          }
+          {
+            profiles.default.search = {
+              force = true; # https://github.com/nix-community/home-manager/issues/3698
+              privateDefault = "ddg";
+            };
+          }
+          {
+            profiles.default.search.engines =
+              lib.concatMapAttrs # https://github.com/nix-community/home-manager/blob/75ed713570ca17427119e7e204ab3590cc3bf2a5/modules/programs/firefox/profiles/search.nix#L498-L524
+                (type: alias: {
+                  "nix-${type}" = {
+                    name = "Nix ${type}";
+                    urls = [
+                      {
+                        template = "https://search.nixos.org/${type}";
+                        params = [
+                          {
+                            name = "query";
+                            value = "{searchTerms}";
+                          }
+                        ];
+                      }
+                    ];
+                    icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+                    definedAliases = [ alias ];
+                  };
+                })
+                {
+                  packages = "@np";
+                  options = "@no";
+                };
+          }
+          {
+            profiles.default.search =
+              let
+                alias = "kagi";
+              in
+              {
+                default = alias;
+                engines.kagi = {
+                  name = "Kagi";
+                  urls = [
+                    {
+                      template = "https://kagi.com/search";
+                      params = [
+                        {
+                          name = "q";
+                          value = "{searchTerms}";
+                        }
+                      ];
+                    }
+                  ];
+                  icon = pkgs.fetchurl {
+                    url = "https://kagi.com/apple-touch-icon.png";
+                    hash = "sha256-1XQib7Lok2vCZpm7jr0Tqzy7ZcLZ5epLGFTjf7y8gps=";
+                  };
+                  definedAliases = [ "@${alias}" ];
+                };
+              };
           }
         ];
       };
