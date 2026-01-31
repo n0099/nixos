@@ -22,6 +22,12 @@
               viAlias = true;
               vimAlias = true;
               colorscheme = "sorbet";
+              performance.byteCompileLua = {
+                enable = true;
+                nvimRuntime = true;
+              };
+            }
+            {
               plugins = {
                 trim.enable = true;
                 lastplace.enable = true;
@@ -351,115 +357,134 @@
               plugins.hmts.enable = true;
               extraPlugins = [
                 # cannot set attr path `extraFiles."queries/nix/injections.scm"` as it would conflict with `plugins.treesitter.nixvimInjections = true`: https://github.com/nix-community/nixvim/blob/7addac6d111837217c16762968a9042eac703f7e/plugins/by-name/treesitter/default.nix#L307
-                (pkgs.writeTextDir "queries/nix/injections.scm" /* scheme */ ''
-                  ;; extends
-                  ; https://github.com/nix-community/nixvim/discussions/1965#discussioncomment-10222371
-                  ; https://neovim.io/doc/user/treesitter.html#treesitter-query-modeline-extends
+                (pkgs.writeTextFile {
+                  name = "helix-nix-injections.scm"; # change the default drv name that based on the filename of dest to prevent conflict with other drv with the same name
+                  destination = "/queries/nix/injections.scm";
+                  text = /* scheme */ ''
+                    ;; extends
+                    ; https://github.com/nix-community/nixvim/discussions/1965#discussioncomment-10222371
+                    ; https://neovim.io/doc/user/treesitter.html#treesitter-query-modeline-extends
 
-                  ; https://github.com/calops/hmts.nvim/pull/31
-                  ; https://search.nixos.org/options?query=services.nginx.%20config
-                  (binding
-                    attrpath: (_) @_path (#hmts-path? @_path "services" "nginx" "((events|stream|(prep|app)end)C|c)onfig")
-                    expression: (_ (string_fragment) @injection.content)
-                    (#set! injection.language "nginx")
-                    (#set! injection.combined)
-                  )
-                  (binding
-                    attrpath: (_) @_path (#hmts-path? @_path "services" "nginx" "((append|common)H|h)ttpConfig")
-                    expression: (_ (string_fragment) @injection.content)
-                    (#set! injection.language "nginx")
-                    (#set! injection.combined)
-                  )
+                    ${
+                      {
+                        url = "https://github.com/helix-editor/helix/raw/refs/heads/master/runtime/queries/nix/injections.scm";
+                        hash = "sha256-t1PvajXX4e8kx5AChRHC9lVA634Dbl/nxol4F2g1AOI=";
+                      }
+                      |> pkgs.fetchurl
+                      |> lib.readFile
+                    }
+                  '';
+                })
+                (pkgs.writeTextFile {
+                  name = "base-nix-injections.scm";
+                  destination = "/queries/nix/injections.scm";
+                  text = /* scheme */ ''
+                    ;; extends
+                    ; https://github.com/calops/hmts.nvim/pull/31
+                    ; https://search.nixos.org/options?query=services.nginx.%20config
+                    (binding
+                      attrpath: (_) @_path (#hmts-path? @_path "services" "nginx" "((events|stream|(prep|app)end)C|c)onfig")
+                      expression: (_ (string_fragment) @injection.content)
+                      (#set! injection.language "nginx")
+                      (#set! injection.combined)
+                    )
+                    (binding
+                      attrpath: (_) @_path (#hmts-path? @_path "services" "nginx" "((append|common)H|h)ttpConfig")
+                      expression: (_ (string_fragment) @injection.content)
+                      (#set! injection.language "nginx")
+                      (#set! injection.combined)
+                    )
 
-                  (binding
-                    attrpath: (_) @_path (#hmts-path? @_path "services" "nginx" "upstreams" ".*" "extraConfig")
-                    expression: (_ (string_fragment) @injection.content)
-                    (#set! injection.language "nginx")
-                    (#set! injection.combined)
-                  )
+                    (binding
+                      attrpath: (_) @_path (#hmts-path? @_path "services" "nginx" "upstreams" ".*" "extraConfig")
+                      expression: (_ (string_fragment) @injection.content)
+                      (#set! injection.language "nginx")
+                      (#set! injection.combined)
+                    )
 
-                  (binding
-                    attrpath: (_) @_path (#hmts-path? @_path "services" "nginx" "virtualHosts" ".*" "extraConfig")
-                    expression: (_ (string_fragment) @injection.content)
-                    (#set! injection.language "nginx")
-                    (#set! injection.combined)
-                  )
-                  (binding
-                    attrpath: (_) @_path (#hmts-path? @_path "services" "nginx" "virtualHosts" ".*" "locations" ".*" "extraConfig")
-                    expression: (_ (string_fragment) @injection.content)
-                    (#set! injection.language "nginx")
-                    (#set! injection.combined)
-                  )
+                    (binding
+                      attrpath: (_) @_path (#hmts-path? @_path "services" "nginx" "virtualHosts" ".*" "extraConfig")
+                      expression: (_ (string_fragment) @injection.content)
+                      (#set! injection.language "nginx")
+                      (#set! injection.combined)
+                    )
+                    (binding
+                      attrpath: (_) @_path (#hmts-path? @_path "services" "nginx" "virtualHosts" ".*" "locations" ".*" "extraConfig")
+                      expression: (_ (string_fragment) @injection.content)
+                      (#set! injection.language "nginx")
+                      (#set! injection.combined)
+                    )
 
-                  ; https://search.nixos.org/options?query=services.%20nginx.%20config
-                  ; https://github.com/search?q=repo%3ANixOS%2Fnixpkgs%20nginx%2Fvhost-options.nix&type=code
-                  (binding
-                    attrpath: (_) @_path (#hmts-path? @_path "services" ".*" "nginx" "extraConfig")
-                    expression: (_ (string_fragment) @injection.content)
-                    (#set! injection.language "nginx")
-                    (#set! injection.combined)
-                  )
-                  (binding
-                    attrpath: (_) @_path (#hmts-path? @_path "services" ".*" "nginx" "locations" ".*" "extraConfig")
-                    expression: (_ (string_fragment) @injection.content)
-                    (#set! injection.language "nginx")
-                    (#set! injection.combined)
-                  )
+                    ; https://search.nixos.org/options?query=services.%20nginx.%20config
+                    ; https://github.com/search?q=repo%3ANixOS%2Fnixpkgs%20nginx%2Fvhost-options.nix&type=code
+                    (binding
+                      attrpath: (_) @_path (#hmts-path? @_path "services" ".*" "nginx" "extraConfig")
+                      expression: (_ (string_fragment) @injection.content)
+                      (#set! injection.language "nginx")
+                      (#set! injection.combined)
+                    )
+                    (binding
+                      attrpath: (_) @_path (#hmts-path? @_path "services" ".*" "nginx" "locations" ".*" "extraConfig")
+                      expression: (_ (string_fragment) @injection.content)
+                      (#set! injection.language "nginx")
+                      (#set! injection.combined)
+                    )
 
-                  ; https://github.com/calops/hmts.nvim/pull/32
-                  ; https://search.nixos.org/options?query=ssh.extraConfig
-                  (binding
-                    attrpath: (_) @_path (#hmts-path? @_path "services" "openssh" "extraConfig")
-                    expression: (_ (string_fragment) @injection.content)
-                    (#set! injection.language "ssh_config")
-                    (#set! injection.combined)
-                  )
-                  (binding
-                    attrpath: (_) @_path (#hmts-path? @_path "programs" "ssh" "extraConfig")
-                    expression: (_ (string_fragment) @injection.content)
-                    (#set! injection.language "ssh_config")
-                    (#set! injection.combined)
-                  )
-                  (binding
-                    attrpath: (_) @_path (#hmts-path? @_path "boot" "initrd" "network" "ssh" "extraConfig")
-                    expression: (_ (string_fragment) @injection.content)
-                    (#set! injection.language "ssh_config")
-                    (#set! injection.combined)
-                  )
+                    ; https://github.com/calops/hmts.nvim/pull/32
+                    ; https://search.nixos.org/options?query=ssh.extraConfig
+                    (binding
+                      attrpath: (_) @_path (#hmts-path? @_path "services" "openssh" "extraConfig")
+                      expression: (_ (string_fragment) @injection.content)
+                      (#set! injection.language "ssh_config")
+                      (#set! injection.combined)
+                    )
+                    (binding
+                      attrpath: (_) @_path (#hmts-path? @_path "programs" "ssh" "extraConfig")
+                      expression: (_ (string_fragment) @injection.content)
+                      (#set! injection.language "ssh_config")
+                      (#set! injection.combined)
+                    )
+                    (binding
+                      attrpath: (_) @_path (#hmts-path? @_path "boot" "initrd" "network" "ssh" "extraConfig")
+                      expression: (_ (string_fragment) @injection.content)
+                      (#set! injection.language "ssh_config")
+                      (#set! injection.combined)
+                    )
 
-                  ; https://github.com/calops/hmts.nvim/blob/a32cd413f7d0a69d7f3d279c631f20cb117c8d30/queries/nix/injections.scm#L78
-                  (binding
-                    attrpath: (_) @_path (#hmts-path? @_path "programs" "zsh" "initContent")
-                    expression: [
-                      (apply_expression
-                        function: (apply_expression
+                    ; https://github.com/calops/hmts.nvim/blob/a32cd413f7d0a69d7f3d279c631f20cb117c8d30/queries/nix/injections.scm#L78
+                    (binding
+                      attrpath: (_) @_path (#hmts-path? @_path "programs" "zsh" "initContent")
+                      expression: [
+                        (apply_expression
+                          function: (apply_expression
+                            function: (select_expression
+                              expression: (variable_expression
+                                name: ((identifier) @attr_first (#eq? @attr_first "lib")))
+                              attrpath: (attrpath
+                                attr: ((identifier) @attr_rest (#eq? @attr_rest "mkOrder"))))) ; https://github.com/NixOS/nixpkgs/blob/2b4472395590e81847ed7a392effc6c840a6a8ac/lib/modules.nix#L1488-L1509
+                          argument: (_ (string_fragment) @injection.content))
+                        (apply_expression
                           function: (select_expression
                             expression: (variable_expression
-                              name: ((identifier) @attr_first (#eq? @attr_first "lib")))
+                              name: ((identifier) @attr_1_first (#eq? @attr_1_first "lib")))
                             attrpath: (attrpath
-                              attr: ((identifier) @attr_rest (#eq? @attr_rest "mkOrder"))))) ; https://github.com/NixOS/nixpkgs/blob/2b4472395590e81847ed7a392effc6c840a6a8ac/lib/modules.nix#L1488-L1509
-                        argument: (_ (string_fragment) @injection.content))
-                      (apply_expression
-                        function: (select_expression
-                          expression: (variable_expression
-                            name: ((identifier) @attr_1_first (#eq? @attr_1_first "lib")))
-                          attrpath: (attrpath
-                            attr: ((identifier) @attr_1_rest (#eq? @attr_1_rest "mkMerge"))))
-                        argument: (list_expression
-                          element: (parenthesized_expression
-                            expression: (apply_expression
-                              function: (apply_expression
-                                function: (select_expression
-                                  expression: (variable_expression
-                                    name: ((identifier) @attr_2_first (#eq? @attr_2_first "lib")))
-                                  attrpath: (attrpath
-                                    attr: ((identifier) @attr_2_rest (#eq? @attr_2_rest "mkOrder")))))
-                              argument: (_ (string_fragment) @injection.content)))))
-                    ]
-                    (#set! injection.language "bash")
-                    (#set! injection.combined)
-                  )
-                '')
+                              attr: ((identifier) @attr_1_rest (#eq? @attr_1_rest "mkMerge"))))
+                          argument: (list_expression
+                            element: (parenthesized_expression
+                              expression: (apply_expression
+                                function: (apply_expression
+                                  function: (select_expression
+                                    expression: (variable_expression
+                                      name: ((identifier) @attr_2_first (#eq? @attr_2_first "lib")))
+                                    attrpath: (attrpath
+                                      attr: ((identifier) @attr_2_rest (#eq? @attr_2_rest "mkOrder")))))
+                                argument: (_ (string_fragment) @injection.content)))))
+                      ]
+                      (#set! injection.language "bash")
+                      (#set! injection.combined)
+                    )
+                  '';
+                })
               ];
             }
           ];
