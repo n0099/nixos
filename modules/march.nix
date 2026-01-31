@@ -36,7 +36,7 @@
                   overrideAttrs =
                     ffmpeg:
                     ffmpeg.overrideAttrs (prev: {
-                      postPatch = (prev.postPatch or "") + ''
+                      postPatch = (prev.postPatch or "") + /* sh */ ''
                         # https://github.com/NixOS/nixpkgs/issues/398625
                         sed -i '/fate-vsynth%-huffyuvbgra/d' tests/fate/vcodec.mak
                         sed -i 's/huffyuvbgra//' tests/fate/vcodec.mak

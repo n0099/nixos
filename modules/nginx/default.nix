@@ -22,27 +22,21 @@
               recommendedGzipSettings = true;
               recommendedBrotliSettings = true;
               recommendedProxySettings = true;
-              appendConfig = ''
-                worker_processes auto;
-              '';
+              appendConfig = "worker_processes auto;";
             }
             {
-              appendHttpConfig = lib.mkMerge [
-                ''
-                  charset utf-8;
-                  msie_padding off;
-                ''
-                ''
-                  aio threads;
-                  directio 128k;
-                  output_buffers 2 128k;
-                ''
-                ''
-                  limit_req_zone $binary_remote_addr zone=ip:10m rate=50r/s;
-                  limit_req zone=ip burst=100 nodelay;
-                  limit_req_status 429;
-                ''
-              ];
+              appendHttpConfig = ''
+                charset utf-8;
+                msie_padding off;
+
+                aio threads;
+                directio 128k;
+                output_buffers 2 128k;
+
+                limit_req_zone $binary_remote_addr zone=ip:10m rate=50r/s;
+                limit_req zone=ip burst=100 nodelay;
+                limit_req_status 429;
+              '';
             }
             {
               additionalModules = [ pkgs.nginxModules.moreheaders ];

@@ -76,7 +76,7 @@
                   zstyle :bracketed-paste-magic paste-finish pastefinish
                 '')
                 (
-                  lib.mkOrder 1010 ''
+                  lib.mkOrder 1010 /* bash */ ''
                     # https://github.com/atuinsh/atuin/pull/2903
                     # https://stackoverflow.com/questions/3435355/remove-entry-from-array/52188874#52188874
                     ZSH_AUTOSUGGEST_STRATEGY_EXCLUDE=(atuin)
