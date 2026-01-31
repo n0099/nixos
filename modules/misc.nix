@@ -18,7 +18,7 @@
         boot.kernelModules = [ "msr" ];
       }
       {
-        systemd.coredump.extraConfig = ''
+        systemd.coredump.extraConfig = /* ini */ ''
           # https://www.freedesktop.org/software/systemd/man/247/systemd-coredump.html#Disabling%20coredump%20processing
           Storage=none
           ProcessSizeMax=0

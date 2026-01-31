@@ -9,12 +9,14 @@
             nerd-fonts.fira-code
             last-resort
           ];
-          fontconfig.enable = true;
-          fontconfig.localConf = ''
-            <?xml version="1.0"?>
-            <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
-            <fontconfig>
-          '';
+          fontconfig = {
+            enable = true;
+            localConf = ''
+              <?xml version="1.0"?>
+              <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+              <fontconfig>
+            '';
+          };
         }
         {
           fontconfig.localConf = ''

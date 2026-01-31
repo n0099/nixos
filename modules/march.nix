@@ -20,7 +20,7 @@
                 libreoffice.override (prev: {
                   unwrapped = prev.unwrapped.overrideAttrs (prev: {
                     patches = prev.patches ++ [
-                      (pkgs.writeText "skip-testArrayFormulasFODS.patch" ''
+                      (pkgs.writeText "skip-testArrayFormulasFODS.patch" /* diff */ ''
                         diff --git a/sc/qa/unit/functions_array.cxx b/sc/qa/unit/functions_array.cxx
                         index ef0da39f5..43caa9002 100644
                         --- a/sc/qa/unit/functions_array.cxx

@@ -18,7 +18,7 @@
               }
             ];
           };
-          extraEntries = ''
+          extraEntries = /* bash */ ''
             menuentry 'UEFI Setup' --class uefi {
               # https://github.com/Lxtharia/minegrub-world-sel-theme/blob/00254ae5e1836ede1ad502b74dac162eab8eebe2/README.md#setting-icons-for-entries-like-uefi-settings
               fwsetup
