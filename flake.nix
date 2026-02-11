@@ -1,5 +1,6 @@
 {
   inputs = {
+    self.submodules = true; # https://github.com/NixOS/nix/pull/12421
     base.url = "./base";
     nur = {
       url = "github:nix-community/NUR";
