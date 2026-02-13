@@ -8,7 +8,7 @@
           packages = with pkgs; [ last-resort ];
           fontconfig = {
             enable = true;
-            localConf = ''
+            localConf = lib.mkBefore /* xml */ ''
               <?xml version="1.0"?>
               <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
               <fontconfig>
@@ -16,6 +16,9 @@
           };
         }
         {
+          # test with ⠿ https://codepoints.net/U+283F
+          # $ FC_DEBUG=4 pango-view --font monospace -t ⠿ | grep family:
+          # $ fc-match -s :family=monospace:charset=283F | head
           fontconfig.localConf = ''
             <match target="font">
               <!-- https://discuss.kde.org/t/konsole-renders-btop-characters-not-properly/12502 -->
@@ -50,6 +53,9 @@
             # source-code-pro
             source-han-mono
           ];
+          # test with 门关复
+          # $ FC_DEBUG=4 pango-view --font monospace -t 门关复 | grep family:
+          # $ fc-match -s :family=monospace:charset=95E8:charset=5173:charset=590D | head
           fontconfig.localConf = ''
             <!-- https://gist.github.com/akiirui/b3f36e8bdf9a9f5636a98113960bc7f4 -->
             <!-- https://japanese.stackexchange.com/questions/86411/why-are-%E5%85%B3-and-%E5%A4%8D-half-width-in-japanese -->
@@ -80,7 +86,7 @@
           '';
         }
         {
-          fontconfig.localConf = "</fontconfig>";
+          fontconfig.localConf = lib.mkAfter "</fontconfig>";
         }
       ];
     };
