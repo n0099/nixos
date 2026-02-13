@@ -95,10 +95,6 @@
             enable = true;
             defaultProfile = "default";
             profiles.default = {
-              font = {
-                name = "FiraCode Nerd Font Ret";
-                size = 11;
-              };
               extraConfig = {
                 Appearance.UseFontLineChararacters = true;
                 General = {

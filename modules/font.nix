@@ -5,10 +5,7 @@
     {
       fonts = lib.mkMerge [
         {
-          packages = with pkgs; [
-            nerd-fonts.fira-code
-            last-resort
-          ];
+          packages = with pkgs; [ last-resort ];
           fontconfig = {
             enable = true;
             localConf = ''
