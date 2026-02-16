@@ -9,6 +9,7 @@
           "steam-unwrapped"
         ];
         programs.steam.enable = true;
+        services.sanoid.datasets."rpool/ENC/STEAM".autosnap = false;
       }
       {
         environment.systemPackages = [ pkgs.mangohud ];

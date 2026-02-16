@@ -8,7 +8,10 @@
           enable = true;
           variant = "bore-lto";
         };
+      }
+      {
         boot.zfs.package = pkgs.zfs_2_4;
+        networking.hostId = "ec1ca6eb";
       }
       {
         hardware.rasdaemon.enable = true;
