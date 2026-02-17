@@ -30,6 +30,23 @@
               );
           in
           recurse [ ] set;
+        overrideExtensionExecutableConfig =
+          configKey: executablePkg: drv:
+          drv.overrideAttrs (
+            final: prev: {
+              nativeBuildInputs =
+                with pkgs;
+                prev.nativeBuildInputs or [ ]
+                ++ [
+                  jq
+                  moreutils
+                ];
+              postInstall = prev.postInstall or "" + ''
+                cd "$out/$installPrefix"
+                jq -e '.contributes.configuration.properties."${configKey}".default = "${lib.getExe executablePkg}"' package.json | sponge package.json
+              '';
+            }
+          );
       in
       {
         programs.vscode = {
@@ -62,7 +79,10 @@
 
                   editorconfig.editorconfig
                   mikestead.dotenv
-                  mkhl.direnv
+                  (
+                    mkhl.direnv # https://github.com/NixOS/nixpkgs/pull/491239
+                    |> overrideExtensionExecutableConfig "direnv.path.executable" pkgs.direnv
+                  )
                   jnoortheen.nix-ide
 
                   qcz.text-power-tools
@@ -71,8 +91,11 @@
                   shd101wyy.markdown-preview-enhanced
                   pkgs.vscode-marketplace-release.bierner.markdown-preview-github-styles # https://github.com/mjbvz/vscode-github-markdown-preview-style/issues/59#issuecomment-1499414723
 
-                  timonwong.shellcheck
-                  mads-hartmann.bash-ide-vscode
+                  (
+                    mads-hartmann.bash-ide-vscode # https://github.com/NixOS/nixpkgs/pull/491237
+                    |> overrideExtensionExecutableConfig "bashIde.shellcheckPath" pkgs.shellcheck
+                    |> overrideExtensionExecutableConfig "bashIde.shfmt.path" pkgs.shfmt
+                  )
 
                   github.vscode-github-actions
                 ];
