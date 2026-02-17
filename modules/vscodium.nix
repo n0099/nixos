@@ -115,7 +115,10 @@
                 extensions = [ extensions.eamodio.gitlens ];
                 userSettings = flatSettings {
                   gitlens = {
+                    ai.enabled = false;
                     telemetry.enabled = false;
+                    advanced.skipOnboarding = true;
+                    plusFeatures.enabled = false;
                     launchpad.indicator.enabled = false;
                   };
                 };
@@ -125,7 +128,7 @@
                 userSettings."workbench.iconTheme" = "a-file-icon-vscode";
               }
             ];
-            fe =
+            Frontend =
               let
                 default = config.programs.vscode.profiles.default;
               in
