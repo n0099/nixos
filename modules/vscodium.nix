@@ -75,9 +75,9 @@
                       "files.associations"."*.json5" = "jsonc";
                     };
                   extensions =
-                    forOpenVsxVersion [
+                    forVscodeVersion [ "ahmadalli.vscode-nginx-conf" ]
+                    ++ forOpenVsxVersion [
                       "zxh404.vscode-proto3"
-                      "ahmadalli.vscode-nginx-conf"
                       "ms-vscode.hexeditor"
                       "mechatroner.rainbow-csv"
 
@@ -131,7 +131,7 @@
                   };
                 }
                 {
-                  extensions = forOpenVsxVersion [ "atommaterial.a-file-icon-vscode" ];
+                  extensions = forVscodeVersion [ "atommaterial.a-file-icon-vscode" ];
                   userSettings."workbench.iconTheme" = "a-file-icon-vscode";
                 }
               ];
@@ -147,10 +147,12 @@
                       "vue.volar.3.0.7" # https://github.com/vuejs/language-tools/issues/5941
                       "dbaeumer.vscode-eslint"
                       "stylelint.vscode-stylelint"
-                      "webben.browserslist"
-                      "kimuson.ts-type-expand"
                       "antfu.goto-alias"
                       "arcanis.vscode-zipfs"
+                    ]
+                    ++ forVscodeVersion [
+                      "kimuson.ts-type-expand"
+                      "webben.browserslist"
                     ];
                 };
             }
