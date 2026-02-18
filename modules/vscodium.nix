@@ -4,7 +4,10 @@
       { inputs, ... }:
 
       {
-        nixpkgs.overlays = [ inputs.nix-vscode-extensions.overlays.default ];
+        nixpkgs.overlays = [
+          inputs.nix-vscode-extensions.overlays.default
+          inputs.nix4vscode.overlays.default
+        ];
       };
     homeManager.vscode =
       {
@@ -138,8 +141,10 @@
                   extensions =
                     with extensions;
                     default.extensions
+                    ++ pkgs.nix4vscode.forOpenVsxVersion (config.programs.vscode.package.version) [
+                      "vue.volar.3.0.7" # https://github.com/vuejs/language-tools/issues/5941
+                    ]
                     ++ [
-                      vue.volar
                       dbaeumer.vscode-eslint
                       stylelint.vscode-stylelint
                       webben.browserslist

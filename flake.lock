@@ -451,6 +451,28 @@
         "type": "github"
       }
     },
+    "nix4vscode": {
+      "inputs": {
+        "nixpkgs": [
+          "base",
+          "nixpkgs"
+        ],
+        "systems": "systems_4"
+      },
+      "locked": {
+        "lastModified": 1771296372,
+        "narHash": "sha256-VOcMNmRXAVMuhqYzXYglmrPzU5mqZ1EBi1ix3LD+w5o=",
+        "owner": "nix-community",
+        "repo": "nix4vscode",
+        "rev": "8f9c2a1878083f41199b64ca9afb2daa0669bec3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nix4vscode",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1761597516,
@@ -644,6 +666,7 @@
         "base": "base",
         "minegrub-world-sel-theme": "minegrub-world-sel-theme",
         "nix-vscode-extensions": "nix-vscode-extensions",
+        "nix4vscode": "nix4vscode",
         "nur": "nur",
         "plasma-manager": "plasma-manager"
       }
@@ -679,6 +702,22 @@
       }
     },
     "systems_3": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_4": {
+      "flake": false,
       "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",

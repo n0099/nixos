@@ -10,6 +10,10 @@
       url = "github:nix-community/nix-vscode-extensions";
       inputs.nixpkgs.follows = "base/nixpkgs";
     };
+    nix4vscode = {
+      url = "github:nix-community/nix4vscode";
+      inputs.nixpkgs.follows = "base/nixpkgs";
+    };
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
       inputs = {
