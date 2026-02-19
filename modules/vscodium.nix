@@ -69,7 +69,11 @@
                         experimental.showMoves = true;
                         hideUnchangedRegions.enabled = true;
                       };
-                      files.autoGuessEncoding = true;
+                      scm.inputFontFamily = "editor";
+                      files = {
+                        autoGuessEncoding = true;
+                        trimTrailingWhitespace = true;
+                      };
                     }
                     // {
                       "files.associations"."*.json5" = "jsonc";
@@ -139,22 +143,27 @@
                 let
                   default = config.programs.vscode.profiles.default;
                 in
-                {
-                  userSettings = default.userSettings;
-                  extensions =
-                    default.extensions
-                    ++ forOpenVsxVersion [
-                      "vue.volar.3.0.7" # https://github.com/vuejs/language-tools/issues/5941
-                      "dbaeumer.vscode-eslint"
-                      "stylelint.vscode-stylelint"
-                      "antfu.goto-alias"
-                      "arcanis.vscode-zipfs"
-                    ]
-                    ++ forVscodeVersion [
-                      "kimuson.ts-type-expand"
-                      "webben.browserslist"
-                    ];
-                };
+                lib.mkMerge [
+                  {
+                    userSettings = default.userSettings;
+                    extensions =
+                      default.extensions
+                      ++ forOpenVsxVersion [
+                        "vue.volar.3.0.7" # https://github.com/vuejs/language-tools/issues/5941
+                        "dbaeumer.vscode-eslint"
+                        "stylelint.vscode-stylelint"
+                        "arcanis.vscode-zipfs"
+                      ]
+                      ++ forVscodeVersion [
+                        "kimuson.ts-type-expand"
+                        "webben.browserslist"
+                      ];
+                  }
+                  {
+                    extensions = forOpenVsxVersion [ "antfu.goto-alias" ];
+                    userSettings."editor.gotoLocation.multipleDefinitions" = "goto";
+                  }
+                ];
             }
             |> lib.concatMapAttrs (
               name: profile:
