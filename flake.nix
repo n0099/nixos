@@ -20,7 +20,7 @@
       };
       url = "github:ryantm/agenix";
     };
-    detsys-nix.url = "github:DeterminateSystems/nix-src";
+    detsys-nix.url = "https://flakehub.com/f/DeterminateSystems/nix-src/*";
     flake-file.url = "github:vic/flake-file";
     flake-parts.url = "github:hercules-ci/flake-parts";
     home-manager = {

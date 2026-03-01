@@ -29,7 +29,7 @@ lib.foldl lib.recursiveUpdate { } [
     };
   }
   {
-    flake-file.inputs.detsys-nix.url = "github:DeterminateSystems/nix-src";
+    flake-file.inputs.detsys-nix.url = "https://flakehub.com/f/DeterminateSystems/nix-src/*";
     flake.modules = {
       nixos.detsys =
         { pkgs, ... }:
