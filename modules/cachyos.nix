@@ -25,7 +25,7 @@
           default = pkgs.linux_latest; # https://github.com/xddxdd/nix-cachyos-kernel/blob/dc3941ceb1cc0b303ddefc5e5fa1577a2d7856d7/kernel-cachyos/default.nix#L16
         };
       };
-      config = {
+      config = lib.mkIf cfg.enable {
         nixpkgs.overlays = [ inputs.nix-cachyos-kernel.outputs.overlay ]; # https://github.com/xddxdd/nix-cachyos-kernel/blob/dc3941ceb1cc0b303ddefc5e5fa1577a2d7856d7/flake.nix#L95
         boot.kernelPackages = pkgs.cachyosKernels."linuxPackages-cachyos-${cfg.variant}".extend (
           final: prev: {
