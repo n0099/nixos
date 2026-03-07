@@ -26,20 +26,14 @@
         };
       };
       config = lib.mkIf cfg.enable {
-        nixpkgs.overlays = [ inputs.nix-cachyos-kernel.outputs.overlay ]; # https://github.com/xddxdd/nix-cachyos-kernel/blob/dc3941ceb1cc0b303ddefc5e5fa1577a2d7856d7/flake.nix#L95
-        boot.kernelPackages = pkgs.cachyosKernels."linuxPackages-cachyos-${cfg.variant}".extend (
-          final: prev: {
-            kernel = prev.kernel.override {
-              inherit (cfg.baseKernel) version src;
-              structuredExtraConfig =
-                with lib.kernel;
-                lib.optionalAttrs (lib.hasSuffix "-lto" cfg.variant) {
-                  LTO_CLANG_FULL = yes; # https://www.kernelconfig.io/config_lto_clang_full
-                  LTO_CLANG_THIN = no; # https://github.com/xddxdd/nix-cachyos-kernel/blob/52d03c7f4e6f78cbf9e1ec1d78101b2369ff8f7c/kernel-cachyos/mkCachyKernel.nix#L108-L111
-                };
-            };
+        boot.kernelPackages =
+          {
+            lto = "full"; # https://www.kernelconfig.io/config_lto_clang_full
+            stdenv = pkgs.clangStdenv; # using our stdenv with possibly configured `hostPlatform.gcc.march`
+            inherit (cfg.baseKernel) version src;
           }
-        );
+          |> inputs.nix-cachyos-kernel.outputs.packages.${pkgs.stdenv.system}."linux-cachyos-${cfg.variant}".override # https://github.com/xddxdd/nix-cachyos-kernel/issues/23#issuecomment-3764296449
+          |> pkgs.linuxKernel.packagesFor;
       };
     };
 }
