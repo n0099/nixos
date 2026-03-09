@@ -21,20 +21,25 @@
         enable = lib.mkEnableOption "";
         variant = lib.mkOption { type = lib.types.str; }; # https://wiki.cachyos.org/features/kernel/#variants
         baseKernel = lib.mkOption {
-          type = lib.types.package;
-          default =
-            let
-              # https://github.com/CachyOS/kernel-patches/issues/140
-              # https://github.com/xddxdd/nix-cachyos-kernel/commit/a3da9122076ae33d52828d1e6c4a2595378f0ca2#diff-352bbe444aff13cc4c129bd885cbbb136eb0aa2db3bacfe3586909d7d337e4c2R16
-              lts = (lib.importJSON "${inputs.nix-cachyos-kernel}/kernel-cachyos/version.json").lts;
-            in
-            rec {
-              inherit (src) outPath; # to pass `isStorePath` check of https://github.com/NixOS/nixpkgs/blob/e2fbb67cc1eedacce97b850cd5664d23e15eb984/lib/types.nix#L647
-              inherit (lts) version;
-              src = pkgs.fetchurl {
-                inherit (lts) url hash;
-              };
-            };
+          type = with lib.types; either package str;
+          default = "lts";
+          apply =
+            value:
+            if lib.isString value then
+              let
+                # https://github.com/CachyOS/kernel-patches/issues/140
+                # https://github.com/xddxdd/nix-cachyos-kernel/commit/a3da9122076ae33d52828d1e6c4a2595378f0ca2#diff-352bbe444aff13cc4c129bd885cbbb136eb0aa2db3bacfe3586909d7d337e4c2R16
+                prepatched = (lib.importJSON "${inputs.nix-cachyos-kernel}/kernel-cachyos/version.json").${value};
+              in
+              rec {
+                inherit (src) outPath; # to pass `isStorePath` check of https://github.com/NixOS/nixpkgs/blob/e2fbb67cc1eedacce97b850cd5664d23e15eb984/lib/types.nix#L647
+                inherit (prepatched) version;
+                src = pkgs.fetchurl {
+                  inherit (prepatched) url hash;
+                };
+              }
+            else
+              value;
         };
       };
       config = lib.mkIf cfg.enable {
