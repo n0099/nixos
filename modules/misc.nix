@@ -6,11 +6,10 @@
       {
         n0099.cachyos = {
           enable = true;
-          variant = "bore-lto";
+          variant = "bmq-lto";
         };
       }
       {
-        n0099.cachyos.baseKernel = pkgs.linuxPackages_6_18.kernel;
         boot.zfs.package = pkgs.zfs_2_4;
         networking.hostId = "ec1ca6eb";
       }
