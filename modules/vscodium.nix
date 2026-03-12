@@ -161,7 +161,7 @@
                   }
                   {
                     extensions = forOpenVsxVersion [ "antfu.goto-alias" ];
-                    userSettings."editor.gotoLocation.multipleDefinitions" = "goto";
+                    userSettings."editor.gotoLocation.multipleDefinitions" = "gotoAndPeek";
                   }
                 ];
             }
