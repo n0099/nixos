@@ -10,6 +10,16 @@
           file
           tree
           lsof
+          jq
+          yq
+          openssl
+          parallel
+          pv
+          dig
+          whois
+          nload
+          nix-diff
+          nix-tree
           nixfmt-tree
           comma
         ];
