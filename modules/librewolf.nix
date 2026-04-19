@@ -273,7 +273,7 @@
             profiles.default.extensions.packages = [ addons.ublock-origin ];
             # https://mozilla.github.io/policy-templates/#3rdparty
             # https://discourse.nixos.org/t/declare-firefox-extensions-and-settings/36265/26
-            # click `Reset to default settings…` in moz-extension://95bd60a3-bbff-4694-a503-b7f8d4a3e9e6/dashboard.html#settings.html is required after managed storage changed
+            # click `Reset to default settings…` in moz-extension://{Internal UUID}/dashboard.html#settings.html is required after managed storage changed
             policies."3rdparty".Extensions."uBlock0@raymondhill.net".adminSettings = {
               userSettings = {
                 suspendUntilListsAreLoaded = true;
@@ -381,8 +381,9 @@
           {
             profiles.default.extensions.packages = [ addons.sidebery ];
             policies."3rdparty".Extensions."{3c078156-979c-498b-8990-85f7987dd929}".settings = {
-              # https://github.com/mbnuqw/sidebery/blob/b6fbb138614267a5cb9bf0757e8cd2e99a63f8b4/src/services/settings.actions.ts#L26-L29
-              # delete item `settings` in moz-extension://d244b345-7b9d-4203-aaaa-564dd6bb0339/page.setup/setup.html#storage is required after managed storage changed
+              # https://github.com/mbnuqw/sidebery/blob/cd2f8805e50011df35c7e66d5aba83bdcd3eea91/src/types/settings.ts
+              # https://github.com/mbnuqw/sidebery/blob/cd2f8805e50011df35c7e66d5aba83bdcd3eea91/src/defaults/settings.ts
+              # click `Reset settings` then `Reload add-on` in moz-extension://{Internal UUID}/page.setup/setup.html#settings_help is required to sync current settings with managed storage
               nativeScrollbarsThin = false;
               dndOutside = "data";
               searchBarMode = "static";
