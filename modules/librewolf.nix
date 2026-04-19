@@ -396,8 +396,6 @@
               previewTabsTitle = 10;
               previewTabsUrl = 10;
               density = "loose";
-              scrollThroughTabs = "global";
-              scrollThroughTabsCyclic = true;
               tabsSecondClickActPrev = true;
               syncUseFirefox = false;
             };
