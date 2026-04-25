@@ -139,27 +139,34 @@
           mapfile -td, -c 1 -C process_file_system < <(printf "%s\0" "$SANOID_TARGETS")
         '';
       };
+      cfg = config.n0099.sanoid;
     in
-    lib.mkMerge [
-      {
-        systemd.services.sanoid.serviceConfig =
-          lib.genAttrs [ "User" "Group" "ExecStartPre" "ExecStopPost" ] (
-            # https://github.com/NixOS/nixpkgs/blob/3acb677ea67d4c6218f33de0db0955f116b7588c/nixos/modules/services/backup/sanoid.nix#L248
-            _: "" |> lib.mkForce
-          )
-          // {
-            DynamicUser = false |> lib.mkForce;
-          };
-      }
-      {
-        systemd.tmpfiles.settings."sanoid-upload".${logsDir}."d" = { };
-        services.logrotate.settings."sanoid-upload".files = "${logsDir}/*.log";
-      }
-      {
-        services.sanoid.templates.default = {
-          script_timeout = 0; # https://github.com/jimsalterjrs/sanoid/blob/a5fa5e7badecc435663e40e6a0f69523c2a0fd1c/sanoid#L1658
-          post_snapshot_script = "sh -c '${script}/bin/${script.name} >/dev/null 2>&1'";
-        };
-      }
-    ];
+    {
+      options.n0099.sanoid.enable = lib.mkEnableOption "";
+      config =
+        [
+          {
+            services.sanoid.templates.default = {
+              script_timeout = 0; # https://github.com/jimsalterjrs/sanoid/blob/a5fa5e7badecc435663e40e6a0f69523c2a0fd1c/sanoid#L1658
+              post_snapshot_script = "sh -c '${script}/bin/${script.name} >/dev/null 2>&1'";
+            };
+          }
+          {
+            systemd.services.sanoid.serviceConfig =
+              lib.genAttrs [ "User" "Group" "ExecStartPre" "ExecStopPost" ] (
+                # https://github.com/NixOS/nixpkgs/blob/3acb677ea67d4c6218f33de0db0955f116b7588c/nixos/modules/services/backup/sanoid.nix#L248
+                _: "" |> lib.mkForce
+              )
+              // {
+                DynamicUser = false |> lib.mkForce;
+              };
+          }
+          {
+            systemd.tmpfiles.settings."sanoid-upload".${logsDir}."d" = { };
+            services.logrotate.settings."sanoid-upload".files = "${logsDir}/*.log";
+          }
+        ]
+        |> lib.mkMerge
+        |> lib.mkIf cfg.enable;
+    };
 }
