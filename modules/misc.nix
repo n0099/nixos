@@ -12,6 +12,7 @@
       {
         boot.zfs.package = pkgs.zfs_2_4;
         networking.hostId = "ec1ca6eb";
+        n0099.sanoid.enable = true;
       }
       {
         hardware.rasdaemon.enable = true;
