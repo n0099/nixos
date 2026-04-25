@@ -1,6 +1,11 @@
 {
   flake.modules.nixos.misc =
-    { lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
 
     lib.mkMerge [
       {
@@ -12,7 +17,9 @@
       {
         boot.zfs.package = pkgs.zfs_2_4;
         networking.hostId = "ec1ca6eb";
+        services.sanoid.datasets."rpool/ENC/WIN11".autosnap = false;
         n0099.sanoid.enable = true;
+        systemd.services.sanoid.environment = config.networking.proxy.envVars;
       }
       {
         hardware.rasdaemon.enable = true;
