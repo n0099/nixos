@@ -24,10 +24,11 @@
       {
         xdg.mimeApps = {
           enable = true;
-          defaultApplications = {
-            "x-scheme-handler/http" = "librewolf.desktop";
-            "x-scheme-handler/https" = "librewolf.desktop";
-          };
+          defaultApplications = lib.genAttrs [
+            "x-scheme-handler/http"
+            "x-scheme-handler/https"
+            "text/html"
+          ] (_: "librewolf.desktop");
         };
         programs.librewolf = lib.mkMerge [
           {
