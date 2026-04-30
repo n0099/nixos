@@ -4,7 +4,7 @@
   flake.modules.nixos.boot = {
     boot.loader = {
       systemd-boot.enable = false |> lib.mkForce;
-      efi.efiSysMountPoint = "/efi";
+      efi.efiSysMountPoint = "/efi"; # https://forum.endeavouros.com/t/boot-efi-vs-efi-with-endeavouros/76199
       grub = {
         enable = true;
         device = "nodev";
