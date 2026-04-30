@@ -1,7 +1,6 @@
 # DO-NOT-EDIT. This file was auto-generated using github:vic/flake-file.
 # Use `nix run .#write-flake` to regenerate it.
 {
-
   outputs = inputs: import ./outputs.nix inputs;
 
   nixConfig = {
@@ -14,29 +13,28 @@
 
   inputs = {
     agenix = {
+      url = "github:ryantm/agenix";
       inputs = {
         home-manager.follows = "home-manager";
         nixpkgs.follows = "nixpkgs";
       };
-      url = "github:ryantm/agenix";
     };
     detsys-nix.url = "https://flakehub.com/f/DeterminateSystems/nix-src/*";
     flake-file.url = "github:vic/flake-file";
     flake-parts.url = "github:hercules-ci/flake-parts";
     home-manager = {
-      inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     import-tree.url = "github:vic/import-tree";
     nix-cachyos-kernel = {
-      inputs.nixpkgs.follows = "nixpkgs";
       url = "github:xddxdd/nix-cachyos-kernel";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixvim = {
-      inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-community/nixvim/nixos-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-
 }
