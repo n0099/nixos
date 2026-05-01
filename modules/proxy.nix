@@ -1,5 +1,7 @@
 let
-  proxy = "localhost:1080";
+  host = "localhost";
+  port = 1080;
+  proxy = "${host}:${builtins.toString port}";
 in
 {
   flake.modules = {
@@ -17,9 +19,21 @@ in
           systemd.services.sanoid.environment = config.networking.proxy.envVars;
         }
       ];
-    homeManager.proxy.programs.librewolf.policies.Proxy = {
-      Mode = "manual";
-      SOCKSProxy = proxy;
-    };
+    homeManager.proxy =
+      { lib, pkgs, ... }:
+
+      lib.mkMerge [
+        {
+          programs.librewolf.policies.Proxy = {
+            Mode = "manual";
+            SOCKSProxy = proxy;
+          };
+        }
+        {
+          programs.ssh.matchBlocks."github.com".proxyCommand =
+            # https://stackoverflow.com/questions/1728934/accessing-a-git-repository-via-ssh-behind-a-firewall/8255371#8255371
+            "${lib.getExe pkgs.socat} - PROXY:${host}:%h:%p,proxyport=${builtins.toString port}";
+        }
+      ];
   };
 }
