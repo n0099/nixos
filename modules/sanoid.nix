@@ -98,18 +98,21 @@
               do
                 case $snapshot in
                   autosnap_*_daily)
-                    # https://mywiki.wooledge.org/BashPitfalls#local_var.3D.24.28cmd.29
-                    local latest_snapshot
-                    latest_snapshot=$(rclone lsjson --files-only \
-                      "$bucket/$month_dir/''${file_system#"''${prefix}"}" \
-                        | jq -r 'sort_by(.ModTime) | last | .Path')
-                    if [[ -n $latest_snapshot ]] && [[ $latest_snapshot != 'null' ]]
-                    then
-                      zfs_send_to_rclone "$bucket" "$file_system" "$snapshot" autosnap_"$latest_snapshot"
-                    fi
+                    # https://stackoverflow.com/questions/29532904/bash-subshell-errexit-semantics
+                    {
+                      # https://mywiki.wooledge.org/BashPitfalls#local_var.3D.24.28cmd.29
+                      local latest_snapshot
+                      latest_snapshot=$(rclone lsjson --files-only \
+                        "$bucket/$month_dir/''${file_system#"''${prefix}"}" \
+                          | jq -r 'sort_by(.ModTime) | last | .Path')
+                      if [[ -n $latest_snapshot ]] && [[ $latest_snapshot != 'null' ]]
+                      then
+                        zfs_send_to_rclone "$bucket" "$file_system" "$snapshot" autosnap_"$latest_snapshot"
+                      fi
+                    } || continue
                     ;;
                   autosnap_*_monthly)
-                    zfs_send_to_rclone "$bucket" "$file_system" "$snapshot"
+                    zfs_send_to_rclone "$bucket" "$file_system" "$snapshot" || continue
                 esac
               done
             }
