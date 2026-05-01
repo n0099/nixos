@@ -49,14 +49,6 @@
                 "general.autoScroll" = true;
               };
             policies = {
-              Proxy =
-                let
-                  proxy = osConfig.networking.proxy.default;
-                in
-                lib.mkIf (proxy != null) {
-                  Mode = "manual";
-                  SOCKSProxy = 1 |> lib.elemAt (lib.splitString "://" proxy);
-                };
               DisplayBookmarksToolbar = "never";
               Homepage.StartPage = "previous-session";
               SanitizeOnShutdown = {
