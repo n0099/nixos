@@ -149,7 +149,7 @@
                     extensions =
                       default.extensions
                       ++ forOpenVsxVersion [
-                        "vue.volar.3.0.7" # https://github.com/vuejs/language-tools/issues/5941
+                        "vue.volar"
                         "dbaeumer.vscode-eslint"
                         "stylelint.vscode-stylelint"
                         "arcanis.vscode-zipfs"
