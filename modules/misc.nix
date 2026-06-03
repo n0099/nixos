@@ -34,12 +34,5 @@
         atopService.enable = false;
         atopRotateTimer.enable = false;
       };
-      security = {
-        dhparams = {
-          enable = true;
-          stateful = false;
-          defaultBitSize = 4096;
-        };
-      };
     };
 }
