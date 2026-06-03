@@ -1,11 +1,6 @@
 {
   flake.modules.nixos.misc =
-    {
-      config,
-      lib,
-      pkgs,
-      ...
-    }:
+    { lib, pkgs, ... }:
 
     lib.mkMerge [
       {
@@ -28,11 +23,11 @@
         boot.kernelModules = [ "msr" ];
       }
       {
-        systemd.coredump.extraConfig = /* ini */ ''
+        systemd.coredump.settings.Coredump = {
           # https://www.freedesktop.org/software/systemd/man/247/systemd-coredump.html#Disabling%20coredump%20processing
-          Storage=none
-          ProcessSizeMax=0
-        '';
+          Storage = "none";
+          ProcessSizeMax = 0;
+        };
       }
       {
         n0099.stdenv.enable = true;
