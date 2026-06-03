@@ -30,7 +30,7 @@ in
           };
         }
         {
-          programs.ssh.matchBlocks."github.com".proxyCommand =
+          programs.ssh.settings."github.com".proxyCommand =
             # https://stackoverflow.com/questions/1728934/accessing-a-git-repository-via-ssh-behind-a-firewall/8255371#8255371
             "${lib.getExe pkgs.socat} - PROXY:${host}:%h:%p,proxyport=${builtins.toString port}";
         }
