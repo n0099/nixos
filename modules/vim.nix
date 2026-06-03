@@ -293,7 +293,6 @@
                 nvim-autopairs.enable = true;
                 coq-nvim = {
                   enable = true;
-                  installArtifacts = true;
                   settings.auto_start = "shut-up";
                 };
               };
