@@ -22,7 +22,7 @@
       programs.ssh = {
         enable = true;
         enableDefaultConfig = false;
-        matchBlocks."*" = {
+        settings."*" = {
           addKeysToAgent = "1h"; # https://man.archlinux.org/man/sshd_config.5#TIME_FORMATS
           serverAliveInterval = 15;
           identityFile = "~/.ssh/id/%r@%h:%p.pem"; # https://askubuntu.com/questions/30788/does-ssh-key-need-to-be-named-id-rsa/423297#423297
