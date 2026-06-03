@@ -1,18 +1,8 @@
 {
   flake.modules.nixos.nginx-https =
-    {
-      config,
-      lib,
-      pkgs,
-      ...
-    }:
+    { lib, pkgs, ... }:
 
     lib.mkMerge [
-      {
-        # https://github.com/NixOS/nixpkgs/pull/452972
-        security.dhparams.params.nginx = { };
-        services.nginx.sslDhparam = config.security.dhparams.params.nginx.path;
-      }
       {
         services.nginx = lib.mkMerge [
           {
