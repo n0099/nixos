@@ -1,12 +1,12 @@
 {
   flake.modules = {
-    nixos.vscode =
+    nixos.vscodium =
       { inputs, ... }:
 
       {
         nixpkgs.overlays = [ inputs.nix4vscode.overlays.default ];
       };
-    homeManager.vscode =
+    homeManager.vscodium =
       {
         config,
         lib,
@@ -29,7 +29,7 @@
               );
           in
           recurse [ ] set;
-        vscodeVersion = config.programs.vscode.package.version;
+        vscodeVersion = config.programs.vscodium.package.version;
         forVscodeVersion = pkgs.nix4vscode.forVscodeVersion vscodeVersion;
         forOpenVsxVersion = pkgs.nix4vscode.forOpenVsxVersion vscodeVersion;
         forOpenVsxExtVersion =
@@ -51,7 +51,7 @@
         };
       in
       {
-        programs.vscode = {
+        programs.vscodium = {
           enable = true;
           package = pkgs.vscodium;
           profiles =
@@ -141,7 +141,7 @@
               ];
               Frontend =
                 let
-                  default = config.programs.vscode.profiles.default;
+                  default = config.programs.vscodium.profiles.default;
                 in
                 lib.mkMerge [
                   {
