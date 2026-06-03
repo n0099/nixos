@@ -84,7 +84,7 @@
       }
       {
         environment.systemPackages = [
-          pkgs.wineWowPackages.waylandFull
+          pkgs.wineWow64Packages.waylandFull
           # pkgs.winetricks # https://github.com/Winetricks/winetricks/issues/2084#issuecomment-1902843148
         ];
       }
