@@ -367,7 +367,7 @@
                     ${
                       {
                         url = "https://github.com/helix-editor/helix/raw/refs/heads/master/runtime/queries/nix/injections.scm";
-                        hash = "sha256-t1PvajXX4e8kx5AChRHC9lVA634Dbl/nxol4F2g1AOI=";
+                        hash = "sha256-7eQhn0e6wXym9CVIUIa2Fk9/AVHrPQTYQmJq67RJsRU=";
                       }
                       |> pkgs.fetchurl
                       |> lib.readFile
