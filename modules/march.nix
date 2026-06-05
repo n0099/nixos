@@ -28,32 +28,6 @@
           {
             nix.settings.keep-outputs = true; # https://discourse.nixos.org/t/rebuild-nixos-offline/3679/16
           }
-          {
-            nixpkgs.overlays = [
-              (
-                final: prev:
-                let
-                  overrideAttrs =
-                    ffmpeg:
-                    ffmpeg.overrideAttrs (prev: {
-                      postPatch = (prev.postPatch or "") + /* sh */ ''
-                        # https://github.com/NixOS/nixpkgs/issues/398625
-                        sed -i '/fate-vsynth%-huffyuvbgra/d' tests/fate/vcodec.mak
-                        sed -i 's/huffyuvbgra//' tests/fate/vcodec.mak
-                      '';
-                    });
-                in
-                {
-                  ffmpeg = overrideAttrs prev.ffmpeg;
-                  ffmpeg-full = overrideAttrs prev.ffmpeg;
-                  ffmpeg-headless = overrideAttrs prev.ffmpeg-headless;
-                  ffmpeg_8 = overrideAttrs prev.ffmpeg_8;
-                  ffmpeg_8-full = overrideAttrs prev.ffmpeg_8-full;
-                  ffmpeg_8-headless = overrideAttrs prev.ffmpeg_8-headless;
-                }
-              )
-            ];
-          }
         ]
         |> lib.mkIf enable;
     };
