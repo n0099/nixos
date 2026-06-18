@@ -12,8 +12,17 @@
       {
         boot.zfs.package = pkgs.zfs_2_4;
         networking.hostId = "ec1ca6eb";
-        services.sanoid.datasets."rpool/ENC/WIN11".autosnap = false;
         n0099.sanoid.enable = true;
+        services.sanoid.datasets =
+          lib.genAttrs
+            (map (dataset: "rpool/ENC/${dataset}") [
+              "WIN11"
+              "NIX-BUILD"
+              "NIX-BUILD-LOG"
+            ])
+            (_: {
+              autosnap = false;
+            });
       }
       {
         hardware.rasdaemon.enable = true;
