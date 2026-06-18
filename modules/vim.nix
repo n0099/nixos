@@ -1,9 +1,14 @@
 {
   flake.modules.nixos.nixvim =
-    { pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
 
     {
-      programs.nixvim.extraPlugins = [
+      programs.nixvim.extraPlugins =
         (pkgs.writeTextDir "queries/nix/injections.scm" /* scheme */ ''
           ; https://github.com/calops/hmts.nvim/pull/30
           (binding
@@ -27,6 +32,6 @@
             (#set! injection.combined)
           )
         '')
-      ];
+        |> lib.optional (config.programs.nixvim.plugins.hmts.enable);
     };
 }
