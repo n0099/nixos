@@ -36,7 +36,7 @@ lib.foldl lib.recursiveUpdate { } [
 
         {
           nixpkgs.overlays = [
-            (final: prev: { nix = inputs.detsys-nix.packages."${pkgs.stdenv.system}".default; }) # https://github.com/DeterminateSystems/nix-src/issues/379
+            (_: _: { nix = inputs.detsys-nix.packages.${pkgs.stdenv.system}.default; }) # https://github.com/DeterminateSystems/nix-src/issues/379
           ];
           nix.settings = {
             eval-cores = 0; # https://docs.determinate.systems/determinate-nix/#parallel-evaluation
