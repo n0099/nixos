@@ -12,7 +12,7 @@
       {
         # https://stackoverflow.com/questions/69971612/how-does-march-native-affect-floating-point-accuracy
         nixpkgs.overlays = [
-          (final: prev: {
+          (_: prev: {
             assimp = prev.assimp.overrideAttrs { doCheck = false; }; # https://github.com/assimp/assimp/issues/6342
           })
         ];
