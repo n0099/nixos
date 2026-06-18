@@ -14,7 +14,7 @@
     in
     {
       services.nginx = {
-        n0099.proxyPassByUrl."${domain}" = [
+        n0099.proxyPassByUrl.${domain} = [
           { "/" = "${listen.address}:${toString listen.port}"; }
         ];
         virtualHosts.${domain}.locations."/".proxyWebsockets = true; # https://github.com/dani-garcia/vaultwarden/wiki/Enabling-WebSocket-notifications
