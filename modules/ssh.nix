@@ -1,3 +1,5 @@
+{ lib, ... }:
+
 {
   flake.modules = {
     nixos.ssh = {
@@ -12,10 +14,11 @@
           ClientAliveInterval = 15;
         };
       };
-      # https://github.com/nix-community/srvos/blob/3fb70232a9fe901d943d0340ab99fa36abb62418/shared/common/well-known-hosts.nix#L7
-      # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints
-      programs.ssh.knownHosts."github.com".publicKey =
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
+      programs.ssh.knownHosts = lib.genAttrs [ "github.com" "gist.github.com" ] (_: {
+        # https://github.com/nix-community/srvos/blob/3fb70232a9fe901d943d0340ab99fa36abb62418/shared/common/well-known-hosts.nix#L7
+        # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints
+        publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
+      });
     };
     homeManager.ssh = {
       services.ssh-agent.enable = true;
