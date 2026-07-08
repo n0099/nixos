@@ -7,6 +7,16 @@
         n0099.cachyos = {
           enable = true;
           variant = "bmq-lto";
+          baseKernel = pkgs.linux_6_18.override {
+            argsOverride = rec {
+              version = "6.18.33";
+              modDirVersion = version;
+              src = pkgs.fetchurl {
+                url = "mirror://kernel/linux/kernel/v${lib.versions.major version}.x/linux-${version}.tar.xz";
+                hash = "sha256-bxb/MCWZ9v40dCiQMizwd1cDEF+9h2dEloL8pq8Pt4I=";
+              };
+            };
+          };
         };
       }
       {
