@@ -4,7 +4,6 @@
 
     {
       home.packages = with pkgs; [
-        clash-verge-rev
         kdePackages.krdc
         kdePackages.krfb
         libreoffice-qt-fresh
