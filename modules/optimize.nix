@@ -8,6 +8,7 @@
     {
       options.n0099.optimize = {
         stdenv = lib.mkEnableOption "";
+        python = lib.mkEnableOption "";
         arch = lib.mkOption {
           # https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html#index-march-14
           type = with lib.types; nullOr str;
@@ -34,6 +35,26 @@
                 };
               })
             );
+        })
+        (lib.mkIf cfg.python {
+          nixpkgs.overlays = # https://discourse.nixos.org/t/why-is-the-nix-compiled-python-slower/18717/28
+            [
+              (
+                _: prev:
+                [ "Minimal" ] ++ lib.map toString (lib.range 11 15) # https://github.com/NixOS/nixpkgs/blob/7cff90c5d614b3c1d6dcec33452829cfcad4c29b/pkgs/development/interpreters/python/default.nix#L90
+                |> lib.map (
+                  version:
+                  let
+                    pkg = "python3${version}";
+                  in
+                  {
+                    name = pkg;
+                    value = prev.${pkg}.override { enableOptimizations = true; };
+                  }
+                )
+                |> lib.listToAttrs
+              )
+            ];
         })
         (lib.mkIf (cfg.arch != "") {
           # https://wiki.nixos.org/wiki/Build_flags#Building_the_whole_system_on_NixOS
