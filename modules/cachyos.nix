@@ -41,17 +41,36 @@
             else
               value;
         };
+        mkCachyKernelOverrides = lib.mkOption { type = with lib.types; attrsOf anything; };
       };
-      config = lib.mkIf cfg.enable {
-        boot.kernelPackages =
-          {
-            autofdo = true; # https://cachyos.org/blog/2411-kernel-autofdo/
-            lto = "full"; # https://www.kernelconfig.io/config_lto_clang_full
-            stdenv = pkgs.clangStdenv; # using our stdenv with possibly configured `hostPlatform.gcc.march`
-            inherit (cfg.baseKernel) version src; # https://github.com/xddxdd/nix-cachyos-kernel/blob/dc3941ceb1cc0b303ddefc5e5fa1577a2d7856d7/kernel-cachyos/default.nix#L16
-          }
-          |> inputs.nix-cachyos-kernel.outputs.packages.${pkgs.stdenv.system}."linux-cachyos-${cfg.variant}".override # https://github.com/xddxdd/nix-cachyos-kernel/issues/23#issuecomment-3764296449
-          |> pkgs.linuxKernel.packagesFor;
-      };
+      config =
+        {
+          boot.kernelPackages =
+            {
+              autofdo = true; # https://cachyos.org/blog/2411-kernel-autofdo/
+              lto = "full"; # https://www.kernelconfig.io/config_lto_clang_full
+              stdenv = pkgs.clangStdenv; # using our stdenv that may built with configured `hostPlatform.gcc.{arch,tune}` so don't have to build nix-cachyos-kernel's stdenv again
+              bbr3 = true; # https://www.phoronix.com/news/Google-BBRv3-Linux
+              inherit (cfg.baseKernel) version src; # https://github.com/xddxdd/nix-cachyos-kernel/blob/dc3941ceb1cc0b303ddefc5e5fa1577a2d7856d7/kernel-cachyos/default.nix#L16
+              extraMakeFlags =
+                let
+                  platform = config.nixpkgs.hostPlatform.gcc;
+                in
+                lib.concatMap # https://github.com/NixOS/nixpkgs/pull/431961#issuecomment-5035234990
+                  (
+                    key:
+                    lib.optional (platform ? arch) "${key}+=-march=${platform.arch}"
+                    ++ lib.optional (platform ? tune) "${key}+=-mtune=${platform.tune}"
+                  )
+                  [
+                    "KCFLAGS"
+                    "KCPPFLAGS"
+                  ];
+            }
+            // cfg.mkCachyKernelOverrides
+            |> inputs.nix-cachyos-kernel.outputs.packages.${pkgs.stdenv.system}."linux-cachyos-${cfg.variant}".override # https://github.com/xddxdd/nix-cachyos-kernel/issues/23#issuecomment-3764296449
+            |> pkgs.linuxKernel.packagesFor;
+        }
+        |> lib.mkIf cfg.enable;
     };
 }
