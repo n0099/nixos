@@ -1,6 +1,11 @@
 {
   flake.modules.nixos.zfs =
-    { lib, config, ... }:
+    {
+      pkgs,
+      lib,
+      config,
+      ...
+    }:
 
     {
       services = {
@@ -8,6 +13,7 @@
         sanoid = lib.mkMerge [
           {
             enable = true;
+            package = pkgs.sanoid.override { zfs = config.boot.zfs.package; };
             datasets =
               config.fileSystems
               |> lib.filterAttrs (mountpoint: _: mountpoint != "/nix/store")
