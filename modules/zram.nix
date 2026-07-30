@@ -2,7 +2,7 @@
   flake.modules.nixos.zram = {
     zramSwap = {
       enable = true;
-      memoryPercent = 100;
+      memoryPercent = 300;
     };
     boot.kernel.sysctl = {
       # https://unix.stackexchange.com/questions/34034/what-is-the-appropriate-value-of-vm-swappiness-when-using-zram/774112#774112
