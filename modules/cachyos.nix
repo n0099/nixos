@@ -28,8 +28,10 @@
             if lib.isString value then
               let
                 # https://github.com/CachyOS/kernel-patches/issues/140
-                # https://github.com/xddxdd/nix-cachyos-kernel/commit/a3da9122076ae33d52828d1e6c4a2595378f0ca2#diff-352bbe444aff13cc4c129bd885cbbb136eb0aa2db3bacfe3586909d7d337e4c2R16
-                prepatched = (lib.importJSON "${inputs.nix-cachyos-kernel}/kernel-cachyos/version.json").${value};
+                # https://github.com/xddxdd/nix-cachyos-kernel/commit/12eb1a90ebec95e37c81cb0f9b2a0907ffd6704f#diff-9fd890849d1d04eb0bc88266a8df0ca8404613f123ab5a5e5a1112e073b7145cR44
+                prepatched =
+                  (lib.importJSON "${inputs.nix-cachyos-kernel}/kernel-cachyos/version.json")
+                  ."linux-cachyos-${value}";
               in
               rec {
                 inherit (src) outPath; # to pass `isStorePath` check of https://github.com/NixOS/nixpkgs/blob/e2fbb67cc1eedacce97b850cd5664d23e15eb984/lib/types.nix#L647
