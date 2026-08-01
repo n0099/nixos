@@ -68,15 +68,17 @@
           boot = {
             kernelPackages = (
               {
-                autofdo = true; # https://cachyos.org/blog/2411-kernel-autofdo/
-                lto = "full"; # https://www.kernelconfig.io/config_lto_clang_full
                 stdenv = pkgs.clangStdenv; # using our stdenv that may built with configured `hostPlatform.gcc.{arch,tune}` so don't have to build nix-cachyos-kernel's stdenv again
                 bbr3 = true; # https://www.phoronix.com/news/Google-BBRv3-Linux
-                inherit (cfg.baseKernel) version src; # https://github.com/xddxdd/nix-cachyos-kernel/blob/dc3941ceb1cc0b303ddefc5e5fa1577a2d7856d7/kernel-cachyos/default.nix#L16
                 inherit extraMakeFlags;
+                inherit (cfg.baseKernel) version src; # https://github.com/xddxdd/nix-cachyos-kernel/blob/dc3941ceb1cc0b303ddefc5e5fa1577a2d7856d7/kernel-cachyos/default.nix#L16
               }
               // lib.optionalAttrs (cfg.baseKernel ? cachyosConfigFile) {
                 inherit (cfg.baseKernel) cachyosConfigFile;
+              }
+              // lib.optionalAttrs (lib.hasSuffix "-lto" cfg.variant) {
+                autofdo = true; # https://cachyos.org/blog/2411-kernel-autofdo/
+                lto = "full"; # https://www.kernelconfig.io/config_lto_clang_full
               }
               // cfg.mkCachyKernelOverrides
               |> (getVariant cfg.variant).override # https://github.com/xddxdd/nix-cachyos-kernel/issues/23#issuecomment-3764296449
