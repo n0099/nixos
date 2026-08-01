@@ -15,6 +15,9 @@
 
     let
       cfg = config.n0099.cachyos;
+      getVariant =
+        variant:
+        inputs.nix-cachyos-kernel.outputs.packages.${pkgs.stdenv.system}."linux-cachyos-${variant}";
     in
     {
       options.n0099.cachyos = {
@@ -22,23 +25,22 @@
         variant = lib.mkOption { type = lib.types.str; }; # https://wiki.cachyos.org/features/kernel/#variants
         baseKernel = lib.mkOption {
           type = with lib.types; either package str;
-          default = "lts";
+          default = cfg.variant;
           apply =
             value:
             if lib.isString value then
               let
+                variant = getVariant value;
                 # https://github.com/CachyOS/kernel-patches/issues/140
                 # https://github.com/xddxdd/nix-cachyos-kernel/commit/12eb1a90ebec95e37c81cb0f9b2a0907ffd6704f#diff-9fd890849d1d04eb0bc88266a8df0ca8404613f123ab5a5e5a1112e073b7145cR44
-                prepatched =
-                  (lib.importJSON "${inputs.nix-cachyos-kernel}/kernel-cachyos/version.json")
-                  ."linux-cachyos-${value}";
-              in
-              rec {
-                inherit (src) outPath; # to pass `isStorePath` check of https://github.com/NixOS/nixpkgs/blob/e2fbb67cc1eedacce97b850cd5664d23e15eb984/lib/types.nix#L647
-                inherit (prepatched) version;
                 src = pkgs.fetchurl {
-                  inherit (prepatched) url hash;
+                  inherit (variant.src.src) url hash;
                 };
+              in
+              {
+                inherit src;
+                inherit (src) outPath; # to pass `isStorePath` check of https://github.com/NixOS/nixpkgs/blob/e2fbb67cc1eedacce97b850cd5664d23e15eb984/lib/types.nix#L647
+                inherit (variant) version cachyosConfigFile;
               }
             else
               value;
@@ -73,8 +75,11 @@
                 inherit (cfg.baseKernel) version src; # https://github.com/xddxdd/nix-cachyos-kernel/blob/dc3941ceb1cc0b303ddefc5e5fa1577a2d7856d7/kernel-cachyos/default.nix#L16
                 inherit extraMakeFlags;
               }
+              // lib.optionalAttrs (cfg.baseKernel ? cachyosConfigFile) {
+                inherit (cfg.baseKernel) cachyosConfigFile;
+              }
               // cfg.mkCachyKernelOverrides
-              |> inputs.nix-cachyos-kernel.outputs.packages.${pkgs.stdenv.system}."linux-cachyos-${cfg.variant}".override # https://github.com/xddxdd/nix-cachyos-kernel/issues/23#issuecomment-3764296449
+              |> (getVariant cfg.variant).override # https://github.com/xddxdd/nix-cachyos-kernel/issues/23#issuecomment-3764296449
               |> pkgs.linuxKernel.packagesFor
             );
             zfs.modulePackage = # https://github.com/NixOS/nixpkgs/issues/473637#issuecomment-5037550911
