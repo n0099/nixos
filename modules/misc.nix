@@ -49,9 +49,6 @@
         };
       }
       {
-        n0099.stdenv.enable = true;
-      }
-      {
         environment.systemPackages = [ pkgs.devenv ];
       }
     ];
