@@ -82,11 +82,5 @@
         hardware.bluetooth.enable = true;
         programs.kdeconnect.enable = true;
       }
-      {
-        environment.systemPackages = [
-          pkgs.wineWow64Packages.waylandFull
-          # pkgs.winetricks # https://github.com/Winetricks/winetricks/issues/2084#issuecomment-1902843148
-        ];
-      }
     ];
 }
