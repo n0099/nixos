@@ -3,12 +3,12 @@
 lib.foldl lib.recursiveUpdate { } [
   {
     flake.modules = {
-      nixos.osu.n0099.permittedUnfreePackages = [ "osu-lazer-bin" ];
+      nixos.osu.n0099.permittedUnfreePackages = [ "osu-lazer-bin" ]; # https://github.com/ppy/osu-framework/issues/2784
       homeManager.osu =
         { pkgs, ... }:
 
         {
-          home.packages = [ pkgs.osu-lazer-bin ];
+          home.packages = [ pkgs.osu-lazer-bin ]; # https://github.com/ppy/osu/pull/27681
         };
     };
   }
