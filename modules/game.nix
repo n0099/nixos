@@ -31,14 +31,20 @@
         environment.systemPackages = [ pkgs.mangohud ];
       }
       {
-        # https://github.com/NixOS/nixpkgs/issues/351516#issuecomment-3584219555
-        # programs.steam.gamescopeSession.enable = true;
+        programs.steam.gamescopeSession.enable = true;
+      }
+      {
+        # https://discourse.nixos.org/t/unable-to-activate-gamescope-capsysnice-option/37843/6
+        # https://github.com/NixOS/nixpkgs/issues/312195
         # programs.gamescope.capSysNice = true;
         services.ananicy = {
           enable = true;
           package = pkgs.ananicy-cpp;
           rulesProvider = pkgs.ananicy-rules-cachyos;
         };
+      }
+      {
+        services.scx.enable = true;
       }
     ];
 }
