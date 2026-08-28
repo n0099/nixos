@@ -8,7 +8,6 @@
         lib,
         pkgs,
         config,
-        osConfig,
         ...
       }:
 
@@ -49,6 +48,11 @@
                 "general.autoScroll" = true;
               };
             policies = {
+              # about:policies
+              # https://mozilla.github.io/policy-templates
+              # https://github.com/mozilla/policy-templates
+              # https://firefox-admin-docs.mozilla.org/reference/policies/
+              # https://firefox-admin-docs.mozilla.org/release-notes/
               DisplayBookmarksToolbar = "never";
               Homepage.StartPage = "previous-session";
               SanitizeOnShutdown = {
@@ -60,23 +64,21 @@
                 # Downloads = true;
               };
               Preferences = mkPreferences (
-                # about:policies
-                # https://mozilla.github.io/policy-templates
-                # https://github.com/mozilla/policy-templates
                 # https://github.com/NixOS/nixpkgs/blob/b4c2c57c31e68544982226d07e4719a2d86302a8/nixos/modules/programs/firefox.nix#L340-L345
                 {
                   "browser.urlbar.trimURLs" = false;
                   "widget.gtk.overlay-scrollbars.enabled" = false; # https://superuser.com/questions/1720362/firefox-scroll-bar-disappearing
                 }
                 // lib.concatMapAttrs (name: value: { "browser.newtabpage.activity-stream.${name}" = value; }) {
-                  "feeds.topsites" = true;
+                  "feeds.section.highlights" = true;
+                  "section.highlights.rows" = 4;
                   "section.highlights.includeBookmarks" = false;
                   "section.highlights.includeDownloads" = true;
                   "section.highlights.includeVisited" = true;
-                  "feeds.section.highlights" = true;
-                  "section.highlights.rows" = 4;
+                  "feeds.topsites" = true;
                   "topSitesRows" = 4;
                   "showSponsoredCheckboxes" = false;
+                  "nova.enabled" = false;
                 }
                 // {
                   "browser.download.autohideButton" = true;
@@ -151,7 +153,6 @@
               vue-js-devtools
               wayback-machine
               terms-of-service-didnt-read
-              offline-qr-code-generator
               hover-zoom-plus
               violentmonkey
               copy-selection-as-markdown
