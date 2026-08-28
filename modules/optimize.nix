@@ -69,8 +69,10 @@
             };
             system = "x86_64-linux";
           };
-          nix.settings.system-features = [ "gccarch-${cfg.arch}" ];
-          nix.settings.keep-outputs = true; # https://discourse.nixos.org/t/rebuild-nixos-offline/3679/16
+          nix.settings = {
+            system-features = [ "gccarch-${cfg.arch}" ];
+            keep-outputs = true; # https://discourse.nixos.org/t/rebuild-nixos-offline/3679/16
+          };
         })
       ];
     };
