@@ -6,7 +6,15 @@
       {
         n0099.cachyos = {
           enable = true;
-          variant = "bore-lto";
+          variant = "bmq-lto";
+          mkCachyKernelOverrides.prePatch =
+            let
+              patch = pkgs.fetchpatch {
+                url = "https://github.com/CachyOS/linux/commit/d286c785c4c385e10eb1c8c440a6a0c4496a73ad.patch";
+                hash = "sha256-cjV+MyFgzFQwu4mTxd0qUGV3uY2q9Gj/fo5HqRaUi7Y=";
+              };
+            in
+            "patch -Rp1 < ${patch}";
         };
       }
       {
