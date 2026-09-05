@@ -84,6 +84,7 @@
             };
           };
         };
+        environment.systemPackages = [ pkgs.easyeffects ]; # https://github.com/Digitalone1/EasyEffects-Presets https://github.com/jaakkopasanen/AutoEq
       }
       {
         hardware.bluetooth.enable = true;
