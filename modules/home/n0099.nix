@@ -21,7 +21,6 @@
           nix-diff
           nix-tree
           nixfmt-tree
-          comma
         ];
       }
       {
