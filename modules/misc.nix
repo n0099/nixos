@@ -35,5 +35,15 @@
         atopRotateTimer.enable = false;
       };
       systemd.settings.Manager.StatusUnitFormat = "combined"; # https://github.com/systemd/systemd/pull/15957
+      services.kmscon = {
+        enable = true;
+        useXkbConfig = true;
+        fonts = [
+          {
+            name = "FiraCode Nerd Font Ret";
+            package = pkgs.nerd-fonts.fira-code;
+          }
+        ];
+      };
     };
 }
