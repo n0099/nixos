@@ -40,15 +40,14 @@
                 ++ prefixOmz [ "path:lib" ]
                 ++ prefixOmzPlugin [
                   "common-aliases"
+                  "docker-compose"
+                  "git"
+                  "systemd"
                   "colored-man-pages"
                   "extract"
-                  "docker-compose"
                   "last-working-dir"
-                  "git"
                   "isodate"
                   "safe-paste"
-                  "sudo"
-                  "systemd"
                 ]
                 ++ [
                   "zdharma-continuum/fast-syntax-highlighting"
