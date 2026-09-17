@@ -10,8 +10,8 @@
       }:
 
       let
-        omzPrefix = suffixs: map (i: "ohmyzsh/ohmyzsh ${i}") suffixs;
-        omzPluginPrefix = plugins: omzPrefix (map (i: "path:plugins/${i}") plugins);
+        prefixOmz = map (i: "ohmyzsh/ohmyzsh ${i}");
+        prefixOmzPlugin = plugins: plugins |> map (i: "path:plugins/${i}") |> prefixOmz;
       in
       lib.mkMerge [
         {
@@ -37,8 +37,8 @@
                 plugins = [
                   "getantidote/use-omz"
                 ]
-                ++ omzPrefix [ "path:lib" ]
-                ++ omzPluginPrefix [
+                ++ prefixOmz [ "path:lib" ]
+                ++ prefixOmzPlugin [
                   "common-aliases"
                   "colored-man-pages"
                   "extract"
@@ -87,7 +87,7 @@
               ];
             }
             {
-              antidote.plugins = omzPluginPrefix [ "docker" ];
+              antidote.plugins = prefixOmzPlugin [ "docker" ];
               initContent = lib.mkOrder 800 ''
                 # https://github.com/ohmyzsh/ohmyzsh/tree/3e7ef0182f59c7990a52cf6ec2981adb56d5b368/plugins/docker
                 zstyle ':completion:*:*:docker:*' option-stacking yes
