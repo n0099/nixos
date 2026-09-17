@@ -34,5 +34,6 @@
         atopService.enable = false;
         atopRotateTimer.enable = false;
       };
+      systemd.settings.Manager.StatusUnitFormat = "combined"; # https://github.com/systemd/systemd/pull/15957
     };
 }
