@@ -82,7 +82,7 @@
 
             # https://mywiki.wooledge.org/BashFAQ/050
             command time -v ${zfs} send -wLcP "''${send_params[@]}" \
-              | pv -pterabfs "$send_size" \
+              | pv -pterabfvs "$send_size" -N "$(numfmt --to=iec-i --suffix=B --format=%f "$send_size")" \
               | command time -v rclone rcat \
                 --error-on-no-transfer --ignore-existing \
                 "$bucket/$month_dir/''${file_system#"''${prefix}"}/''${snapshot#autosnap_}"
