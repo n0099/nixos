@@ -4,7 +4,11 @@
 
     let
       secondLevelDomain =
-        domain: domain |> lib.splitString "." |> lib.takeEnd 2 |> lib.concatStringsSep ".";
+        domain:
+        domain
+        |> lib.splitString "."
+        |> lib.takeEnd 2
+        |> lib.concatStringsSep ".";
       certByDomain =
         domain:
         let
@@ -17,7 +21,7 @@
         };
       baseDomains =
         config.services.nginx.n0099.baseUrls
-        |> map (lib.splitString "/")
+        |> map lib.path.subpath.components
         |> map lib.head
         |> lib.uniqueStrings;
       withWWWSubDomain = map (domain: "www.${domain}");
@@ -27,7 +31,12 @@
         (lib.genAttrs baseDomains certByDomain)
         (lib.genAttrs
           # https://news.ycombinator.com/item?id=2455864
-          (baseDomains |> map secondLevelDomain |> lib.uniqueStrings |> withWWWSubDomain)
+          (
+            baseDomains
+            |> map secondLevelDomain
+            |> lib.uniqueStrings
+            |> withWWWSubDomain
+          )
           (
             domain:
             certByDomain domain
