@@ -1,6 +1,6 @@
 {
   flake.modules.nixos.nginx-cert =
-    { config, lib, ... }:
+    { lib, pkgs, ... }:
 
     let
       secondLevelDomain =
@@ -19,32 +19,13 @@
           sslCertificate = "${certBasePath}/fullchain.pem"; # https://stackoverflow.com/questions/26191463/ssl-error0b080074x509-certificate-routinesx509-check-private-keykey-values/41154564#41154564
           sslCertificateKey = "${certBasePath}/privkey.pem";
         };
-      baseDomains =
-        config.services.nginx.n0099.baseUrls
-        |> map lib.path.subpath.components
-        |> map lib.head
-        |> lib.uniqueStrings;
-      withWWWSubDomain = map (domain: "www.${domain}");
+      nginxLib = import ./_lib.nix lib;
     in
     {
-      services.nginx.virtualHosts = lib.mkMerge [
-        (lib.genAttrs baseDomains certByDomain)
-        (lib.genAttrs
-          # https://news.ycombinator.com/item?id=2455864
-          (
-            baseDomains
-            |> map secondLevelDomain
-            |> lib.uniqueStrings
-            |> withWWWSubDomain
-          )
-          (
-            domain:
-            certByDomain domain
-            // {
-              locations."/".return = "301 https://${secondLevelDomain domain}";
-            }
-          )
-        )
-      ];
+      options.services.nginx.virtualHosts = nginxLib.overrideOption (
+        { name, ... }:
+
+        certByDomain name |> lib.mkIf (name != "default")
+      );
     };
 }
