@@ -1,8 +1,6 @@
-{ lib, ... }:
-
 {
   flake.modules.nixos.nginx-options =
-    { config, ... }:
+    { lib, ... }:
 
     {
       options = {
@@ -12,13 +10,15 @@
             default = [ ];
           };
           proxyPassByUrl = lib.mkOption {
-            type = with lib.types; str |> attrsOf |> listOf |> attrsOf;
+            type =
+              with lib.types;
+              str
+              |> attrsOf
+              |> listOf
+              |> attrsOf;
             default = { };
           };
         };
       };
-      config.services.nginx.enable =
-        with config.services.nginx.n0099;
-        !(baseUrls == [ ] || proxyPassByUrl == { }) |> lib.mkDefault;
     };
 }
