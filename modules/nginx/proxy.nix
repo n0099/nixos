@@ -4,40 +4,29 @@
 
     {
       options.services.nginx.n0099.proxyPassByUrl = lib.mkOption {
-        type =
-          with lib.types;
-          str
-          |> attrsOf
-          |> listOf
-          |> attrsOf;
+        type = with lib.types; str |> attrsOf |> attrsOf;
         default = { };
       };
       config.services.nginx = {
-        virtualHosts = (
-          lib.mapAttrs (_: proxyPassKeyByBaseUrl: {
-            locations =
-              proxyPassKeyByBaseUrl
-              |> map (
-                lib.concatMapAttrs (
-                  location: proxyPass:
-                  let
-                    locationBlock = {
-                      proxyPass = "http://${proxyPass}";
-                    };
-                  in
-                  if location == "/" then
-                    { ${location} = locationBlock; }
-                  else
-                    {
-                      # https://stackoverflow.com/questions/5948659/when-should-i-use-a-trailing-slash-in-my-url
-                      "= ${location}".return = "307 ${location}/";
-                      "${location}/" = locationBlock;
-                    }
-                )
-              )
-              |> lib.mkMerge;
-          }) config.services.nginx.n0099.proxyPassByUrl
-        );
+        virtualHosts = lib.mapAttrs (_: proxyPassByUrl: {
+          locations = lib.concatMapAttrs (
+            url: proxyPass:
+            let
+              locationBlock = {
+                proxyPass = "http://${proxyPass}";
+              };
+            in
+            if url == "/" then
+              { ${url} = locationBlock; }
+            else
+              {
+                # https://stackoverflow.com/questions/5948659/when-should-i-use-a-trailing-slash-in-my-url
+                # https://stackoverflow.com/questions/2068418/whats-the-difference-between-a-302-and-a-307-redirect
+                "= ${url}".return = "307 ${url}/";
+                "${url}/" = locationBlock;
+              }
+          ) proxyPassByUrl;
+        }) config.services.nginx.n0099.proxyPassByUrl;
       };
     };
 }
