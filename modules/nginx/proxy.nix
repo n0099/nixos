@@ -21,7 +21,7 @@
                   else
                     {
                       # https://stackoverflow.com/questions/5948659/when-should-i-use-a-trailing-slash-in-my-url
-                      "= ${location}".return = "302 ${location}/";
+                      "= ${location}".return = "307 ${location}/";
                       "${location}/" = locationBlock;
                     }
                 )
