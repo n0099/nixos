@@ -1,7 +1,7 @@
 { lib, ... }:
 
 {
-  flake.modules.nixos.nginx-noWWW = { config, ... }: {
+  flake.modules.nixos."nginx/noWWW" = { config, ... }: {
     options.services.nginx.n0099.noWWWDomains = lib.mkOption { type = with lib.types; listOf str; };
     config.services.nginx.virtualHosts =
       lib.genAttrs (config.services.nginx.n0099.noWWWDomains |> map (domain: "www.${domain}"))

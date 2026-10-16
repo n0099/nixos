@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nginx-proxy =
+  flake.modules.nixos."nginx/proxy" =
     { config, lib, ... }:
 
     {

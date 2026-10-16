@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nginx-http3 =
+  flake.modules.nixos."nginx/http3" =
     { lib, pkgs, ... }:
 
     {

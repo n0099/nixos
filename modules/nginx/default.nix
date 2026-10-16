@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nginx =
+  flake.modules.nixos."nginx/default" =
     {
       config,
       lib,

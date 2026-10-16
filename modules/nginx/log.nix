@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nginx-log =
+  flake.modules.nixos."nginx/log" =
     { config, lib, ... }:
 
     let

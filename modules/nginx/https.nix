@@ -1,5 +1,5 @@
 {
-  flake.modules.nixos.nginx-https =
+  flake.modules.nixos."nginx/https" =
     { lib, pkgs, ... }:
 
     let
