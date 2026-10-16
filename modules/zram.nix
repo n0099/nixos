@@ -9,7 +9,7 @@
       # https://news.ycombinator.com/item?id=45686280
       # https://old.reddit.com/r/Fedora/comments/mzun99/new_zram_tuning_benchmarks/
       "vm.page-cluster" = 0;
-      "vm.swappiness" = 150;
+      "vm.swappiness" = 100;
     };
   };
 }
