@@ -34,18 +34,15 @@ lib.foldl lib.recursiveUpdate { } [
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake.modules = {
-      nixos.detsys =
-        { pkgs, ... }:
-
-        {
-          nixpkgs.overlays = [
-            (_: _: { nix = inputs.detsys-nix.packages.${pkgs.stdenv.system}.default; }) # https://github.com/DeterminateSystems/nix-src/issues/379
-          ];
-          nix.settings = {
-            eval-cores = 0; # https://docs.determinate.systems/determinate-nix/#parallel-evaluation
-            lazy-trees = true; # https://lobste.rs/s/wgn94m/introducing_lazy_trees_determinate_nix_3#c_hqsipx
-          };
+      nixos.detsys = {
+        nixpkgs.overlays = [
+          (final: _: { nix = (inputs.detsys-nix.lib.makeComponents { pkgs = final; }).nix-everything; }) # https://github.com/DeterminateSystems/nix-src/issues/379
+        ];
+        nix.settings = {
+          eval-cores = 0; # https://docs.determinate.systems/determinate-nix/#parallel-evaluation
+          lazy-trees = true; # https://lobste.rs/s/wgn94m/introducing_lazy_trees_determinate_nix_3#c_hqsipx
         };
+      };
       homeManager.detsys.manual.manpages.enable = false; # https://github.com/nix-community/home-manager/issues/7935#issuecomment-3671184459
     };
   }
