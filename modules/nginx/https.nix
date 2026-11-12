@@ -16,6 +16,7 @@
         in
         {
           forceSSL = true;
+          redirectCode = 308; # https://stackoverflow.com/questions/42136829/whats-the-difference-between-http-301-and-308-status-codes
           sslCertificate = "${certBasePath}/fullchain.pem"; # https://stackoverflow.com/questions/26191463/ssl-error0b080074x509-certificate-routinesx509-check-private-keykey-values/41154564#41154564
           sslCertificateKey = "${certBasePath}/privkey.pem";
         };
