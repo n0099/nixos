@@ -24,26 +24,19 @@
         enable = lib.mkEnableOption "";
         variant = lib.mkOption { type = lib.types.str; }; # https://wiki.cachyos.org/features/kernel/#variants
         baseKernel = lib.mkOption {
-          type = with lib.types; either package str;
+          type = lib.types.str;
           default = cfg.variant;
           apply =
             value:
-            if lib.isString value then
-              let
-                variant = getVariant value;
-                # https://github.com/CachyOS/kernel-patches/issues/140
-                # https://github.com/xddxdd/nix-cachyos-kernel/commit/12eb1a90ebec95e37c81cb0f9b2a0907ffd6704f#diff-9fd890849d1d04eb0bc88266a8df0ca8404613f123ab5a5e5a1112e073b7145cR44
-                src = pkgs.fetchurl {
-                  inherit (variant.src.src) url hash;
-                };
-              in
-              {
-                inherit src;
-                inherit (src) outPath; # to pass `isStorePath` check of https://github.com/NixOS/nixpkgs/blob/e2fbb67cc1eedacce97b850cd5664d23e15eb984/lib/types.nix#L647
-                inherit (variant) version cachyosConfigFile;
-              }
-            else
-              value;
+            let
+              variant = getVariant value;
+            in
+            {
+              inherit (variant) version cachyosConfigFile;
+              src = pkgs.fetchurl {
+                inherit (variant.src.src) url hash;
+              };
+            };
         };
         mkCachyKernelOverrides = lib.mkOption { type = with lib.types; attrsOf anything; };
       };
