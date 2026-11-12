@@ -30,10 +30,10 @@
                 msie_padding off;
 
                 aio threads;
-                directio 128k;
-                output_buffers 2 128k;
+                directio 128K;
+                output_buffers 2 128K;
 
-                limit_req_zone $binary_remote_addr zone=ip:10m rate=50r/s;
+                limit_req_zone $binary_remote_addr zone=ip:10M rate=50r/s;
                 limit_req zone=ip burst=100 nodelay;
                 limit_req_status 429;
               '';
