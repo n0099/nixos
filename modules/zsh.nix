@@ -21,7 +21,7 @@
               sessionVariables = {
                 # https://unix.stackexchange.com/questions/743817/how-to-start-tmux-in-a-way-that-it-inherits-all-environment-variables-from-the-c
                 COLORTERM = "truecolor"; # https://github.com/termstandard/colors
-                LESS = "--mouse -R";
+                LESS = "--mouse -Ri";
               };
               history = {
                 size = 100000;
