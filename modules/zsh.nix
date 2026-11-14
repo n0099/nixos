@@ -19,9 +19,11 @@
             {
               enable = true;
               sessionVariables = {
-                # https://unix.stackexchange.com/questions/743817/how-to-start-tmux-in-a-way-that-it-inherits-all-environment-variables-from-the-c
                 COLORTERM = "truecolor"; # https://github.com/termstandard/colors
-                LESS = "--mouse -Ri";
+              }
+              // rec {
+                LESS = "-RSMi --mouse --wheel-lines 3"; # https://explainshell.com/explain?cmd=less+-RSMi https://github.com/tmux/tmux/issues/3775#issuecomment-1958976118 https://github.com/tmux/tmux/issues/3692
+                SYSTEMD_LESS = LESS; # https://github.com/systemd/systemd/issues/29479
               };
               history = {
                 size = 100000;
