@@ -23,7 +23,7 @@
               }
               // rec {
                 LESS = "-RSMi --mouse --wheel-lines 3"; # https://explainshell.com/explain?cmd=less+-RSMi https://github.com/tmux/tmux/issues/3775#issuecomment-1958976118 https://github.com/tmux/tmux/issues/3692
-                SYSTEMD_LESS = LESS; # https://github.com/systemd/systemd/issues/29479
+                SYSTEMD_LESS = "${LESS} -F"; # https://github.com/systemd/systemd/issues/29479
                 LESSSECURE = 1; # https://www.man7.org/linux/man-pages/man1/less.1.html#SECURITY
                 SYSTEMD_PAGERSECURE = 1; # https://github.com/systemd/systemd/issues/5666
               };
