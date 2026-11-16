@@ -8,7 +8,7 @@ in
 
       {
         fonts = {
-          packages = with pkgs; [ nerd-fonts.fira-code ];
+          packages = [ pkgs.nerd-fonts.fira-code ];
           fontconfig.defaultFonts.monospace = [ fontFamily ];
         };
       };

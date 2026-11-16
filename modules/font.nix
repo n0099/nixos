@@ -5,7 +5,7 @@
     {
       fonts = lib.mkMerge [
         {
-          packages = with pkgs; [ last-resort ];
+          packages = [ pkgs.last-resort ];
           fontconfig = {
             enable = true;
             localConf = lib.mkBefore /* xml */ ''
