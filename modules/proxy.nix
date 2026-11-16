@@ -46,9 +46,8 @@ in
               prev:
               let
                 unwrapped = prev.passthru.unwrapped.overrideAttrs (prev: {
-                  # https://github.com/NixOS/nixpkgs/pull/539637
                   patches = (prev.patches or [ ]) ++ [
-                    (pkgs.writeText "prevent-writing-mimeapps" ''
+                    (pkgs.writeText "https://github.com/NixOS/nixpkgs/pull/539637" ''
                       diff --git a/src-tauri/src/utils/init.rs b/src-tauri/src/utils/init.rs
                       index 43b61c8f..5094667a 100644
                       --- a/src-tauri/src/utils/init.rs
@@ -78,6 +77,26 @@ in
                            Ok(())
                        }
                        #[cfg(target_os = "macos")]
+                    '')
+                    (pkgs.writeText "https://github.com/clash-verge-rev/clash-verge-rev/issues/2729#issuecomment-5926388952" ''
+                      diff --git a/src-tauri/src/core/sysopt.rs b/src-tauri/src/core/sysopt.rs
+                      index b0429cd0..9348b6fc 100644
+                      --- a/src-tauri/src/core/sysopt.rs
+                      +++ b/src-tauri/src/core/sysopt.rs
+                      @@ -157,13 +157,6 @@ impl Sysopt {
+
+                               self.access_guard().write().set_guard_type(GuardType::None);
+
+                      -        if !sys_enable && !pac_enable {
+                      -            // disable proxy
+                      -            sys.set_system_proxy()?;
+                      -            auto.set_auto_proxy()?;
+                      -            return Ok(());
+                      -        }
+                      -
+                               if pac_enable {
+                                   sys.enable = false;
+                                   auto.enable = true;
                     '')
                   ];
                 });
