@@ -41,8 +41,8 @@
             [
               (
                 _: prev:
-                [ "Minimal" ] ++ lib.map toString (lib.range 11 15) # https://github.com/NixOS/nixpkgs/blob/7cff90c5d614b3c1d6dcec33452829cfcad4c29b/pkgs/development/interpreters/python/default.nix#L90
-                |> lib.map (
+                [ "Minimal" ] ++ map toString (lib.range 11 15) # https://github.com/NixOS/nixpkgs/blob/7cff90c5d614b3c1d6dcec33452829cfcad4c29b/pkgs/development/interpreters/python/default.nix#L90
+                |> map (
                   version:
                   let
                     pkg = "python3${version}";

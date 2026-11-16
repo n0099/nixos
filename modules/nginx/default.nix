@@ -80,7 +80,7 @@
                 ];
               }
               |> lib.mapCartesianProduct ({ listen, addr }: listen // addr)
-              |> lib.map (
+              |> map (
                 listen:
                 listen
                 // {
