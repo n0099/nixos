@@ -9,6 +9,7 @@ lib.foldl lib.recursiveUpdate { } [
 
         {
           home.packages = [ pkgs.osu-lazer-bin ]; # https://github.com/ppy/osu/pull/27681
+          xdg.configFile."mimeapps.list".force = true; # https://github.com/ppy/osu/discussions/27856
         };
     };
   }
