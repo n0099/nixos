@@ -25,7 +25,7 @@
       {
         boot.zfs.package = pkgs.zfs_2_4;
         nixpkgs.overlays = [
-          (_: prev: {
+          (final: prev: {
             kernelPackagesExtensions = prev.kernelPackagesExtensions ++ [
               # https://github.com/NixOS/nixpkgs/blob/5dfba6236110080a54247d6460bc2ff5dda939cc/pkgs/top-level/linux-kernels.nix#L668
               (
@@ -36,7 +36,7 @@
                 {
                   ${pkgName} = prev.${pkgName}.overrideAttrs (prev: {
                     patches = prev.patches ++ [
-                      (pkgs.writeText "https://github.com/openzfs/zfs/issues/11140#issuecomment-5498519538" ''
+                      (final.writeText "https://github.com/openzfs/zfs/issues/11140#issuecomment-5498519538" ''
                         diff --git a/module/os/linux/zfs/zpl_inode.c b/module/os/linux/zfs/zpl_inode.c
                         index 3492f4a..37caaab 100644
                         --- a/module/os/linux/zfs/zpl_inode.c
