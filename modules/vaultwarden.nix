@@ -13,6 +13,15 @@
       };
     in
     {
+      networking = {
+        hosts."${config.containers.vaultwarden.n0099.subnetPrefix}1" = [ domain ];
+        proxy.envVars =
+          let
+            noProxy = config.networking.proxy.noProxy;
+            no_proxy = if isNull noProxy then "127.0.0.1,localhost" else noProxy; # https://github.com/NixOS/nixpkgs/blob/78e9c786dc08cd4f3420c2395cd977206a9b1da2/nixos/modules/config/networking.nix#L236
+          in
+          { no_proxy = no_proxy + ",${domain}"; } |> lib.mkAfter;
+      };
       services.nginx = {
         n0099.proxyPassByUrl.${domain} = [
           { "/" = "${listen.address}:${toString listen.port}"; }

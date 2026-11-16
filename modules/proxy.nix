@@ -10,23 +10,27 @@ in
 
       lib.mkMerge [
         {
-          networking.proxy = {
-            default = "socks5h://${proxy}";
-            noProxy = "127.0.0.1,localhost";
-          };
+          networking.proxy.default = "socks5h://${proxy}";
         }
         {
           systemd.services.sanoid.environment = config.networking.proxy.envVars;
         }
       ];
     homeManager.proxy =
-      { lib, pkgs, ... }:
+      {
+        osConfig,
+        lib,
+        pkgs,
+        ...
+      }:
 
       lib.mkMerge [
         {
           programs.librewolf.policies.Proxy = {
             Mode = "manual";
+            Locked = true;
             SOCKSProxy = proxy;
+            Passthrough = osConfig.networking.proxy.envVars.no_proxy;
           };
         }
         {
