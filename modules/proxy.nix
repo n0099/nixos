@@ -1,7 +1,7 @@
 let
   host = "localhost";
   port = 1080;
-  proxy = "${host}:${builtins.toString port}";
+  proxy = "${host}:${toString port}";
 in
 {
   flake.modules = {
@@ -37,7 +37,7 @@ in
           programs.ssh.settings = lib.genAttrs [ "github.com" "gist.github.com" ] (_: {
             proxyCommand =
               # https://stackoverflow.com/questions/1728934/accessing-a-git-repository-via-ssh-behind-a-firewall/8255371#8255371
-              "${lib.getExe pkgs.socat} - PROXY:${host}:%h:%p,proxyport=${builtins.toString port}";
+              "${lib.getExe pkgs.socat} - PROXY:${host}:%h:%p,proxyport=${toString port}";
           });
         }
         {
