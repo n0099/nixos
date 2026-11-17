@@ -23,7 +23,6 @@
         };
       }
       {
-        boot.zfs.package = pkgs.zfs_2_4;
         nixpkgs.overlays = [
           (final: prev: {
             kernelPackagesExtensions = prev.kernelPackagesExtensions ++ [
