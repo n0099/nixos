@@ -83,5 +83,8 @@
         hardware.bluetooth.enable = true;
         programs.kdeconnect.enable = true;
       }
+      {
+        services.kmscon.hwRender = true;
+      }
     ];
 }
