@@ -111,6 +111,12 @@
           # https://forum.manjaro.org/t/after-last-update-konsole-keyboard-shortcut-issue-with-alt-f/161923
           # https://bugs.kde.org/show_bug.cgi?id=482628
         }
+        {
+          # https://github.com/nix-community/home-manager/issues/5162#issuecomment-6935055826
+          # https://github.com/nix-community/home-manager/blob/ec172013fa62135f58fb58dd17ae9651e8f39727/modules/misc/fontconfig.nix#L88
+          # TODO: remove after reach https://github.com/nix-community/home-manager/pull/9920
+          fonts.fontconfig.enable = false;
+        }
       ];
   };
 }
