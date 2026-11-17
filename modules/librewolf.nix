@@ -170,7 +170,7 @@
               indie-wiki-buddy
               canvasblocker
               decentraleyes
-              (addons.buildFirefoxXpiAddon {
+              (buildFirefoxXpiAddon {
                 pname = "dimensions";
                 version = "2.1.1resigned1";
                 addonId = "{38300720-a4e6-4463-a5d4-d3e981959f59}";
@@ -178,7 +178,7 @@
                 sha256 = "sha256-g77jPBZ9ndLBC+Oyd6d0Df1dQ18T3I7wMGx7Dekaww4=";
                 meta = { };
               })
-              (addons.buildFirefoxXpiAddon {
+              (buildFirefoxXpiAddon {
                 pname = "entity-explosion";
                 version = "0.9.6";
                 addonId = "{b2dbb4cf-7425-4790-8bc4-b1ccbc818118}";
@@ -186,7 +186,7 @@
                 sha256 = "sha256-2f1QCh7tC8lq/g3oE9CA/SVId0EuviA3alM2EwIOgvI=";
                 meta = { };
               })
-              (addons.buildFirefoxXpiAddon {
+              (buildFirefoxXpiAddon {
                 pname = "undisposition-racle-fork";
                 version = "0.0.6";
                 addonId = "{39919541-b8e1-4e50-a249-043d2326ef5e}";
@@ -194,7 +194,7 @@
                 sha256 = "sha256-cIk2Fx4YMIoAXcaGJKoSyvKQ9k6/GJ1sLn0ZuxrOcLw=";
                 meta = { };
               })
-              (addons.buildFirefoxXpiAddon {
+              (buildFirefoxXpiAddon {
                 pname = "view-background-images";
                 version = "3.0.4";
                 addonId = "{f1f7b448-d666-46c6-9dfa-3ee4c5c83578}";
@@ -202,7 +202,7 @@
                 sha256 = "sha256-k0cvoatpeiiHlY/+71ViNot92bJGn8avBruDmzVCaoo=";
                 meta = { };
               })
-              (addons.buildFirefoxXpiAddon {
+              (buildFirefoxXpiAddon {
                 pname = "openlink-structured-data-sniff";
                 version = "3.4.27";
                 addonId = "osds@openlinksw.com";
@@ -210,7 +210,7 @@
                 sha256 = "sha256-KCDvs2cbz24gMIjA8B4XwfPznckta2tWozgHDxnYrq0=";
                 meta = { };
               })
-              (addons.buildFirefoxXpiAddon {
+              (buildFirefoxXpiAddon {
                 pname = "markdown-here";
                 version = "2.16.0";
                 addonId = "markdown-here-webext@adam.pritchard";
@@ -218,7 +218,7 @@
                 sha256 = "sha256-EAlgm9Vg1x+PNd6G4ogoLnAa0AP8WhJ/keL7PSPqLnc=";
                 meta = { };
               })
-              (addons.buildFirefoxXpiAddon {
+              (buildFirefoxXpiAddon {
                 pname = "copy-unicode-urls";
                 version = "0.0.21";
                 addonId = "{ec113e08-3560-4792-a123-26355ac2d26d}";
@@ -226,7 +226,7 @@
                 sha256 = "sha256-kBupwPnSjk4Z5dyFy0jJSFM5fGcFIGxz6X2Op6Ca38w=";
                 meta = { };
               })
-              (addons.buildFirefoxXpiAddon {
+              (buildFirefoxXpiAddon {
                 pname = "github-user-languages";
                 version = "1.1.0";
                 addonId = "extension@github-user-languages.github.com";
@@ -234,7 +234,7 @@
                 sha256 = "sha256-210XZ4l106wpqQriBKzygC41f9BFW95bTAclZKQof8w=";
                 meta = { };
               })
-              (addons.buildFirefoxXpiAddon {
+              (buildFirefoxXpiAddon {
                 pname = "whowrotethat";
                 version = "0.22.3.0";
                 addonId = "{7c53a467-2542-497a-86fb-59c2904a56d1}";
@@ -242,7 +242,7 @@
                 sha256 = "sha256-G8W+ZB5iJsBYXhcn9AZFWwiYwLWjwPuSfK+5I4vEZNw=";
                 meta = { };
               })
-              (addons.buildFirefoxXpiAddon {
+              (buildFirefoxXpiAddon {
                 pname = "youtube-tweak";
                 version = "1.1.4";
                 addonId = "youtubetweak@dark495.me";
@@ -251,7 +251,7 @@
                 meta = { };
               })
               /*
-                (addons.buildFirefoxXpiAddon {
+                (buildFirefoxXpiAddon {
                   # https://github.com/nix-community/nur-combined/blob/c0b354b97973b08cd9e55ca81e95fcfb16f93f5a/repos/rycee/pkgs/firefox-addons/default.nix#L9-L41
                   pname = "";
                   version = "";
