@@ -152,8 +152,24 @@
               react-devtools
               vue-js-devtools
               wayback-machine
-              terms-of-service-didnt-read
-              hover-zoom-plus
+              (buildFirefoxXpiAddon {
+                # https://github.com/tosdr/browser-extensions/issues/146
+                pname = "terms-of-service-didnt-read";
+                version = "5.1.1";
+                addonId = "jid0-3GUEt1r69sQNSrca5p8kx9Ezc3U@jetpack";
+                url = "https://web.archive.org/web/20261002210708/https://addons.mozilla.org/firefox/downloads/file/4464742/terms_of_service_didnt_read-5.1.1.xpi";
+                sha256 = "sha256-resAl04BF3VIv8Blvh0pwMfimS1mhM7SxVXKiNxF8kM=";
+                meta = { };
+              })
+              (buildFirefoxXpiAddon {
+                # https://github.com/extesy/hoverzoom/issues/1819
+                pname = "hover-zoom-plus";
+                version = "1.1.15";
+                addonId = "{92e6fe1c-6e1d-44e1-8bc6-d309e59406af}";
+                url = "https://web.archive.org/web/20260929161228/https://addons.mozilla.org/firefox/downloads/file/4819056/hover_zoom_plus-1.1.15.xpi";
+                sha256 = "sha256-AvqkuqGv+nK2Yte7xAV085jX6XRBSgF+97sJ13eLF9o=";
+                meta = { };
+              })
               violentmonkey
               copy-selection-as-markdown
               clearurls
