@@ -36,6 +36,21 @@
               src = pkgs.fetchurl {
                 inherit (variant.src.src) url hash;
               };
+              cachyosPatchesSrc =
+                let
+                  # https://github.com/xddxdd/nix-cachyos-kernel/blob/9d1001801db6023d5ce07707fea6af75de260d3f/kernel-cachyos/mkCachyKernel.nix#L220 didn't passthru its original `cachyosPatchesSrc`
+                  variantJSON =
+                    ("${inputs.nix-cachyos-kernel}/kernel-cachyos/version.json" |> lib.readFile |> lib.fromJSON)
+                    ."linux-cachyos-${builtins.match "^([^-]+).*" value |> lib.head}";
+                in
+                pkgs.fetchFromGitHub {
+                  # https://github.com/xddxdd/nix-cachyos-kernel/blob/b1332396df6e880d7e3b6b451c6a74132ce8cf66/kernel-cachyos/default.nix#L27
+                  owner = "CachyOS";
+                  repo = "kernel-patches";
+                  rev = variantJSON.patchRev;
+                  rootDir = "${variantJSON.patchVersion}/";
+                  hash = variantJSON.patchHash;
+                };
             };
         };
         mkCachyKernelOverrides = lib.mkOption { type = with lib.types; attrsOf anything; };
@@ -67,6 +82,9 @@
             }
             // lib.optionalAttrs (cfg.baseKernel ? cachyosConfigFile) {
               inherit (cfg.baseKernel) cachyosConfigFile;
+            }
+            // lib.optionalAttrs (cfg.baseKernel ? cachyosPatchesSrc) {
+              inherit (cfg.baseKernel) cachyosPatchesSrc;
             }
             // lib.optionalAttrs (lib.hasSuffix "-lto" cfg.variant) {
               autofdo = true; # https://cachyos.org/blog/2411-kernel-autofdo/
