@@ -24,6 +24,9 @@
         enable = lib.mkEnableOption "";
         variant = lib.mkOption { type = lib.types.str; }; # https://wiki.cachyos.org/features/kernel/#variants
         mkCachyKernelOverrides = lib.mkOption { type = with lib.types; attrsOf anything; };
+        useLTSWhenVariantBrokeZfs = lib.mkEnableOption "" // {
+          default = config.boot.zfs.enabled;
+        };
       };
       config = lib.mkIf cfg.enable (
         let
@@ -41,22 +44,31 @@
                 "KCFLAGS"
                 "KCPPFLAGS"
               ];
-        in
-        {
-          boot.kernelPackages = (
+          mkKernelPackages =
+            variant:
             {
               stdenv = pkgs.clangStdenv; # using our stdenv that may built with configured `hostPlatform.gcc.{arch,tune}` so don't have to build nix-cachyos-kernel's stdenv again
               bbr3 = true; # https://www.phoronix.com/news/Google-BBRv3-Linux
               inherit extraMakeFlags;
             }
-            // lib.optionalAttrs (lib.hasSuffix "-lto" cfg.variant) {
+            // lib.optionalAttrs (lib.hasSuffix "-lto" variant) {
               autofdo = true; # https://cachyos.org/blog/2411-kernel-autofdo/
               lto = "full"; # https://www.kernelconfig.io/config_lto_clang_full
             }
             // cfg.mkCachyKernelOverrides
-            |> (getVariant cfg.variant).override # https://github.com/xddxdd/nix-cachyos-kernel/issues/23#issuecomment-3764296449
-            |> pkgs.linuxKernel.packagesFor
-          );
+            |> (getVariant variant).override # https://github.com/xddxdd/nix-cachyos-kernel/issues/23#issuecomment-3764296449
+            |> pkgs.linuxKernel.packagesFor;
+          zfsPackageName = config.boot.zfs.package.kernelModuleAttribute; # https://github.com/NixOS/nixpkgs/blob/fd1462031fdee08f65fd0b4c6b64e22239a77870/nixos/modules/tasks/filesystems/zfs.nix#L22
+          variant =
+            if
+              cfg.useLTSWhenVariantBrokeZfs && (mkKernelPackages cfg.variant).${zfsPackageName}.meta.broken # https://github.com/NixOS/nixpkgs/pull/341596#issuecomment-2367200551
+            then
+              if lib.hasInfix "-lto" cfg.variant then "lts-lto" else "lts"
+            else
+              cfg.variant;
+        in
+        {
+          boot.kernelPackages = mkKernelPackages variant;
           nixpkgs.overlays =
             [
               (_: prev: {
@@ -65,10 +77,9 @@
                   (
                     _: prev:
                     let
-                      pkgName = config.boot.zfs.package.kernelModuleAttribute; # https://github.com/NixOS/nixpkgs/blob/fd1462031fdee08f65fd0b4c6b64e22239a77870/nixos/modules/tasks/filesystems/zfs.nix#L22
                     in
                     {
-                      ${pkgName} = prev.${pkgName}.overrideAttrs (prev: {
+                      ${zfsPackageName} = prev.${zfsPackageName}.overrideAttrs (prev: {
                         # https://github.com/NixOS/nixpkgs/issues/473637#issuecomment-5498332999
                         configureFlags = lib.filter (i: !(lib.hasInfix "+=" i)) prev.configureFlags;
                       });
