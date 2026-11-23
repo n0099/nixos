@@ -23,34 +23,6 @@
       options.n0099.cachyos = {
         enable = lib.mkEnableOption "";
         variant = lib.mkOption { type = lib.types.str; }; # https://wiki.cachyos.org/features/kernel/#variants
-        baseKernel = lib.mkOption {
-          type = lib.types.str;
-          default = cfg.variant;
-          apply =
-            value:
-            let
-              variant = getVariant value;
-            in
-            {
-              inherit (variant.src) src;
-              inherit (variant) version cachyosConfigFile;
-              cachyosPatchesSrc =
-                let
-                  # https://github.com/xddxdd/nix-cachyos-kernel/blob/9d1001801db6023d5ce07707fea6af75de260d3f/kernel-cachyos/mkCachyKernel.nix#L220 didn't passthru its original `cachyosPatchesSrc`
-                  variantJSON =
-                    ("${inputs.nix-cachyos-kernel}/kernel-cachyos/version.json" |> lib.readFile |> lib.fromJSON)
-                    ."linux-cachyos-${builtins.match "^([^-]+).*" value |> lib.head}";
-                in
-                pkgs.fetchFromGitHub {
-                  # https://github.com/xddxdd/nix-cachyos-kernel/blob/b1332396df6e880d7e3b6b451c6a74132ce8cf66/kernel-cachyos/default.nix#L27
-                  owner = "CachyOS";
-                  repo = "kernel-patches";
-                  rev = variantJSON.patchRev;
-                  rootDir = "${variantJSON.patchVersion}/";
-                  hash = variantJSON.patchHash;
-                };
-            };
-        };
         mkCachyKernelOverrides = lib.mkOption { type = with lib.types; attrsOf anything; };
       };
       config = lib.mkIf cfg.enable (
@@ -76,12 +48,6 @@
               stdenv = pkgs.clangStdenv; # using our stdenv that may built with configured `hostPlatform.gcc.{arch,tune}` so don't have to build nix-cachyos-kernel's stdenv again
               bbr3 = true; # https://www.phoronix.com/news/Google-BBRv3-Linux
               inherit extraMakeFlags;
-              inherit (cfg.baseKernel)
-                version
-                src
-                cachyosConfigFile
-                cachyosPatchesSrc
-                ; # https://github.com/xddxdd/nix-cachyos-kernel/blob/b1332396df6e880d7e3b6b451c6a74132ce8cf66/kernel-cachyos/default.nix#L40
             }
             // lib.optionalAttrs (lib.hasSuffix "-lto" cfg.variant) {
               autofdo = true; # https://cachyos.org/blog/2411-kernel-autofdo/
