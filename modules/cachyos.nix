@@ -32,10 +32,8 @@
               variant = getVariant value;
             in
             {
+              inherit (variant.src) src;
               inherit (variant) version cachyosConfigFile;
-              src = pkgs.fetchurl {
-                inherit (variant.src.src) url hash;
-              };
               cachyosPatchesSrc =
                 let
                   # https://github.com/xddxdd/nix-cachyos-kernel/blob/9d1001801db6023d5ce07707fea6af75de260d3f/kernel-cachyos/mkCachyKernel.nix#L220 didn't passthru its original `cachyosPatchesSrc`
@@ -78,13 +76,12 @@
               stdenv = pkgs.clangStdenv; # using our stdenv that may built with configured `hostPlatform.gcc.{arch,tune}` so don't have to build nix-cachyos-kernel's stdenv again
               bbr3 = true; # https://www.phoronix.com/news/Google-BBRv3-Linux
               inherit extraMakeFlags;
-              inherit (cfg.baseKernel) version src; # https://github.com/xddxdd/nix-cachyos-kernel/blob/dc3941ceb1cc0b303ddefc5e5fa1577a2d7856d7/kernel-cachyos/default.nix#L16
-            }
-            // lib.optionalAttrs (cfg.baseKernel ? cachyosConfigFile) {
-              inherit (cfg.baseKernel) cachyosConfigFile;
-            }
-            // lib.optionalAttrs (cfg.baseKernel ? cachyosPatchesSrc) {
-              inherit (cfg.baseKernel) cachyosPatchesSrc;
+              inherit (cfg.baseKernel)
+                version
+                src
+                cachyosConfigFile
+                cachyosPatchesSrc
+                ; # https://github.com/xddxdd/nix-cachyos-kernel/blob/b1332396df6e880d7e3b6b451c6a74132ce8cf66/kernel-cachyos/default.nix#L40
             }
             // lib.optionalAttrs (lib.hasSuffix "-lto" cfg.variant) {
               autofdo = true; # https://cachyos.org/blog/2411-kernel-autofdo/
